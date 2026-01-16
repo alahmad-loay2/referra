@@ -1,0 +1,21 @@
+:root {
+    --primary-color: #0EA7B6;
+    --secondary-color: #1e2f6b;
+    --background-color: #F6F6F6;
+
+    --fs-small: 0.875rem;
+    --fs-medium: 1rem;
+    --fs-large: 1.25rem;
+    --fs-xlarge: 1.5rem;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--secondary-color);
+}
