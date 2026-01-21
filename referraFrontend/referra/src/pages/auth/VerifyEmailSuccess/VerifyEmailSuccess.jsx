@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { verifyEmail } from '../../api/auth.api'
+import { verifyEmail } from '../../../api/auth.api.js'
 
 const VerifyEmailSuccess = () => {
   const [status, setStatus] = useState('Verifying your email...')
@@ -27,7 +27,7 @@ const VerifyEmailSuccess = () => {
           await verifyEmail(access_token, refresh_token)
           setStatus('Your email has been verified and your account is ready to use.')
         } catch (err) {
-          setStatus(err.message || 'Unexpected error during verification. Please try again later.')
+          setStatus(err.message)
         }
       }
 

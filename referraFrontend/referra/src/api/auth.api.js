@@ -1,17 +1,5 @@
 const API_BASE_URL = 'http://localhost:5500/api'
 
-const handleJsonResponse = async (res, defaultMessage) => {
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}))
-    const error = new Error(errorBody?.message || defaultMessage)
-    error.status = res.status
-    throw error
-  }
-  return await res.json()
-}
-
-// ---------- AUTH APIs ----------
-
 export const signup = async (payload) => {
   const res = await fetch(`${API_BASE_URL}/auth/signup`, {
     method: 'POST',
@@ -19,7 +7,7 @@ export const signup = async (payload) => {
     credentials: 'include',
     body: JSON.stringify(payload),
   })
-  return handleJsonResponse(res, 'Failed to sign up.')
+  return res.json()
 }
 
 export const signin = async (email, password) => {
@@ -29,7 +17,7 @@ export const signin = async (email, password) => {
     credentials: 'include',
     body: JSON.stringify({ email, password }),
   })
-  return handleJsonResponse(res, 'Failed to sign in.')
+  return res.json()
 }
 
 export const logout = async () => {
@@ -37,7 +25,7 @@ export const logout = async () => {
     method: 'POST',
     credentials: 'include',
   })
-  return handleJsonResponse(res, 'Failed to logout.')
+  return res.json()
 }
 
 export const verifyEmail = async (accessToken, refreshToken) => {
@@ -49,7 +37,7 @@ export const verifyEmail = async (accessToken, refreshToken) => {
     credentials: 'include',
     body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
   })
-  return handleJsonResponse(res, 'Failed to verify email.')
+  return res.json()
 }
 
 export const forgotPassword = async (email) => {
@@ -61,7 +49,7 @@ export const forgotPassword = async (email) => {
     credentials: 'include',
     body: JSON.stringify({ email }),
   })
-  return handleJsonResponse(res, 'Failed to send password reset email.')
+  return res.json()
 }
 
 export const resetPassword = async (accessToken, refreshToken, newPassword) => {
@@ -77,7 +65,7 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
       new_password: newPassword,
     }),
   })
-  return handleJsonResponse(res, 'Failed to reset password.')
+  return res.json()
 }
 
 export const getCurrentUser = async () => {
@@ -85,10 +73,14 @@ export const getCurrentUser = async () => {
     method: 'GET',
     credentials: 'include',
   })
-  return handleJsonResponse(res, 'Failed to get current user.')
+
+  if(!res.ok) {
+    throw new Error('Failed to fetch current user.');
+  }
+
+  return res.json()
 }
 
-// HR management – create/invite HR (must be called as logged-in HR)
 export const createHr = async (payload) => {
   const res = await fetch(`${API_BASE_URL}/auth/hr/create`, {
     method: 'POST',
@@ -98,5 +90,5 @@ export const createHr = async (payload) => {
     credentials: 'include',
     body: JSON.stringify(payload),
   })
-  return handleJsonResponse(res, 'Failed to create HR user.')
+  return res.json()
 }

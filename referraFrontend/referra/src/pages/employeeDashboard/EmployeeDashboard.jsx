@@ -9,7 +9,7 @@ const EmployeeDashboard = () => {
     try {
       await logout();
     } catch (e) {
-      // ignore errors for now
+      console.error(e);
     } finally {
       navigate("/login");
     }

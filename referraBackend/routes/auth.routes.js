@@ -11,10 +11,8 @@ authRoutes.post("/logout", authenticate, logout);
 authRoutes.post("/forgot-password", forgotPasswordController);
 authRoutes.post("/reset-password", resetPasswordController);
 
-// TEMP: Bootstrap first HR (only works if there are no HR records yet). Delete after use.
 authRoutes.post("/bootstrap-first-hr", bootstrapFirstHrController);
 
-// HR can create other HR users (NO employee promotion)
 authRoutes.post("/hr/create", authenticate, requireHr, createHrController);
 
 authRoutes.get("/me", authenticate, (req, res) => {

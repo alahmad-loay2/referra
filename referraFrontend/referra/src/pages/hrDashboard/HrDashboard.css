@@ -1,0 +1,29 @@
+.dashboardContainer {
+    display: grid;
+    grid-template: 
+        "sidebar header"
+        "sidebar content";
+    grid-template-columns: 250px 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+}
+
+#Sidebar {
+    grid-area: sidebar;
+    height: 100vh;
+}
+
+#Header {
+    grid-area: header;
+}
+
+#Content {
+    grid-area: content;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .dashboardContainer {
+        grid-template-columns: 180px 1fr;
+    }
+}

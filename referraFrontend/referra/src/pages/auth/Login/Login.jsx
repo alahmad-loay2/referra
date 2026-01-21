@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signin } from "../../api/auth.api";
+import { signin } from "../../../api/auth.api.js";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const LoginPage = () => {
 
     try {
       const result = await signin(email, password);
-      setMessage(result.message || "Signed in successfully");
+      setMessage(result.message);
 
       const role = result?.user?.Role || result?.user?.role;
       if (role === "HR") {
@@ -25,7 +25,7 @@ const LoginPage = () => {
         navigate("/dashboard/employee");
       }
     } catch (err) {
-      setMessage(err.message || "Failed to sign in");
+      setMessage(err.message);
     } finally {
       setLoading(false);
     }

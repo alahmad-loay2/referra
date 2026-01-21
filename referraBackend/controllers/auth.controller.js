@@ -86,7 +86,6 @@ export const logout = async (req, res, next) => {
   try {
     const isProduction = NODE_ENV === "production";
 
-    // Clear cookies by setting them to expire immediately
     res.cookie("accessToken", "", {
       httpOnly: true,
       secure: isProduction,
@@ -136,7 +135,6 @@ export const resetPasswordController = async (req, res, next) => {
 
     const isProduction = NODE_ENV === "production";
 
-    // Set new cookies after password reset
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
       secure: isProduction,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { signup } from "../../api/auth.api";
+import { signup } from "../../../api/auth.api.js";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -38,9 +38,9 @@ const Register = () => {
         department: form.department,
       };
       const result = await signup(payload);
-      setMessage(result.message || "Signed up successfully. Check your email.");
+      setMessage(result.message);
     } catch (err) {
-      setMessage(err.message || "Failed to sign up");
+      setMessage(err.message);
     } finally {
       setLoading(false);
     }

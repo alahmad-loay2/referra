@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { resetPassword } from '../../api/auth.api'
-
+import { resetPassword } from '../../../api/auth.api.js'
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -54,11 +53,11 @@ const ResetPassword = () => {
 
     try {
       const result = await resetPassword(access_token, refresh_token, newPassword)
-      setStatus(result.message || 'Password reset successfully! You can now sign in.')
+      setStatus(result.message)
       setNewPassword('')
       setConfirmPassword('')
     } catch (err) {
-      setStatus(err.message || 'Failed to reset password.')
+      setStatus(err.message)
     } finally {
       setLoading(false)
     }

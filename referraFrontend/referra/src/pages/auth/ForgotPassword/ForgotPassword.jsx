@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { forgotPassword } from '../../api/auth.api'
+import { forgotPassword } from '../../../api/auth.api.js'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('')
@@ -14,10 +14,10 @@ const ForgotPassword = () => {
 
     try {
       const result = await forgotPassword(email)
-      setStatus(result.message || 'Password reset email sent!')
+      setStatus(result.message)
       setEmail('')
     } catch (err) {
-      setStatus(err.message || 'Failed to send password reset email.')
+      setStatus(err.message)
     } finally {
       setLoading(false)
     }
