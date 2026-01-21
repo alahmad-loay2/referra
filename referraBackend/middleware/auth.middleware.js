@@ -71,15 +71,15 @@ export const authenticate = async (req, res, next) => {
 
     res.cookie("accessToken", refreshed.session.access_token, {
       httpOnly: true,
-      secure: isProd,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshed.session.refresh_token, {
       httpOnly: true,
-      secure: isProd,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

@@ -22,15 +22,15 @@ export const signin = async (req, res, next) => {
 
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -60,15 +60,15 @@ export const verifyEmail = async (req, res, next) => {
 
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -88,15 +88,15 @@ export const logout = async (req, res, next) => {
 
     res.cookie("accessToken", "", {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "strict",
+      secure: true, 
+      sameSite: "none", 
       maxAge: 0,
     });
 
     res.cookie("refreshToken", "", {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none", 
       maxAge: 0,
     });
 
@@ -137,15 +137,15 @@ export const resetPasswordController = async (req, res, next) => {
 
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
