@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase.js";
-import { prisma } from "../lib/prisma.ts";
+import { prisma } from "../lib/prisma.js";
 import { NODE_ENV } from "../config/env.js";
 
 const throwAuthError = () => {

@@ -1,5 +1,5 @@
 import { supabase } from "../../lib/supabase.js";
-import { prisma } from "../../lib/prisma.ts";
+import { prisma } from "../../lib/prisma.js";
 import { FRONTEND_URL } from "../../config/env.js";
 
 export const signupUser = async (payload) => {
