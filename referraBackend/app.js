@@ -13,7 +13,7 @@ app.use(cookieParser())
 app.use(helmet())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: FRONTEND_URL,
+    origin: FRONTEND_URL || process.env.FRONTEND_URL || 'https://referra-five.vercel.app',
     credentials: true
 }))
 app.use(express.json())

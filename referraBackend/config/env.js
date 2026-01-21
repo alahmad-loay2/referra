@@ -1,6 +1,9 @@
 import { config } from "dotenv";
 
-config({ path: `.env.${process.env.NODE_ENV || "development"}.local` });
+// Only load .env files in development, in production (Vercel) use process.env directly
+if (process.env.NODE_ENV !== 'production') {
+  config({ path: `.env.${process.env.NODE_ENV || "development"}.local` });
+}
 
 export const {
   PORT,
