@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { getCurrentUser } from "../api/auth.api.js";
+import Loading from "../components/loading/Loading.jsx";
 
 const EmployeeProtected = () => {
   const [status, setStatus] = useState("loading"); 
@@ -23,7 +24,7 @@ const EmployeeProtected = () => {
   }, []);
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (status === "redirect") {

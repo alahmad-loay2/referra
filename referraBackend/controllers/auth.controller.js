@@ -1,5 +1,4 @@
 import { signupUser, verifyEmailService, signinUser, forgotPassword, resetPassword, bootstrapFirstHr, createHrUser } from "../services/auth/auth.service.js";
-import { NODE_ENV, FRONTEND_URL } from "../config/env.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -17,8 +16,6 @@ export const signup = async (req, res, next) => {
 export const signin = async (req, res, next) => {
   try {
     const result = await signinUser(req.body);
-
-    const isProduction = NODE_ENV === "production";
 
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
@@ -56,8 +53,6 @@ export const verifyEmail = async (req, res, next) => {
 
     const result = await verifyEmailService(access_token, refresh_token);
 
-    const isProduction = NODE_ENV === "production";
-
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
       secure: true,
@@ -84,8 +79,6 @@ export const verifyEmail = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    const isProduction = NODE_ENV === "production";
-
     res.cookie("accessToken", "", {
       httpOnly: true,
       secure: true, 
@@ -132,8 +125,6 @@ export const resetPasswordController = async (req, res, next) => {
     }
 
     const result = await resetPassword(access_token, refresh_token, new_password);
-
-    const isProduction = NODE_ENV === "production";
 
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,

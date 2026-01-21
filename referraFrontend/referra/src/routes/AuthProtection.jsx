@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { getCurrentUser } from "../api/auth.api.js";
+import Loading from "../components/loading/Loading.jsx";
 
 const AuthProtection = () => {
   const [status, setStatus] = useState("loading"); 
@@ -25,7 +26,7 @@ const AuthProtection = () => {
   }, []);
 
 if(status === "loading") {
-    return <div>Loading...</div>;
+    return <Loading />;
 }
 
 if(status === "employee") {
