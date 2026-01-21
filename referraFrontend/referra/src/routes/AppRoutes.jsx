@@ -15,6 +15,10 @@ import Register from "../pages/auth/Register/Register.jsx";
 import VerifyEmailSuccess from "../pages/auth/VerifyEmailSuccess/VerifyEmailSuccess.jsx";
 import ForgotPassword from "../pages/auth/ForgotPassword/ForgotPassword.jsx";
 import ResetPassword from "../pages/auth/ResetPassword/ResetPassword.jsx";
+import EmployeeDashboardHome from "../pages/employeeDashboard/EmployeeDashboardHome/EmployeeDashboardHome.jsx";
+import EmployeeReferrals from "../pages/employeeDashboard/EmployeeReferrals/EmployeeReferrals.jsx";
+import EmployeePositions from "../pages/employeeDashboard/EmployeePositions/EmployeePositions.jsx";
+import EmployeeSubmit from "../pages/employeeDashboard/EmployeeSubmit/EmployeeSubmit.jsx";
 
 const AppRoutes = () => {
   return (
@@ -39,7 +43,12 @@ const AppRoutes = () => {
           </Route>
         </Route>
         <Route element={<EmployeeProtected />}>
-          <Route path="/dashboard/employee" element={<EmployeeDashboard />} />
+          <Route path="/dashboard/employee" element={<EmployeeDashboard />}>
+            <Route index element={<EmployeeDashboardHome />} />
+            <Route path="my-referrals" element={<EmployeeReferrals />} />
+            <Route path="open-positions" element={<EmployeePositions />} />
+            <Route path="submit-referrals" element={<EmployeeSubmit />} />
+          </Route>        
         </Route>
       </Routes>
   );

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import { logout, getCurrentUser } from "../../api/auth.api.js";
+import React from "react";
+import { Outlet } from "react-router-dom";
 import "./HrDashboard.css";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import {
@@ -12,7 +11,6 @@ import {
 import Header from "../../components/header/Header.jsx";
 
 const HrDashboard = () => {
-  const navigate = useNavigate();
 
   const pages = [
     {
@@ -37,16 +35,6 @@ const HrDashboard = () => {
     },
   ];
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      navigate("/login");
-    }
-  };
-
   const user = {
     firstname: "John"
   }
@@ -57,7 +45,7 @@ const HrDashboard = () => {
         <Sidebar pages={pages} />
       </div>
       <div id="Header">
-        <Header onLogout={handleLogout} user={user} text="You are logged in as an HR" buttonText="Create Referral" onClick={() => navigate("/dashboard/hr/referrals/create")} />
+        <Header  user={user} text="Manage referrals and track hiring progress" buttonText="View Referral" to="/dashboard/hr/referrals" />
       </div>
       <div id="Content">
         <Outlet />
