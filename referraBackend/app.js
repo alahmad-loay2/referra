@@ -14,7 +14,9 @@ app.use(helmet())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
     origin: FRONTEND_URL || process.env.FRONTEND_URL || 'https://referra-five.vercel.app',
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 app.use(express.json())
 
