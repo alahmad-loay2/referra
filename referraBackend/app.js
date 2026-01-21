@@ -8,13 +8,14 @@ import errorMiddleware from './middleware/error.middleware.js'
 
 const app = express()
 
+app.set("trust proxy", 1);
 
 app.use(helmet())
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: true,
+    origin: FRONTEND_URL || process.env.FRONTEND_URL || 'https://referra-five.vercel.app',
     credentials: true
 }))
 
