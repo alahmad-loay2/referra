@@ -11,6 +11,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 30px;
+  height: 64px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   background-color: #fff;
 }
@@ -18,23 +19,28 @@
 #logo {
   height: 32px;
 }
-
+.parent-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 /* MAIN CONTENT */
 .content {
   flex: 1;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-start;
-  padding: 150px 120px;
-  gap: 120px;
+  min-height: calc(100vh - 84px); /* navbar height */
+  padding-top: 100px; /* reduce */
+  padding-bottom: 80px;
+  gap: 200px;
 }
-
 /* LEFT SECTION */
 .left-section {
-  max-width: 640px;
+  max-width: 700px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
 }
 
 .left-section h1 {
@@ -42,14 +48,14 @@
   line-height: 1.1;
   font-weight: 700;
   letter-spacing: -0.02em; /* subtle polish */
-  color: var(--secondary-color);
+  color: var(--secondary-color-dark);
 }
 
 .left-section p {
-  font-size: clamp(1.05rem, 1.2vw, 1.15rem);
-  line-height: 1.7;
+  font-size: clamp(1rem, 1.1vw, 1.05rem);
+  line-height: 1.6;
   max-width: 520px; /* ⬅️ better reading width */
-  color: rgba(30, 47, 107, 0.75);
+  color: var(--gray-light);
 }
 
 /* BADGE */
@@ -80,58 +86,92 @@
 /* HIGHLIGHT */
 .highlight {
   color: var(--primary-color);
-  font-weight: 800;
 }
 
 /* BUTTONS */
 .button-group {
   display: flex;
-  gap: 16px;
+  justify-content: flex-end;
+  gap: 10px;
 }
-
 .button-style {
   padding: 12px 26px;
   border-radius: 10px;
   border: none;
-  background-color: var(--primary-color);
+  background-color: var(--secondary-color); /* navy */
   color: #fff;
   font-weight: 600;
   font-size: var(--fs-medium);
   cursor: pointer;
   text-decoration: none;
-}
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 .button-style-2 {
   padding: 12px 26px;
   border-radius: 10px;
-  border: 1px solid var(--primary-color);
+  border: none;
   background-color: transparent;
-  color: var(--primary-color);
+  color: var(--secondary-color-dark);
   font-weight: 600;
   font-size: var(--fs-medium);
   cursor: pointer;
   text-decoration: none;
-}
-/* BUTTON – responsive sizing ONLY */
-.button-style,
-.button-style-2 {
-  padding: clamp(10px, 1.2vw, 14px) clamp(18px, 2vw, 26px);
-  font-size: clamp(0.85rem, 1vw, var(--fs-medium));
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button-style-2:hover {
-  background-color: var(--primary-color);
+  background-color: var(--secondary-color); /* navy */
   color: #fff;
   transition: 0.25s ease;
+}
+
+/* BUTTON – responsive sizing ONLY */
+.button-style,
+.button-style-2 {
+  padding: clamp(10px, 1.2vw, 14px) clamp(18px, 2vw, 24px);
+  font-size: clamp(0.85rem, 1vw, var(--fs-medium));
+}
+
+.hero-btn {
+  padding: 14px 32px; /* slightly smaller */
+  font-size: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(43, 53, 87, 0.32);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* space for arrow */
+}
+
+.hero-btn:hover {
+  transform: translateY(-1px);
+}
+.btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+.hero-btn:hover .btn-arrow {
+  transform: translateX(4px);
 }
 
 /* RIGHT SECTION */
 .right-section {
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 24px;
-  width: 640px;
-  margin-left: 40px; /* subtle, optional */
+  max-width: 900px;
+
+  justify-content: center;
+  margin-left: auto; /* subtle, optional */
+  margin-right: 0; /* 🔥 fills the void */
 }
 
 /* CARD */
@@ -139,9 +179,10 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  width: 740px;
+  width: 100%;
+  max-width: 900px;
   background-color: #fff;
-  padding: 32px 36px;
+  padding: 36px 40px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
@@ -153,7 +194,7 @@
 /* ⬅️ Pull the middle card left */
 .card-wrapper.shifted {
   justify-content: flex-start;
-  margin-left: -64px; /* 🔥 fills the void */
+  margin-left: -70px; /* 🔥 fills the void */
 }
 
 .card-text {
@@ -162,7 +203,7 @@
 }
 
 .card h3 {
-  font-size: var(--fs-medium);
+  font-size: var(--fs-large);
   margin-bottom: 4px;
   color: var(--secondary-color);
 }
@@ -183,6 +224,10 @@
   justify-content: center;
   color: var(--primary-color);
 }
+.icon-blue {
+  background-color: rgba(14, 167, 182, 0.15);
+  color: var(--primary-color);
+}
 
 .icon-green {
   background-color: rgba(34, 197, 94, 0.2);
@@ -193,26 +238,68 @@
   background-color: rgba(245, 158, 11, 0.25);
   color: #f59e0b;
 }
+.stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+}
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-item strong {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--secondary-color-dark);
+  line-height: 1.2;
+}
+
+.stat-item span {
+  font-size: 0.85rem;
+  color: rgba(30, 47, 107, 0.6);
+}
 
 /* ===================== */
 /* MOBILE (≤ 867px) */
 /* ===================== */
 @media (max-width: 867px) {
   .navbar {
-    padding: 14px 16px;
+    height: 64px;
+    padding: 0 12px;
   }
 
-  .navbar .button-style {
-    width: auto;
+  .navbar .button-group {
+    flex-direction: row; /* ⬅️ FORCE row */
+    gap: 8px;
+    flex-wrap: nowrap; /* ⬅️ NO wrapping */
+    margin-left: auto; /* ⬅️ PUSH to right */
+  }
+  .navbar .button-style,
+  .navbar .button-style-2 {
+    width: auto !important; /* ⬅️ OVERRIDE everything */
     padding: 8px 14px;
-    font-size: var(--fs-small);
+    font-size: 0.85rem;
     border-radius: 999px;
+    white-space: nowrap; /* ⬅️ PREVENT line breaks */
+    flex-shrink: 0; /* ⬅️ NO shrinking */
   }
-
   .content {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+
     padding: 32px 16px;
     gap: 32px;
   }
@@ -263,6 +350,11 @@
     width: 42px;
     height: 42px;
   }
+  .stats {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
 }
 
 /* ===================== */
@@ -295,13 +387,9 @@
     margin-left: 0;
   }
 }
-
-/* ===================== */
-/* LARGE SCREENS */
-/* ===================== */
 @media (min-width: 1400px) {
   .content {
     max-width: 1600px;
-    margin: 0 auto;
+    margin: 0 80px;
   }
 }

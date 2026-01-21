@@ -1,21 +1,31 @@
 :root {
-    --primary-color: #0d9aa7;
-    --secondary-color: #1e2f6b;
-    --background-color: #F6F6F6;
+  --font-primary:
+    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --primary-color: #0d9aa7;
+  --secondary-color: #1e2f6b;
+  --secondary-color-dark: #1f2742; /* darker navy */
 
-    --fs-small: 0.875rem;
-    --fs-medium: 1rem;
-    --fs-large: 1.25rem;
-    --fs-xlarge: 1.5rem;
+  --gray-light: #9297a0; /* light grey */
+
+  --background-color: #f6f6f6;
+
+  --fs-small: 0.875rem;
+  --fs-medium: 1rem;
+  --fs-large: 1.25rem;
+  --fs-xlarge: 1.5rem;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-primary);
 }
 
 body {
-    background-color: var(--background-color);
-    color: var(--secondary-color);
+  background-color: var(--background-color);
+  color: var(--secondary-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
