@@ -4,10 +4,10 @@ import { CheckCircle } from "lucide-react";
 import { Calendar } from "lucide-react";
 import { Users, CheckCircle2, Zap } from "lucide-react";
 
-import HomeComponent from "../../components/HomeComponent.jsx";
-import Button from "../../components/Button.jsx";
+import Button from "../../components/button/Button.jsx";
 import "./HomePage.css";
 import { motion } from "framer-motion";
+import HomeComponent from "../../components/cards/HomeComponent.jsx";
 
 const HomePage = () => {
   return (

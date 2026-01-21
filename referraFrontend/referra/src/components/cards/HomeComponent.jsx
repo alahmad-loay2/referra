@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import "../pages/home/HomePage.css";
+import "../../pages/home/HomePage.css";
 
 const HomeComponent = ({
   title,
