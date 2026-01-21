@@ -8,7 +8,6 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    // Check if tokens are present in URL
     const hash = window.location.hash.startsWith('#')
       ? window.location.hash.substring(1)
       : window.location.hash
@@ -66,13 +65,13 @@ const ResetPassword = () => {
   }
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
+    <div>
       <h2>Reset Password</h2>
       <p>Enter your new password below.</p>
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="newPassword" style={{ display: 'block', marginBottom: '5px' }}>
+        <div>
+          <label htmlFor="newPassword">
             New Password
           </label>
           <input
@@ -82,13 +81,12 @@ const ResetPassword = () => {
             onChange={(e) => setNewPassword(e.target.value)}
             required
             minLength={6}
-            style={{ width: '100%', padding: '8px', fontSize: '16px' }}
             placeholder="Enter new password"
           />
         </div>
 
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="confirmPassword" style={{ display: 'block', marginBottom: '5px' }}>
+        <div>
+          <label htmlFor="confirmPassword">
             Confirm Password
           </label>
           <input
@@ -98,7 +96,6 @@ const ResetPassword = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             minLength={6}
-            style={{ width: '100%', padding: '8px', fontSize: '16px' }}
             placeholder="Confirm new password"
           />
         </div>
@@ -106,31 +103,13 @@ const ResetPassword = () => {
         <button
           type="submit"
           disabled={loading}
-          style={{
-            width: '100%',
-            padding: '10px',
-            fontSize: '16px',
-            backgroundColor: loading ? '#ccc' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-          }}
         >
           {loading ? 'Resetting...' : 'Reset Password'}
         </button>
       </form>
 
       {status && (
-        <div
-          style={{
-            marginTop: '15px',
-            padding: '10px',
-            backgroundColor: status.includes('successfully') ? '#d4edda' : '#f8d7da',
-            color: status.includes('successfully') ? '#155724' : '#721c24',
-            borderRadius: '4px',
-          }}
-        >
+        <div>
           {status}
         </div>
       )}
