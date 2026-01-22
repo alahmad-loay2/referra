@@ -43,10 +43,72 @@ model Employee {
   Position String
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
+
+  Application Application[]
 }
 
 model Hr {
   HrId String @id @default(uuid())
   UserId String @unique
   User Users @relation(fields: [UserId], references: [UserId])
+}
+
+model Application {
+  ReferralId String @unique
+  Referral Referral @relation(fields: [ReferralId], references: [ReferralId])
+  EmployeeId String
+  Employee Employee @relation(fields: [EmployeeId], references: [EmployeeId])
+  CandidateId String
+  Candidate Candidate @relation(fields: [CandidateId], references: [CandidateId])
+  PositionId String
+  Position Position @relation(fields: [PositionId], references: [PositionId])
+
+  @@id([EmployeeId, CandidateId, PositionId])
+}
+
+model Candidate {
+  CandidateId String @id @default(uuid())
+  FirstName String
+  LastName String
+  Email String @unique
+  YearOfExperience Int
+  CVUrl String
+  Acceptance Boolean @default(false)
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt 
+
+  Application Application[]
+}
+
+enum Status {
+  Pending
+  Confirmed
+  InterviewOne
+  InterviewTwo
+  Acceptance
+}
+
+model Referral {
+ReferralId String @id @default(uuid())
+Status Status @default(Pending)
+AcceptedInOtherPosition Boolean @default(false)
+CreatedAt DateTime @default(now())
+UpdatedAt DateTime @updatedAt
+
+Application Application?
+}
+
+model Position {
+  PositionId String @id @default(uuid())
+  PositionTitle String
+  PositionState String
+  YearsRequired Int
+  Description String
+  Timezone String
+  Deadline DateTime
+  PositionLocation String
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+
+  Application Application[]
 }

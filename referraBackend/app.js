@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import { FRONTEND_URL } from './config/env.js'
 import authRoutes from './routes/auth.routes.js'
+import employeeRoutes from './routes/employee.routes.js'
 import errorMiddleware from './middleware/error.middleware.js'
 
 const app = express()
@@ -45,6 +46,7 @@ app.use("/api/health" , (req, res) => {
 })
 
 app.use("/api/auth", authRoutes);
+app.use("/api/employee", employeeRoutes);
 
 app.use(errorMiddleware);
 

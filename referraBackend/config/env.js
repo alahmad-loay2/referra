@@ -8,4 +8,5 @@ export const {
   FRONTEND_URL,
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
+  RESEND_API_KEY,
 } = process.env;

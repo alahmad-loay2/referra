@@ -39,6 +39,13 @@ export const requireHr = (req, res, next) => {
   return next();
 };
 
+export const requireEmployee = (req, res, next) => {
+  if (!req.user || req.user.Role !== "Employee" || !req.user.Employee) {
+    return res.status(403).json({ message: "Employee access required" });
+  }
+  return next();
+};
+
 export const authenticate = async (req, res, next) => {
   try {
     const accessToken = req.cookies?.accessToken;

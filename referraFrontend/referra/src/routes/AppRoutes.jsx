@@ -15,6 +15,7 @@ import Register from "../pages/auth/Register/Register.jsx";
 import VerifyEmailSuccess from "../pages/auth/VerifyEmailSuccess/VerifyEmailSuccess.jsx";
 import ForgotPassword from "../pages/auth/ForgotPassword/ForgotPassword.jsx";
 import ResetPassword from "../pages/auth/ResetPassword/ResetPassword.jsx";
+import ConfirmReferral from "../pages/auth/ConfirmReferral/ConfirmReferral.jsx";
 import EmployeeDashboardHome from "../pages/employeeDashboard/EmployeeDashboardHome/EmployeeDashboardHome.jsx";
 import EmployeeReferrals from "../pages/employeeDashboard/EmployeeReferrals/EmployeeReferrals.jsx";
 import EmployeePositions from "../pages/employeeDashboard/EmployeePositions/EmployeePositions.jsx";
@@ -34,6 +35,7 @@ const AppRoutes = () => {
         />
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
+        <Route path="/referral/confirm/:referralId" element={<ConfirmReferral />} />
         <Route element={<HrProtected />}>
           <Route path="/dashboard/hr" element={<HrDashboard />}>
             <Route index element={<HrDashboardHome />} />
