@@ -1,0 +1,221 @@
+.register-page {
+  height: 100vh;
+  display: flex;
+  overflow: hidden; /* no page scroll */
+}
+
+/* LEFT */
+.register-left {
+  /*width: 50%;*/
+  padding: 80px;
+  background: linear-gradient(
+    to top,
+    var(--primary-color),
+    var(--secondary-color-dark)
+  );
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.register-left h1 {
+  font-size: 2.3rem;
+  margin-bottom: 1rem;
+}
+
+.register-left p {
+  max-width: 420px;
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* FEATURES */
+.features {
+  list-style: none;
+}
+
+.features li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: var(--fs-medium);
+}
+
+/* RIGHT */
+.register-right {
+  /*width: 50%;*/
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: --gray-light;
+  padding: 40px 0;
+  overflow-y: auto; /* ✅ vertical scroll allowed */
+  overflow-x: hidden; /* ❌ no horizontal scroll */
+  flex: 2;
+}
+
+/* CARD */
+.form-card {
+  width: 60%;
+}
+
+.logo {
+  width: 50%;
+  margin-bottom: 24px;
+  margin-top: 24px;
+}
+
+.form-card h2 {
+  font-size: var(--fs-xxlarge);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: var(--gray-light);
+  font-size: var(--fs-large);
+  margin-bottom: 24px;
+}
+
+/* FORM */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  flex: 1;
+  min-width: 220px;
+}
+/* Ensure ALL inputs look the same */
+.field input,
+.field select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: var(--fs-medium);
+  color: var(--secondary-color);
+  background-color: #fff;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+label {
+  font-size: var(--fs-small);
+}
+
+input::placeholder,
+select::placeholder {
+  color: var(--gray-light);
+  opacity: 1;
+}
+
+.input-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0 12px;
+  background-color: white;
+}
+
+.input-icon input,
+.input-icon select {
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 10px 0;
+  font-size: var(--fs-medium);
+}
+
+.eye {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: var(--gray-light);
+}
+/* Remove browser default password reveal icon (Chrome / Edge / IE) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Chrome / Edge (WebKit) */
+input[type="password"]::-webkit-textfield-decoration-container {
+  visibility: hidden;
+}
+
+/* BUTTON */
+button {
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: var(--fs-medium);
+  cursor: pointer;
+}
+
+/* FOOTER */
+.footer-text {
+  margin-top: 18px;
+  margin-bottom: 22px;
+  font-size: var(--fs-medium);
+  text-align: center;
+}
+
+.footer-text a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* MESSAGE */
+.message {
+  margin-bottom: 12px;
+  font-size: var(--fs-small);
+  color: var(--primary-color);
+}
+@media (max-width: 768px) {
+  .register-page {
+    flex-direction: column;
+  }
+
+  .register-left {
+    display: none; /* hide marketing panel */
+  }
+
+  .register-right {
+    flex: none;
+    padding: 24px 16px;
+  }
+
+  .form-card {
+    max-width: 100%;
+  }
+
+  .logo {
+    width: 140px;
+  }
+}
