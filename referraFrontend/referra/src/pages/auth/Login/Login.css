@@ -198,7 +198,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
   background: linear-gradient(
     to bottom,
     var(--primary-color),
-    var(--secondary-color-dark)
+    var(--secondary-color)
   );
   flex: 1;
   color: #ffffff;

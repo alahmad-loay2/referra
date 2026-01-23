@@ -45,7 +45,7 @@
 }
 
 .positionsSearchContainer {
-    background-color: rgb(221, 221, 221);
+    background-color: var(--gray-light);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -78,7 +78,7 @@
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #aaa;
+  color: var(--gray-light);
   pointer-events: none;
 }
 
@@ -192,7 +192,6 @@
 
 .statusText {
   font-weight: 500;
-  color: #333;
   width: 50px;          
   text-align: left;          
 }

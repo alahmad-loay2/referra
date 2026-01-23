@@ -11,7 +11,7 @@
   background: linear-gradient(
     to top,
     var(--primary-color),
-    var(--secondary-color-dark)
+    var(--secondary-color)
   );
   color: #fff;
   display: flex;
@@ -134,7 +134,7 @@ select::placeholder {
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--gray-light);
   border-radius: 8px;
   padding: 0 12px;
   background-color: white;
