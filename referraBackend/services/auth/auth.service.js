@@ -1,5 +1,5 @@
-import { supabase } from "../../lib/supabase.js";
-import { prisma } from "../../lib/prisma.js";
+import { supabase } from "../../lib/supabase.js"; // used for auth operations and CV storage
+import { prisma } from "../../lib/prisma.js"; // used for database operations
 import { FRONTEND_URL } from "../../config/env.js";
 
 export const signupUser = async (payload) => {
@@ -55,9 +55,10 @@ export const signupUser = async (payload) => {
   });
 
   if (authError) {
-    if (authError.message && authError.message.includes('already registered')) {
+    if (authError.message && authError.message.includes("already registered")) {
       return {
-        message: "Verification email sent. Please verify your email to complete signup."
+        message:
+          "Verification email sent. Please verify your email to complete signup.",
       };
     }
     const error = new Error(authError.message || "Failed to create user");
@@ -66,7 +67,8 @@ export const signupUser = async (payload) => {
   }
 
   return {
-    message: "Verification email sent. Please verify your email to complete signup."
+    message:
+      "Verification email sent. Please verify your email to complete signup.",
   };
 };
 
@@ -77,10 +79,11 @@ export const verifyEmailService = async (accessToken, refreshToken) => {
     throw error;
   }
 
-  const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  });
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
 
   if (sessionError || !sessionData.session) {
     const error = new Error("Invalid or expired verification link");
@@ -141,10 +144,11 @@ export const signinUser = async (payload) => {
     throw error;
   }
 
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const { data: authData, error: authError } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
   if (authError) {
     const error = new Error(authError.message || "Invalid email or password");
@@ -180,13 +184,17 @@ export const signinUser = async (payload) => {
   }
 
   if (user.Role === "HR" && !user.Hr) {
-    const error = new Error("HR profile not found. Please contact an administrator.");
+    const error = new Error(
+      "HR profile not found. Please contact an administrator.",
+    );
     error.statusCode = 403;
     throw error;
   }
 
   if (user.Role === "Employee" && !user.Employee) {
-    const error = new Error("Employee profile not found. Please contact an administrator.");
+    const error = new Error(
+      "Employee profile not found. Please contact an administrator.",
+    );
     error.statusCode = 403;
     throw error;
   }
@@ -197,17 +205,29 @@ export const signinUser = async (payload) => {
       Email: user.Email,
       Role: user.Role,
     },
-    accessToken: authData.session.access_token,
-    refreshToken: authData.session.refresh_token,
+    accessToken: authData.session.access_token, // dies every 15 mins
+    refreshToken: authData.session.refresh_token, // dies  after a week
     emailVerified: !!supabaseUser.email_confirmed_at || isHr,
   };
 };
 
+// Bootstrap the first HR user in the system
 export const bootstrapFirstHr = async (payload) => {
-  const { email, password, firstName, lastName, age, phoneNumber, gender } = payload || {};
+  const { email, password, firstName, lastName, age, phoneNumber, gender } =
+    payload || {};
 
-  if (!email || !password || !firstName || !lastName || !age || !phoneNumber || !gender) {
-    const error = new Error("email, password, firstName, lastName, age, phoneNumber, gender are required");
+  if (
+    !email ||
+    !password ||
+    !firstName ||
+    !lastName ||
+    !age ||
+    !phoneNumber ||
+    !gender
+  ) {
+    const error = new Error(
+      "email, password, firstName, lastName, age, phoneNumber, gender are required",
+    );
     error.statusCode = 400;
     throw error;
   }
@@ -219,7 +239,9 @@ export const bootstrapFirstHr = async (payload) => {
     throw error;
   }
 
-  const existingUserByEmail = await prisma.users.findUnique({ where: { Email: email } });
+  const existingUserByEmail = await prisma.users.findUnique({
+    where: { Email: email },
+  });
   if (existingUserByEmail) {
     const error = new Error("User already exists in Prisma");
     error.statusCode = 400;
@@ -242,7 +264,9 @@ export const bootstrapFirstHr = async (payload) => {
   });
 
   if (authError) {
-    const error = new Error(authError.message || "Failed to create HR auth user");
+    const error = new Error(
+      authError.message || "Failed to create HR auth user",
+    );
     error.statusCode = 400;
     throw error;
   }
@@ -277,10 +301,13 @@ export const bootstrapFirstHr = async (payload) => {
 };
 
 export const createHrUser = async (payload) => {
-  const { email, firstName, lastName, age, phoneNumber, gender } = payload || {};
+  const { email, firstName, lastName, age, phoneNumber, gender } =
+    payload || {};
 
   if (!email || !firstName || !lastName || !age || !phoneNumber || !gender) {
-    const error = new Error("email, firstName, lastName, age, phoneNumber, gender are required");
+    const error = new Error(
+      "email, firstName, lastName, age, phoneNumber, gender are required",
+    );
     error.statusCode = 400;
     throw error;
   }
@@ -300,7 +327,11 @@ export const createHrUser = async (payload) => {
     if (existingByEmail.Role === "HR" && existingByEmail.Hr) {
       return {
         message: "HR already exists",
-        user: { UserId: existingByEmail.UserId, Email: existingByEmail.Email, Role: existingByEmail.Role },
+        user: {
+          UserId: existingByEmail.UserId,
+          Email: existingByEmail.Email,
+          Role: existingByEmail.Role,
+        },
       };
     }
   }
@@ -325,17 +356,21 @@ export const createHrUser = async (payload) => {
 
   if (authError) {
     const alreadyRegistered =
-      authError.message && authError.message.toLowerCase().includes("already registered");
+      authError.message &&
+      authError.message.toLowerCase().includes("already registered");
 
     if (!alreadyRegistered) {
-      const error = new Error(authError.message || "Failed to create HR auth user");
+      const error = new Error(
+        authError.message || "Failed to create HR auth user",
+      );
       error.statusCode = 400;
       throw error;
     }
   }
 
   return {
-    message: "HR invite created. The user must set their password from the email link.",
+    message:
+      "HR invite created. The user must set their password from the email link.",
   };
 };
 
@@ -352,28 +387,37 @@ export const forgotPassword = async (email) => {
 
   if (!user) {
     return {
-      message: "If an account exists with this email, a password reset link has been sent.",
+      message:
+        "If an account exists with this email, a password reset link has been sent.",
     };
   }
 
-  const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${FRONTEND_URL}/auth/reset-password`,
-  });
+  const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+    email,
+    {
+      redirectTo: `${FRONTEND_URL}/auth/reset-password`,
+    },
+  );
 
   if (resetError) {
-    const error = new Error(resetError.message || "Failed to send password reset email");
+    const error = new Error(
+      resetError.message || "Failed to send password reset email",
+    );
     error.statusCode = 400;
     throw error;
   }
 
   return {
-    message: "If an account exists with this email, a password reset link has been sent.",
+    message:
+      "If an account exists with this email, a password reset link has been sent.",
   };
 };
 
 export const resetPassword = async (accessToken, refreshToken, newPassword) => {
   if (!accessToken || !refreshToken || !newPassword) {
-    const error = new Error("Access token, refresh token, and new password are required");
+    const error = new Error(
+      "Access token, refresh token, and new password are required",
+    );
     error.statusCode = 400;
     throw error;
   }
@@ -384,10 +428,11 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
     throw error;
   }
 
-  const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  });
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
 
   if (sessionError || !sessionData.session) {
     const error = new Error("Invalid or expired reset link");
@@ -398,11 +443,13 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
   const supabaseUser = sessionData.session.user;
 
   const userMetadata = supabaseUser.user_metadata || {};
-  const resetTokenHash = accessToken.substring(0, 20); 
+  const resetTokenHash = accessToken.substring(0, 20);
   const usedResetTokens = userMetadata.usedResetTokens || [];
 
   if (usedResetTokens.includes(resetTokenHash)) {
-    const error = new Error("This reset link has already been used. Please request a new password reset email.");
+    const error = new Error(
+      "This reset link has already been used. Please request a new password reset email.",
+    );
     error.statusCode = 400;
     throw error;
   }
@@ -411,7 +458,7 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
     password: newPassword,
     data: {
       ...userMetadata,
-      usedResetTokens: [...usedResetTokens, resetTokenHash], 
+      usedResetTokens: [...usedResetTokens, resetTokenHash],
     },
   });
 
@@ -428,13 +475,7 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
     });
 
     if (!existingPrismaUser) {
-      const {
-        firstName,
-        lastName,
-        age,
-        phoneNumber,
-        gender,
-      } = userMetadata;
+      const { firstName, lastName, age, phoneNumber, gender } = userMetadata;
 
       await prisma.users.create({
         data: {

@@ -1,17 +1,24 @@
-import { signupUser, verifyEmailService, signinUser, forgotPassword, resetPassword, bootstrapFirstHr, createHrUser } from "../services/auth/auth.service.js";
+import {
+  signupUser,
+  verifyEmailService,
+  signinUser,
+  forgotPassword,
+  resetPassword,
+  bootstrapFirstHr,
+  createHrUser,
+} from "../services/auth/auth.service.js";
 
 export const signup = async (req, res, next) => {
   try {
     const result = await signupUser(req.body);
 
     res.status(201).json({
-      message: result.message
+      message: result.message,
     });
   } catch (error) {
     next(error);
   }
 };
-
 
 export const signin = async (req, res, next) => {
   try {
@@ -81,15 +88,15 @@ export const logout = async (req, res, next) => {
   try {
     res.cookie("accessToken", "", {
       httpOnly: true,
-      secure: true, 
-      sameSite: "none", 
+      secure: true,
+      sameSite: "none",
       maxAge: 0,
     });
 
     res.cookie("refreshToken", "", {
       httpOnly: true,
       secure: true,
-      sameSite: "none", 
+      sameSite: "none",
       maxAge: 0,
     });
 
@@ -119,12 +126,18 @@ export const resetPasswordController = async (req, res, next) => {
     const { access_token, refresh_token, new_password } = req.body;
 
     if (!access_token || !refresh_token || !new_password) {
-      const error = new Error("Access token, refresh token, and new password are required");
+      const error = new Error(
+        "Access token, refresh token, and new password are required",
+      );
       error.statusCode = 400;
       throw error;
     }
 
-    const result = await resetPassword(access_token, refresh_token, new_password);
+    const result = await resetPassword(
+      access_token,
+      refresh_token,
+      new_password,
+    );
 
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
