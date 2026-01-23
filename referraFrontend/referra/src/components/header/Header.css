@@ -16,3 +16,10 @@
     color: var(--gray-light);
     margin-top: 4px;
 }
+
+@media (max-width: 768px) {
+    .headerContainer h3,
+    .headerContainer p {
+        display: none;
+    }
+}

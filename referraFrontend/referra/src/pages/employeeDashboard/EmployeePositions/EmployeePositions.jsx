@@ -5,5 +5,4 @@ const EmployeePositions = () => {
     <div>EmployeePositions</div>
   )
 }
-
 export default EmployeePositions
