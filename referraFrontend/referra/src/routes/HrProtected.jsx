@@ -35,4 +35,3 @@ const HrProtected = () => {
 };
 
 export default HrProtected;
-
