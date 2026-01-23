@@ -1,0 +1,79 @@
+.HrCreatePosition {
+    padding: 30px;
+}
+
+
+.CreatePositionContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 30px 30px;
+    background-color: white;
+    border-radius: 20px;
+}
+
+.CreatePositionContainer a {
+    margin-bottom: 20px;
+    font-size: var(--fs-large);
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+.CreatePositionContainer h3 {
+    font-size: var(--fs-xlarge);
+}
+
+.CreatePositionContainer p {
+    font-size: var(--fs-medium);
+    color: var(--gray-light);
+    margin: 10px 0 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.formGroup label {
+    font-size: var(--fs-medium);
+}
+
+.formGroup input{
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: var(--fs-medium);
+    color: var(--secondary-color);
+}
+
+.formGroup textarea {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: var(--fs-medium);
+    color: var(--secondary-color);
+    resize: vertical;
+    min-height: 100px;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+}
+
+.buttonGroup .cancel {
+    color: white;
+    background-color: var(--secondary-color);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+}
+
+.buttonGroup .create {
+    color: white;
+    background-color: var(--primary-color);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+}

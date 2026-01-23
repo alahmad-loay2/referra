@@ -1,15 +1,21 @@
 .positionsHR {
-    min-width: 500px;
+    min-width: 1000px;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .positionCardsContainer {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
+    justify-content: space-between;
+    gap: 50px;
     width: 100%;
-    padding: 20px 10px;
+    padding: 20px 0;
 }
 
 .positionCards {
@@ -21,6 +27,7 @@
     width: 20vw;
     min-width: 220px;
     border-radius: 20px;
+    flex: 1;
 }
 
 .positionsIcon {
@@ -38,22 +45,41 @@
 }
 
 .positionsSearchContainer {
-    background-color: rgb(200, 200, 200);
+    background-color: rgb(221, 221, 221);
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding: 15px;
-    margin: 20px;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 25px;
+    margin: 20px 0;
     border-radius: 20px;
+}
+
+.selectContainer {
+  display: flex;
+  gap: 15px;
+}
+
+.searchInputWrapper {
+  position: relative;
+  flex: 1;
 }
 
 .positionsSearchContainer input {
     padding: 10px;
     border: none;
     border-radius: 10px;
-    width: 33vw;
+    width: 100%;
     min-width: 200px;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  pointer-events: none;
 }
 
 .positionsSearchContainer select {
@@ -66,4 +92,107 @@
 .positionsSearchContainer input:focus,
 .positionsSearchContainer select:focus {
     outline: none;
+}
+
+
+.positionsTableContainer{
+    margin-top: 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+    height: 100%;
+}
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.positionsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 50px;
+}
+
+.positionsTable th, .positionsTable td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.positionsTable th {
+    background-color: #f2f2f2;
+}
+
+.positionsTable tr:hover {
+    background-color: #f9f9f9;
+}
+
+.positionsTable td button {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.switch input:checked + .slider {
+  background-color: #1f9254; 
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+
+.statusWrapper {
+  display: flex;
+  align-items: center;    
+  gap: 8px;                
+  justify-content: flex-start;
+}
+
+.statusText {
+  font-weight: 500;
+  color: #333;
+  width: 50px;          
+  text-align: left;          
 }

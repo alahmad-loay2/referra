@@ -20,6 +20,7 @@ import EmployeeDashboardHome from "../pages/employeeDashboard/EmployeeDashboardH
 import EmployeeReferrals from "../pages/employeeDashboard/EmployeeReferrals/EmployeeReferrals.jsx";
 import EmployeePositions from "../pages/employeeDashboard/EmployeePositions/EmployeePositions.jsx";
 import EmployeeSubmit from "../pages/employeeDashboard/EmployeeSubmit/EmployeeSubmit.jsx";
+import HrCreatePosition from "../pages/hrDashboard/HrCreatePosition/HrCreatePosition.jsx";
 
 const AppRoutes = () => {
   return (
@@ -41,6 +42,7 @@ const AppRoutes = () => {
             <Route index element={<HrDashboardHome />} />
             <Route path="referrals" element={<HrReferrals />} />
             <Route path="positions" element={<HrPositions />} />
+            <Route path="positions/create-position" element={<HrCreatePosition />} />
             <Route path="team" element={<HrTeam />} />
           </Route>
         </Route>
