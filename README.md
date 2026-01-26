@@ -54,7 +54,8 @@ git clone https://github.com/alahmad-loay2/referra.git
 ```bash
 cd referra
 ```
-<br>
+
+
 #### 2. Frontend setup
   
 ```bash
@@ -64,19 +65,22 @@ cd referraFrontend/referra
 ```bash
 npm install
 ```
-<br>
+
+
 ##### Create .env file 
 
 ```env
 VITE_API_BASE_URL=http://localhost:5500/api
 ```
 
+
 ##### Run the project 
 
 ```bash
 npm run dev
 ```
-<br>
+
+
 #### 3. Backend setup
 
 ```bash
@@ -86,7 +90,8 @@ cd referraBackend
 ```bash
 npm install
 ```
-<br>
+
+
 ##### Create .env.development.local file
 
 ```env
@@ -106,13 +111,15 @@ SUPABASE_ANON_KEY="your supabase anon key"
 #resend 
 RESEND_API_KEY="Your resend api key for your domain"
 ```
-<br>
+
+
 ##### Create .env file
 
 ```env
 DATABASE_URL='Your PostgreSQL database Url'
 ```
-<br>
+
+
 ##### Database setup
 
 ```bash
@@ -122,7 +129,8 @@ npx prisma migrate dev --name init
 ```bash
 npx prisma generate
 ```
-<br>
+
+
 ##### Run the project
 
 ```bash
