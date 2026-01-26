@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CheckCircle, Mail, Lock, Eye, EyeOff, Briefcase } from "lucide-react";
 import { signup } from "../../../api/auth.api.js";
 import "./Register.css";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -54,10 +55,16 @@ const Register = () => {
         department: form.department,
       };
       const result = await signup(payload);
-      setMessage(result.message);
+      // Check if there's an error in the response
+      if (result.error) {
+        setMessage(result.error);
+        setLoading(false);
+      } else {
+        // On success, redirect to signup verification
+        navigate("/auth/signup-verification");
+      }
     } catch (err) {
       setMessage(err.message);
-    } finally {
       setLoading(false);
     }
   };

@@ -13,6 +13,7 @@ import AuthProtection from "./AuthProtection.jsx";
 import LoginPage from "../pages/auth/Login/Login.jsx";
 import Register from "../pages/auth/Register/Register.jsx";
 import VerifyEmailSuccess from "../pages/auth/VerifyEmailSuccess/VerifyEmailSuccess.jsx";
+import SignupVerification from "../pages/auth/SignupVerification/SignupVerification.jsx";
 import ForgotPassword from "../pages/auth/ForgotPassword/ForgotPassword.jsx";
 import ResetPassword from "../pages/auth/ResetPassword/ResetPassword.jsx";
 import ConfirmReferral from "../pages/auth/ConfirmReferral/ConfirmReferral.jsx";
@@ -33,6 +34,10 @@ const AppRoutes = () => {
         <Route
           path="/auth/verify-email-success"
           element={<VerifyEmailSuccess />}
+        />
+        <Route
+          path="/auth/signup-verification"
+          element={<SignupVerification />}
         />
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
