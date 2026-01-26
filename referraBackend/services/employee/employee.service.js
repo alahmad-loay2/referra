@@ -1,6 +1,10 @@
 import { prisma } from "../../lib/prisma.js";
 import { Resend } from "resend";
-import { RESEND_API_KEY, FRONTEND_URL, SUPABASE_URL } from "../../config/env.js";
+import {
+  RESEND_API_KEY,
+  FRONTEND_URL,
+  SUPABASE_URL,
+} from "../../config/env.js";
 import { supabase } from "../../lib/supabase.js";
 
 const getResend = () => {
@@ -22,7 +26,7 @@ export const createReferral = async (payload) => {
     candidateYearOfExperience,
     positionId,
     employeeId,
-    cvFile
+    cvFile,
   } = payload;
 
   if (
@@ -76,7 +80,7 @@ export const createReferral = async (payload) => {
 
     if (existingApplication) {
       const error = new Error(
-        "Application already exists for this candidate and position"
+        "Application already exists for this candidate and position",
       );
       error.statusCode = 400;
       throw error;
@@ -84,11 +88,11 @@ export const createReferral = async (payload) => {
   }
 
   // Upload CV to Supabase first
-  const fileExt = "pdf"; 
+  const fileExt = "pdf";
   const fileName = `${candidateEmail}-${Date.now()}.${fileExt}`;
 
   const { data: uploadData, error: uploadError } = await supabase.storage
-    .from("cvs")           
+    .from("cvs")
     .upload(fileName, cvFile, {
       contentType: "application/pdf",
       upsert: false,
@@ -149,12 +153,12 @@ export const createReferral = async (payload) => {
   try {
     const frontendUrl = FRONTEND_URL;
     const confirmationUrl = `${frontendUrl}/referral/confirm/${result.Referral.ReferralId}`;
-    
+
     const resend = getResend();
     await resend.emails.send({
-      from: 'no-reply@referra.space', 
+      from: "no-reply@referra.space",
       to: candidateEmail,
-      subject: 'Referral Confirmation Request',
+      subject: "Referral Confirmation Request",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Hello ${candidateFirstName} ${candidateLastName},</h2>
@@ -173,14 +177,11 @@ export const createReferral = async (payload) => {
       `,
     });
   } catch (emailError) {
-    console.error('Failed to send confirmation email:', emailError);
+    console.error("Failed to send confirmation email:", emailError);
   }
 
   return result;
 };
-
-
-
 
 // candidate confirms referral using referralId
 export const confirmReferral = async (referralId) => {
@@ -214,11 +215,13 @@ export const confirmReferral = async (referralId) => {
     throw error;
   }
 
-  const twoDaysInMs = 2 * 24 * 60 * 60 * 1000; 
+  const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
   const referralAge = Date.now() - new Date(referral.CreatedAt).getTime();
-  
+
   if (referralAge > twoDaysInMs) {
-    const error = new Error("This referral confirmation link has expired. Please contact the person who referred you for a new link.");
+    const error = new Error(
+      "This referral confirmation link has expired. Please contact the person who referred you for a new link.",
+    );
     error.statusCode = 410;
     throw error;
   }
@@ -245,11 +248,6 @@ export const confirmReferral = async (referralId) => {
 
   return updatedReferral;
 };
-
-
-
-
-
 
 // Employee deletes a candidate's application and referral if status is still pending
 export const deleteCandidate = async (candidateId, employeeId) => {
@@ -284,7 +282,7 @@ export const deleteCandidate = async (candidateId, employeeId) => {
   }
 
   const application = candidate.Application.find(
-    (app) => app.EmployeeId === employeeId
+    (app) => app.EmployeeId === employeeId,
   );
 
   if (!application) {
@@ -295,7 +293,7 @@ export const deleteCandidate = async (candidateId, employeeId) => {
 
   if (application.Referral.Status !== "Pending") {
     const error = new Error(
-      `Cannot delete candidate. Referral status is ${application.Referral.Status}, not Pending`
+      `Cannot delete candidate. Referral status is ${application.Referral.Status}, not Pending`,
     );
     error.statusCode = 400;
     throw error;
@@ -307,7 +305,7 @@ export const deleteCandidate = async (candidateId, employeeId) => {
     },
   });
 
-  const willDeleteCandidate = allApplications.length === 1; 
+  const willDeleteCandidate = allApplications.length === 1;
 
   const result = await prisma.$transaction(async (tx) => {
     await tx.application.delete({
@@ -339,4 +337,194 @@ export const deleteCandidate = async (candidateId, employeeId) => {
       : "Application and referral deleted successfully. Candidate has other applications.",
     deletedCandidate: result.deletedCandidate,
   };
+};
+
+export const getEmployeeReferrals = async ({
+  employeeId,
+  page = 1,
+  pageSize = 10,
+}) => {
+  if (!employeeId) {
+    const error = new Error("Employee ID is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const skip = (page - 1) * pageSize;
+
+  const totalReferrals = await prisma.application.count({
+    where: { EmployeeId: employeeId },
+  });
+
+  const applications = await prisma.application.findMany({
+    where: { EmployeeId: employeeId },
+    include: {
+      Referral: true,
+      Candidate: true,
+      Position: true,
+    },
+    skip,
+    take: pageSize,
+    orderBy: {
+      Referral: { CreatedAt: "desc" },
+    },
+  });
+
+  return {
+    page,
+    pageSize,
+    totalReferrals,
+    totalPages: Math.ceil(totalReferrals / pageSize),
+    applications,
+  };
+};
+
+export const editCandidate = async (payload) => {
+  const {
+    candidateId,
+    employeeId,
+    candidateFirstName,
+    candidateLastName,
+    candidateEmail,
+    candidateYearOfExperience,
+    cvFile,
+  } = payload;
+
+  if (!candidateId) {
+    const error = new Error("Candidate ID is required");
+    error.statusCode = 400;
+    throw error;
+  }
+  if (!employeeId) {
+    const error = new Error("Employee ID is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const candidate = await prisma.candidate.findUnique({
+    where: { CandidateId: candidateId },
+    include: {
+      Application: {
+        where: { EmployeeId: employeeId },
+        include: {
+          Referral: true,
+          Position: true,
+          Employee: true,
+        },
+      },
+    },
+  });
+
+  if (!candidate) {
+    const error = new Error("Candidate not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const application = candidate.Application[0];
+  if (!application) {
+    const error = new Error("Application not found for this employee");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (application.Referral.Status !== "Pending") {
+    const error = new Error(
+      `Cannot edit candidate. Referral status is ${application.Referral.Status}, not Pending`,
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const dataToUpdate = {};
+  if (candidateFirstName !== undefined && candidateFirstName !== "") {
+    dataToUpdate.FirstName = candidateFirstName;
+  }
+  if (candidateLastName !== undefined && candidateLastName !== "") {
+    dataToUpdate.LastName = candidateLastName;
+  }
+  if (
+    candidateYearOfExperience !== undefined &&
+    candidateYearOfExperience !== ""
+  ) {
+    dataToUpdate.YearOfExperience = parseInt(candidateYearOfExperience, 10);
+  }
+
+  if (candidateEmail && candidateEmail !== candidate.Email) {
+    const existing = await prisma.candidate.findUnique({
+      where: { Email: candidateEmail },
+    });
+    if (existing) {
+      const error = new Error("Email is already used by another candidate");
+      error.statusCode = 400;
+      throw error;
+    }
+    dataToUpdate.Email = candidateEmail;
+  }
+
+  if (cvFile) {
+    const fileExt = "pdf";
+    const fileName = `${candidateEmail || candidate.Email}-${Date.now()}.${fileExt}`;
+    const { error: uploadError } = await supabase.storage
+      .from("cvs")
+      .upload(fileName, cvFile, {
+        contentType: "application/pdf",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      const error = new Error(`CV upload failed: ${uploadError.message}`);
+      error.statusCode = 500;
+      throw error;
+    }
+
+    dataToUpdate.CVUrl = `${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName}`;
+  }
+
+  if (Object.keys(dataToUpdate).length === 0) {
+    const error = new Error("No valid fields to update");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const updatedCandidate = await prisma.$transaction(async (tx) => {
+    return await tx.candidate.update({
+      where: { CandidateId: candidateId },
+      data: dataToUpdate,
+    });
+  });
+
+  if (dataToUpdate.Email) {
+    try {
+      const resend = getResend();
+      const frontendUrl = FRONTEND_URL;
+      const confirmationUrl = `${frontendUrl}/referral/confirm/${application.Referral.ReferralId}`;
+
+      await resend.emails.send({
+        from: "no-reply@referra.space",
+        to: dataToUpdate.Email,
+        subject: "Referral Confirmation Request",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Hello ${dataToUpdate.FirstName || candidate.FirstName} ${dataToUpdate.LastName || candidate.LastName},</h2>
+            <p>You have been referred for the position: <strong>${application.Position?.PositionTitle || "the position"}</strong></p>
+            <p>Please click the link below to confirm your referral:</p>
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="${confirmationUrl}" 
+                 style="background-color:rgb(76, 87, 175); color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                Confirm Referral
+              </a>
+            <strong>This link will expire in 2 days.</strong>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style="color: #666; word-break: break-all;">${confirmationUrl}</p>
+          </div>
+        `,
+      });
+    } catch (err) {
+      console.error("Failed to send confirmation email:", err);
+    }
+  }
+
+  return { updatedCandidate };
 };
