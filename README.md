@@ -48,21 +48,21 @@
 #### 1. Clone the Repository
    
 ```bash
-    git clone https://github.com/alahmad-loay2/referra.git
+git clone https://github.com/alahmad-loay2/referra.git
 ```
 
 ```bash
-      cd referra
+cd referra
 ```
 
 #### 2. Frontend setup
   
 ```bash
-    cd referraFrontend/referra
+cd referraFrontend/referra
 ```
 
 ```bash
-    npm install
+npm install
 ```
 
 ##### Create .env file 
@@ -74,17 +74,17 @@ VITE_API_BASE_URL=http://localhost:5500/api
 ##### Run the project 
 
 ```bash
-    npm run dev
+npm run dev
 ```
 
 #### 3. Backend setup
 
 ```bash
-    cd referraBackend
+cd referraBackend
 ```
 
 ```bash
-    npm install
+npm install
 ```
 
 ##### Create .env.development.local file
@@ -126,9 +126,9 @@ npx prisma generate
 ##### Run the project
 
 ```bash
-    npm run dev
+npm run dev
 ```
 
 --- 
 
-[Back To The Top](#Referra – Referral Web App to Ease the Hiring Process)
+[Back To The Top](#Referra)
