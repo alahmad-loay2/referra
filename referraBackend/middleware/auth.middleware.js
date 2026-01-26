@@ -14,7 +14,18 @@ const throwAuthError = () => {
 const attachUser = async (req, supabaseUser, next) => {
   const user = await prisma.users.findUnique({
     where: { UserId: supabaseUser.id },
-    include: { Employee: true, Hr: true },
+    include: {
+      Employee: true,
+      Hr: {
+        include: {
+          Departments: {
+            include: {
+              Department: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!user) {
@@ -97,7 +108,8 @@ export const authenticate = async (req, res, next) => {
   } catch (error) {
     if (error.statusCode) {
       return res.status(error.statusCode).json({
-        message: error.message || "Authentication required. Please sign in again.",
+        message:
+          error.message || "Authentication required. Please sign in again.",
       });
     }
     next(error);

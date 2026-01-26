@@ -51,7 +51,10 @@ model Hr {
   HrId String @id @default(uuid())
   UserId String @unique
   User Users @relation(fields: [UserId], references: [UserId])
+
+  Departments HrDepartment[]
 }
+
 
 model Application {
   ReferralId String @unique
@@ -97,11 +100,14 @@ UpdatedAt DateTime @updatedAt
 
 Application Application?
 }
-
+enum PositionState {
+  OPEN
+  CLOSED
+}
 model Position {
   PositionId String @id @default(uuid())
   PositionTitle String
-  PositionState String
+  PositionState PositionState @default(OPEN)
   YearsRequired Int
   Description String
   Timezone String
@@ -109,6 +115,24 @@ model Position {
   PositionLocation String
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
+  DepartmentId String
+  Department Department @relation(fields: [DepartmentId], references: [DepartmentId])
 
   Application Application[]
+}
+model Department {
+  DepartmentId String @id @default(uuid())
+  DepartmentName String
+
+  Hrs HrDepartment[]
+  Positions Position[]
+}
+model HrDepartment {
+  HrId String
+  DepartmentId String
+
+  Hr Hr @relation(fields: [HrId], references: [HrId])
+  Department Department @relation(fields: [DepartmentId], references: [DepartmentId])
+
+  @@id([HrId, DepartmentId])
 }
