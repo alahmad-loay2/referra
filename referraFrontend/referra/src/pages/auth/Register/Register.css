@@ -13,7 +13,7 @@
     var(--primary-color),
     var(--secondary-color)
   );
-  color: #fff;
+  color: var(--white);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -51,7 +51,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  background: --gray-light;
+  background: var(--background-color);
   padding: 40px 0;
   overflow-y: auto; /* ✅ vertical scroll allowed */
   overflow-x: hidden; /* ❌ no horizontal scroll */
@@ -75,7 +75,7 @@
 }
 
 .subtitle {
-  color: var(--gray-light);
+  color: var(--gray-dark);
   font-size: var(--fs-large);
   margin-bottom: 24px;
 }
@@ -110,7 +110,7 @@ form {
   border: 1px solid #d1d5db;
   font-size: var(--fs-medium);
   color: var(--secondary-color);
-  background-color: #fff;
+  background-color: var(--white);
 }
 
 .field input:focus,
@@ -125,7 +125,7 @@ label {
 
 input::placeholder,
 select::placeholder {
-  color: var(--gray-light);
+  color: var(--gray-dark);
   opacity: 1;
 }
 
@@ -134,7 +134,7 @@ select::placeholder {
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid var(--gray-light);
+  border: 1px solid var(--gray-dark);
   border-radius: 8px;
   padding: 0 12px;
   background-color: white;
@@ -153,7 +153,7 @@ select::placeholder {
   position: absolute;
   right: 12px;
   cursor: pointer;
-  color: var(--gray-light);
+  color: var(--gray-dark);
 }
 /* Remove browser default password reveal icon (Chrome / Edge / IE) */
 input[type="password"]::-ms-reveal,
@@ -173,7 +173,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
   border-radius: 8px;
   border: none;
   background: var(--primary-color);
-  color: #fff;
+  color: var(--white);
   font-size: var(--fs-medium);
   cursor: pointer;
 }

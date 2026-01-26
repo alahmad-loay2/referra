@@ -15,7 +15,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: --gray-light;
+  background-color: var(--background-color);
   flex: 1;
 }
 
@@ -36,7 +36,7 @@
 /* SUBTITLE */
 .login-subtitle {
   font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-  color: var(--gray-light);
+  color: var(--gray-dark);
   margin-bottom: 60px;
 }
 
@@ -73,7 +73,7 @@
   padding: 0 12px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--white);
 }
 
 /* INPUT */
@@ -89,14 +89,14 @@
 
 /* PLACEHOLDER */
 .input-icon-login input::placeholder {
-  color: var(--gray-light);
+  color: var(--gray-dark);
   opacity: 1;
 }
 
 /* EYE ICON */
 .eye {
   cursor: pointer;
-  color: var(--gray-light);
+  color: var(--gray-dark);
 }
 
 .eye:hover {
@@ -145,7 +145,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
   border: none;
 
   background-color: var(--primary-color);
-  color: #fff;
+  color: var(--white);
 
   font-size: 1rem;
   font-weight: 500;
@@ -201,7 +201,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
     var(--secondary-color)
   );
   flex: 1;
-  color: #ffffff;
+  color: var(--white);
 }
 
 .login-right-content {
@@ -246,7 +246,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
 .login-stat-number {
   font-size: 1.6rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--white);
 }
 
 .login-stat-label {

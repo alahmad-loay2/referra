@@ -8,12 +8,12 @@
 }
 
 .headerContainer h3 {
-    font-size: var(--fs-large);
+    font-size: var(--fs-xlarge);
 }
 
 .headerContainer p {
-    font-size: var(--fs-small);
-    color: var(--gray-light);
+    font-size: var(--fs-medium);
+    color: var(--gray-dark);
     margin-top: 4px;
 }
 

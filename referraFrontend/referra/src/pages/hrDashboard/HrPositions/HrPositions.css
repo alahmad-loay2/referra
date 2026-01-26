@@ -40,7 +40,7 @@
 
 .positionCardsText p {
     font-size: var(--fs-small);
-    color: var(--gray-light);
+    color: var(--gray-dark);
     margin-bottom: 5px;
 }
 
@@ -71,6 +71,7 @@
     border-radius: 10px;
     width: 100%;
     min-width: 200px;
+    font-size: var(--fs-small);
 }
 
 .searchIcon {
@@ -78,7 +79,7 @@
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--gray-light);
+  color: var(--gray-dark);
   pointer-events: none;
 }
 
@@ -87,6 +88,7 @@
     border: none;
     border-radius: 10px;
     min-width: 150px;
+    font-size: var(--fs-small);
 }
 
 .positionsSearchContainer input:focus,
@@ -101,6 +103,7 @@
     padding: 20px;
     border-radius: 20px;
     height: 100%;
+    font-size: var(--fs-medium);
 }
 
 .tableHeader {
@@ -119,15 +122,15 @@
 .positionsTable th, .positionsTable td {
     text-align: left;
     padding: 12px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--gray-light);
 }
 
 .positionsTable th {
-    background-color: #f2f2f2;
+    background-color: var(--gray-light);
 }
 
 .positionsTable tr:hover {
-    background-color: #f9f9f9;
+    background-color: var(--gray-light);
 }
 
 .positionsTable td button {
@@ -157,7 +160,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: var(--gray-dark);
   transition: 0.4s;
   border-radius: 24px;
 }

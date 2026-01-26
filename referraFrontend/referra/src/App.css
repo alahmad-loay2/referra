@@ -4,18 +4,18 @@
     "Helvetica Neue", Arial, sans-serif;
   --primary-color: #0d9aa7;
   --secondary-color: #1e2f6b;
-  
-  /* --secondary-color-dark: #1f2742; darker navy */
-
-  --gray-light: #9297a0; /* light grey */
-
   --background-color: #f6f6f6;
+  --gray-dark: #9297a0; 
+  --gray-light: #e8e8e8;
+  --white: #ffffff;
+
+  /* --secondary-color-dark: #1f2742; darker navy */
 
   --fs-small: 0.875rem;
   --fs-medium: 1rem;
-  --fs-large: 1.25rem;
-  --fs-xlarge: 1.5rem;
-  --fs-xxlarge: clamp(0.99rem, 4.4vw, 2.4rem);
+  --fs-large: 1.3rem;
+  --fs-xlarge: 1.6rem;
+  --fs-xxlarge: clamp(2.8rem, 4.5vw, 4.2rem);
 }
 
 * {

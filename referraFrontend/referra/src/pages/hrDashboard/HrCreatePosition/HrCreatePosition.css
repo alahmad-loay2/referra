@@ -19,12 +19,12 @@
 }
 
 .CreatePositionContainer h3 {
-    font-size: var(--fs-xlarge);
+    font-size: var(--fs-large);
 }
 
 .CreatePositionContainer p {
-    font-size: var(--fs-medium);
-    color: var(--gray-light);
+    font-size: var(--fs-small);
+    color: var(--gray-dark);
     margin: 10px 0 20px;
 }
 
@@ -40,7 +40,7 @@
 
 .formGroup input{
     padding: 10px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--gray-light);
     border-radius: 8px;
     font-size: var(--fs-medium);
     color: var(--secondary-color);
@@ -48,7 +48,7 @@
 
 .formGroup textarea {
     padding: 10px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--gray-light);
     border-radius: 8px;
     font-size: var(--fs-medium);
     color: var(--secondary-color);
