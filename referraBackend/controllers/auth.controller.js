@@ -8,6 +8,10 @@ import {
   createHrUser,
 } from "../services/auth/auth.service.js";
 
+
+// all controller for authentication and sending cookies to client
+// business logic is in services 
+
 export const signup = async (req, res, next) => {
   try {
     const result = await signupUser(req.body);

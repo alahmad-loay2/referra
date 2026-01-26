@@ -1,5 +1,8 @@
 import { createReferral, confirmReferral, deleteCandidate } from "../services/employee/employee.service.js";
 
+// controllers for employee related operations
+// business logic is in services
+
 export const CreateReferral = async (req, res, next) => {
   try {
     if (req.fileValidationError) {

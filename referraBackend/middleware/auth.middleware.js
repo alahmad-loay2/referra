@@ -2,6 +2,9 @@ import { supabase } from "../lib/supabase.js";
 import { prisma } from "../lib/prisma.js";
 import { NODE_ENV } from "../config/env.js";
 
+// Middleware for authentication and role-based access control
+// handle refreshing tokens and attaching user info to req object
+
 const throwAuthError = () => {
   const error = new Error("Authentication required. Please sign in again.");
   error.statusCode = 401;

@@ -10,6 +10,10 @@ const getResend = () => {
   return new Resend(RESEND_API_KEY);
 };
 
+// Create a new referral for a candidate by an employee
+// create the candidate if doesnt exist
+// cv upload to supabase storage
+// send confirmation email to candidate
 export const createReferral = async (payload) => {
   const {
     candidateFirstName,
@@ -178,7 +182,7 @@ export const createReferral = async (payload) => {
 
 
 
-
+// candidate confirms referral using referralId
 export const confirmReferral = async (referralId) => {
   if (!referralId) {
     const error = new Error("Referral ID is required");
@@ -247,7 +251,7 @@ export const confirmReferral = async (referralId) => {
 
 
 
-
+// Employee deletes a candidate's application and referral if status is still pending
 export const deleteCandidate = async (candidateId, employeeId) => {
   if (!candidateId) {
     const error = new Error("Candidate ID is required");

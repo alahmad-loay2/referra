@@ -2,6 +2,8 @@ import "dotenv/config";
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from "../generated/prisma/client.js";
 
+// Initialize Prisma Client with PostgreSQL adapter (from prisma docs)
+
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {

@@ -2,6 +2,7 @@ import { supabase } from "../../lib/supabase.js"; // used for auth operations an
 import { prisma } from "../../lib/prisma.js"; // used for database operations
 import { FRONTEND_URL } from "../../config/env.js";
 
+// Sign up a new employee with supabase and send verification email 
 export const signupUser = async (payload) => {
   const {
     firstName,
@@ -72,6 +73,7 @@ export const signupUser = async (payload) => {
   };
 };
 
+// Verify email using tokens from verification link and create user in prisma
 export const verifyEmailService = async (accessToken, refreshToken) => {
   if (!accessToken || !refreshToken) {
     const error = new Error("Missing verification tokens");
@@ -135,6 +137,7 @@ export const verifyEmailService = async (accessToken, refreshToken) => {
   };
 };
 
+// Sign in user and return tokens along with user info
 export const signinUser = async (payload) => {
   const { email, password } = payload;
 
@@ -300,6 +303,7 @@ export const bootstrapFirstHr = async (payload) => {
   };
 };
 
+// allow hr users to be created by existing hr users and send them invite email
 export const createHrUser = async (payload) => {
   const { email, firstName, lastName, age, phoneNumber, gender } =
     payload || {};
@@ -374,6 +378,7 @@ export const createHrUser = async (payload) => {
   };
 };
 
+// Send password reset email to user
 export const forgotPassword = async (email) => {
   if (!email) {
     const error = new Error("Email is required");
@@ -413,6 +418,7 @@ export const forgotPassword = async (email) => {
   };
 };
 
+// Reset user password using tokens from reset link
 export const resetPassword = async (accessToken, refreshToken, newPassword) => {
   if (!accessToken || !refreshToken || !newPassword) {
     const error = new Error(
