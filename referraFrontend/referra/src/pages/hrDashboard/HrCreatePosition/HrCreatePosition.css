@@ -2,17 +2,20 @@
     padding: 30px;
 }
 
-
 .CreatePositionContainer {
     display: flex;
     flex-direction: column;
-    padding: 10px 30px 30px;
+    padding: 30px;
     background-color: white;
     border-radius: 20px;
 }
 
+.createPositionHeader {
+    display: flex;
+    gap: 10px;
+}
+
 .CreatePositionContainer a {
-    margin-bottom: 20px;
     font-size: var(--fs-large);
     color: var(--secondary-color);
     text-decoration: none;
@@ -30,15 +33,29 @@
 
 .formGroup {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    gap: 30px;
 }
 
-.formGroup label {
+.labelInput {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    width: 100%;
+}
+
+.labelInput:first-child {
+    flex: 6;
+}
+
+.labelInput:last-child {
+    flex: 4;
+}
+
+.labelInput label {
     font-size: var(--fs-medium);
 }
 
-.formGroup input{
+.labelInput input{
     padding: 10px;
     border: 1px solid var(--gray-light);
     border-radius: 8px;
@@ -46,7 +63,7 @@
     color: var(--secondary-color);
 }
 
-.formGroup textarea {
+.labelInput textarea {
     padding: 10px;
     border: 1px solid var(--gray-light);
     border-radius: 8px;
@@ -56,10 +73,15 @@
     min-height: 100px;
 }
 
+
 .buttonGroup {
     display: flex;
     gap: 15px;
     justify-content: flex-end;
+}
+
+.buttonGroup button {
+    font-size: var(--fs-medium);
 }
 
 .buttonGroup .cancel {
@@ -76,4 +98,4 @@
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
-}
+} 
