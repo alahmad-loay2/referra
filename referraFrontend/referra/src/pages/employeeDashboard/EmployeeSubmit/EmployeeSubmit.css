@@ -1,0 +1,251 @@
+.employeeSubmit {
+  width: 1000px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+}
+
+/* Cards */
+.employeeSubmit-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.employeeSubmit-card:last-of-type {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Select */
+.employeeSubmit-select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-light);
+}
+
+/* Form */
+.employeeSubmit-formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  flex: 1;
+}
+
+.employeeSubmit-input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-light);
+}
+
+/* Upload */
+.employeeSubmit-upload {
+  margin-top: 20px;
+  padding: 30px;
+  text-align: center;
+  border: 2px dashed var(--gray-light);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--gray-dark);
+}
+
+/* Actions */
+.employeeSubmit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.employeeSubmit-reset {
+  background: var(--secondary-color);
+  color: var(--white);
+
+  border: none;
+}
+
+.employeeSubmit-submit {
+  background: var(--primary-color);
+  color: var(--white);
+
+  border: none;
+}
+.employeeSubmit-submit:hover {
+  opacity: 0.92;
+}
+.employeeSubmit-reset,
+.employeeSubmit-submit {
+  padding: 14px 26px; /* bigger click area */
+  font-size: var(--fs-meduim);
+  font-weight: 600;
+  border-radius: 10px;
+  min-width: 140px;
+  cursor: pointer;
+}
+
+/* Typography spacing ONLY for EmployeeSubmit page */
+.employeeSubmit h2 {
+  font-size: var(--fs-xlarge);
+  margin-bottom: 8px;
+}
+
+.employeeSubmit > p {
+  color: var(--gray-dark);
+  margin-bottom: 28px;
+}
+
+.employeeSubmit h4 {
+  margin-bottom: 6px;
+  font-size: var(--fs-large);
+}
+
+.employeeSubmit-card p {
+  font-size: var(--fs-small);
+  color: var(--gray-dark);
+  margin-bottom: 16px;
+}
+.employeeSubmit-filePreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--secondary-color);
+  font-size: 0.95rem;
+}
+
+.employeeSubmit-fileIcon {
+  font-size: 1.4rem;
+}
+
+.employeeSubmit-fileName {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employeeSubmit-removeFile {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--gray-dark);
+}
+
+.employeeSubmit-removeFile:hover {
+  color: red;
+}
+/* Modal overlay */
+.employeeSubmit-modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.employeeSubmit-modal {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.employeeSubmit-modal h3 {
+  margin-bottom: 10px;
+  color: var(--secondary-color);
+}
+
+.employeeSubmit-modal p {
+  font-size: 0.95rem;
+  color: var(--gray-dark);
+  margin-bottom: 20px;
+}
+
+/* Modal actions */
+.employeeSubmit-modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.employeeSubmit-cancel {
+  background: transparent;
+  border: 1px solid var(--gray-light);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.employeeSubmit-confirm {
+  background: var(--secondary-color);
+  color: var(--white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.employeeSubmit-confirm:hover {
+  opacity: 0.9;
+}
+.successText {
+  color: green;
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+.employeeSubmit-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.errorText {
+  font-size: 0.75rem;
+  color: #d32f2f;
+  margin-top: 4px;
+}
+/* Feedback message (success / error) */
+.employeeSubmit-feedback {
+  margin-top: 24px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeSlideIn 0.25s ease;
+}
+
+/* Success style */
+.employeeSubmit-feedback.success {
+  background: #e6f4ea;
+  color: #1e7e34;
+  border: 1px solid #b7e1c1;
+}
+
+/* Error style */
+.employeeSubmit-feedback.error {
+  background: #fdecea;
+  color: #b3261e;
+  border: 1px solid #f5c6cb;
+}
+
+/* Small animation */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

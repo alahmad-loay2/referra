@@ -1,11 +1,12 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "../../components/header/Header.jsx";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import { Briefcase, LayoutDashboard, UserCog, Users } from "lucide-react";
 import "./EmployeeDashboard.css";
 
 const EmployeeDashboard = () => {
+  const location = useLocation();
 
   const pages = [
     {
@@ -31,18 +32,27 @@ const EmployeeDashboard = () => {
   ];
 
   const user = {
-    firstname: "John"
-  }
+    firstname: "John",
+  };
 
-
+  const hideHeader =
+    location.pathname === "/dashboard/employee/submit-referrals";
   return (
     <div className="employeeDashboardContainer">
       <div id="Sidebar">
         <Sidebar pages={pages} />
       </div>
-      <div id="Header">
-        <Header  user={user} text="Track your referrals and help us build an amazing team" buttonText="Submit a Referral" to="/dashboard/employee/submit-referrals" />
-      </div>
+      {location.pathname !== "/dashboard/employee/submit-referrals" && (
+        <div id="Header">
+          <Header
+            user={user}
+            text="Track your referrals and help us build an amazing team"
+            buttonText="Submit a Referral"
+            to="/dashboard/employee/submit-referrals"
+          />
+        </div>
+      )}
+
       <div id="Content">
         <Outlet />
       </div>
