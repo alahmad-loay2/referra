@@ -17,7 +17,7 @@
 }
 
 .signup-verification-message {
-  font-size: 1.1rem;
+  font-size: var(--fs-medium);
   font-weight: 500;
   color: var(--secondary-color);
   line-height: 1.5;
@@ -29,6 +29,6 @@
   }
 
   .signup-verification-message {
-    font-size: 1rem;
+    font-size: var(--fs-medium);
   }
 }

@@ -78,6 +78,9 @@ model Candidate {
   UpdatedAt DateTime @updatedAt 
 
   Application Application[]
+
+  @@index([FirstName])
+  @@index([LastName])
 }
 
 enum Status {
@@ -96,6 +99,9 @@ CreatedAt DateTime @default(now())
 UpdatedAt DateTime @updatedAt
 
 Application Application?
+
+@@index([Status])
+@@index([CreatedAt])
 }
 
 model Position {

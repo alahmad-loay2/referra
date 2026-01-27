@@ -27,7 +27,7 @@
 
 /* TITLE */
 .login-left h2 {
-  font-size: clamp(2.1rem, 4.3vw, 3.5rem);
+  font-size: var(--fs-xxlarge);
   font-weight: 600;
   margin-bottom: 6px;
   color: var(--secondary-color);
@@ -35,7 +35,7 @@
 
 /* SUBTITLE */
 .login-subtitle {
-  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  font-size: var(--fs-large);
   color: var(--gray-dark);
   margin-bottom: 60px;
 }
@@ -58,7 +58,7 @@
 }
 
 .field-login label {
-  font-size: 0.85rem;
+  font-size: var(--fs-small);
   color: var(--secondary-color);
 }
 
@@ -83,7 +83,7 @@
   outline: none;
   background: transparent;
 
-  font-size: 1rem;
+  font-size: var(--fs-medium);
   color: var(--secondary-color);
 }
 
@@ -124,7 +124,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
 
 /* Inline forgot password link */
 .forgot-password-inline {
-  font-size: 0.85rem;
+  font-size: var(--fs-small);
   color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
@@ -147,7 +147,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
   background-color: var(--primary-color);
   color: var(--white);
 
-  font-size: 1rem;
+  font-size: var(--fs-medium);
   font-weight: 500;
   cursor: pointer;
 }
@@ -166,7 +166,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
    ========================= */
 .login-footer {
   margin-top: 28px;
-  font-size: 0.95rem;
+  font-size: var(--fs-medium);
   text-align: center;
   color: var(--secondary-color);
 }
@@ -183,7 +183,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
    ========================= */
 .login-message {
   margin-bottom: 16px;
-  font-size: 0.85rem;
+  font-size: var(--fs-small);
   color: var(--primary-color);
 }
 
@@ -216,14 +216,14 @@ input[type="password"]::-webkit-textfield-decoration-container {
 
 /* TITLE */
 .login-right h1 {
-  font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+  font-size: var(--fs-xlarge);
   font-weight: 700;
   margin-bottom: 10px;
 }
 
 /* TEXT */
 .login-right p {
-  font-size: 1rem;
+  font-size: var(--fs-medium);
   line-height: 1.5;
   opacity: 0.9;
 }
@@ -244,13 +244,13 @@ input[type="password"]::-webkit-textfield-decoration-container {
 }
 
 .login-stat-number {
-  font-size: 1.6rem;
+  font-size: var(--fs-xlarge);
   font-weight: 600;
   color: var(--white);
 }
 
 .login-stat-label {
-  font-size: 0.85rem;
+  font-size: var(--fs-small);
   opacity: 0.85;
   margin-top: 4px;
 }
