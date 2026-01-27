@@ -2,7 +2,7 @@ import { supabase } from "../../lib/supabase.js"; // used for auth operations an
 import { prisma } from "../../lib/prisma.js"; // used for database operations
 import { FRONTEND_URL } from "../../config/env.js";
 
-// Sign up a new employee with supabase and send verification email 
+// Sign up a new employee with supabase and send verification email
 export const signupUser = async (payload) => {
   const {
     firstName,
@@ -216,8 +216,16 @@ export const signinUser = async (payload) => {
 
 // Bootstrap the first HR user in the system
 export const bootstrapFirstHr = async (payload) => {
-  const { email, password, firstName, lastName, age, phoneNumber, gender } =
-    payload || {};
+  const {
+    email,
+    password,
+    firstName,
+    lastName,
+    age,
+    phoneNumber,
+    gender,
+    departmentId,
+  } = payload || {};
 
   if (
     !email ||
@@ -226,12 +234,22 @@ export const bootstrapFirstHr = async (payload) => {
     !lastName ||
     !age ||
     !phoneNumber ||
-    !gender
+    !gender ||
+    !departmentId
   ) {
     const error = new Error(
-      "email, password, firstName, lastName, age, phoneNumber, gender are required",
+      "email, password, firstName, lastName, age, phoneNumber, gender, departmentId are required",
     );
     error.statusCode = 400;
+    throw error;
+  }
+  const department = await prisma.department.findUnique({
+    where: { DepartmentId: departmentId },
+  });
+
+  if (!department) {
+    const error = new Error("Department not found");
+    error.statusCode = 404;
     throw error;
   }
 
@@ -262,6 +280,7 @@ export const bootstrapFirstHr = async (payload) => {
         phoneNumber,
         gender,
         role: "HR",
+        departmentId,
       },
     },
   });
@@ -292,9 +311,18 @@ export const bootstrapFirstHr = async (payload) => {
       PhoneNumber: phoneNumber,
       Gender: gender,
       Role: "HR",
-      Hr: { create: {} },
+      Hr: {
+        create: {},
+      },
     },
     include: { Hr: true },
+  });
+  // 🔗 link HR to department
+  await prisma.hrDepartment.create({
+    data: {
+      HrId: user.Hr.HrId,
+      DepartmentId: departmentId,
+    },
   });
 
   return {
@@ -305,14 +333,31 @@ export const bootstrapFirstHr = async (payload) => {
 
 // allow hr users to be created by existing hr users and send them invite email
 export const createHrUser = async (payload) => {
-  const { email, firstName, lastName, age, phoneNumber, gender } =
+  const { email, firstName, lastName, age, phoneNumber, gender, departmentId } =
     payload || {};
 
-  if (!email || !firstName || !lastName || !age || !phoneNumber || !gender) {
+  if (
+    !email ||
+    !firstName ||
+    !lastName ||
+    !age ||
+    !phoneNumber ||
+    !gender ||
+    !departmentId
+  ) {
     const error = new Error(
-      "email, firstName, lastName, age, phoneNumber, gender are required",
+      "email, firstName, lastName, age, phoneNumber, gender, departmentId are required",
     );
     error.statusCode = 400;
+    throw error;
+  }
+  const department = await prisma.department.findUnique({
+    where: { DepartmentId: departmentId },
+  });
+
+  if (!department) {
+    const error = new Error("Department not found");
+    error.statusCode = 404;
     throw error;
   }
 
@@ -354,6 +399,7 @@ export const createHrUser = async (payload) => {
         phoneNumber,
         gender,
         role: "HR",
+        departmentId,
       },
     },
   });
@@ -481,9 +527,15 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
     });
 
     if (!existingPrismaUser) {
-      const { firstName, lastName, age, phoneNumber, gender } = userMetadata;
-
-      await prisma.users.create({
+      const { firstName, lastName, age, phoneNumber, gender, departmentId } =
+        userMetadata;
+      if (!departmentId) {
+        throw Object.assign(
+          new Error("HR department is missing. Contact administrator."),
+          { statusCode: 400 },
+        );
+      }
+      const createdUser = await prisma.users.create({
         data: {
           UserId: supabaseUser.id,
           Email: supabaseUser.email,
@@ -493,7 +545,18 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
           PhoneNumber: phoneNumber || "N/A",
           Gender: gender || "N/A",
           Role: "HR",
-          Hr: { create: {} },
+          Hr: {
+            create: {}, // HR created without department
+          },
+        },
+        include: { Hr: true },
+      });
+
+      //  Link HR to department (NEW SCHEMA)
+      await prisma.hrDepartment.create({
+        data: {
+          HrId: createdUser.Hr.HrId,
+          DepartmentId: departmentId,
         },
       });
     }
