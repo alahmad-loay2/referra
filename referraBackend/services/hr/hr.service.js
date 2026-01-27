@@ -116,15 +116,13 @@ export const getVisiblePositions = async (user, query) => {
   });
 
   return {
-    data: positions,
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-      hasNextPage: page * limit < total,
-      hasPrevPage: page > 1,
-    },
+    positions: positions,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+    hasNextPage: page * limit < total,
+    hasPrevPage: page > 1,
   };
 };
 

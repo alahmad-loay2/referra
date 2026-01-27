@@ -39,11 +39,7 @@ export const GetVisiblePositions = async (req, res, next) => {
   try {
     const result = await getVisiblePositions(req.user, req.query);
 
-    res.status(200).json({
-      message: "Positions fetched successfully",
-      positions: result.data,
-      pagination: result.pagination,
-    });
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
