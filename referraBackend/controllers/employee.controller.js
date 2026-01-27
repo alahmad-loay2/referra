@@ -110,12 +110,43 @@ export const getApplicationsByEmployee = async (req, res, next) => {
     const employeeId = req.user.Employee?.EmployeeId;
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
+    const search = req.query.search || "";
+
+    const statusQuery = req.query.status;
+    let status;
+
+    if (statusQuery) {
+      const allowedStatus = [
+        "Pending",
+        "Confirmed",
+        "InterviewOne",
+        "InterviewTwo",
+        "Acceptance",
+      ];
+
+      if (!allowedStatus.includes(statusQuery)) {
+        const error = new Error("Invalid status value");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      status = statusQuery; 
+    }
+
+    const createdAt = req.query.createdAt || undefined;
     if (!employeeId) {
       const error = new Error("Employee profile not found");
       error.statusCode = 404;
       throw error;
     }
-    const result = await getEmployeeReferrals({ employeeId, page, pageSize });
+    const result = await getEmployeeReferrals({
+      employeeId,
+      page,
+      pageSize,
+      search,
+      status,
+      createdAt,
+    });
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -154,7 +185,7 @@ export const EditCandidate = async (req, res, next) => {
       candidateLastName,
       candidateEmail,
       candidateYearOfExperience,
-      cvFile, 
+      cvFile,
     };
 
     const result = await editCandidate(payload);

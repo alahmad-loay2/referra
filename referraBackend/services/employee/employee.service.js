@@ -343,6 +343,9 @@ export const getEmployeeReferrals = async ({
   employeeId,
   page = 1,
   pageSize = 10,
+  search,
+  status, 
+  createdAt
 }) => {
   if (!employeeId) {
     const error = new Error("Employee ID is required");
@@ -352,12 +355,43 @@ export const getEmployeeReferrals = async ({
 
   const skip = (page - 1) * pageSize;
 
-  const totalReferrals = await prisma.application.count({
-    where: { EmployeeId: employeeId },
-  });
+  const andFilters = [{ EmployeeId: employeeId }];
+
+  if (search && search.trim() !== "") {
+    andFilters.push({
+      Candidate: {
+      OR: [
+        { FirstName: { contains: search, mode: "insensitive" } },
+        { LastName: { contains: search, mode: "insensitive" } },
+        { Email: { contains: search, mode: "insensitive" } },
+      ],
+      }
+    })
+  }
+
+  if (status) {
+    andFilters.push({
+      Referral: { Status: status },
+    });
+  }
+
+  if (createdAt) {
+    const startOfDay = new Date(createdAt);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(createdAt);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    andFilters.push({
+      Referral: { CreatedAt: { gte: startOfDay, lte: endOfDay } },
+    });
+  }
+
+  const where = { AND: andFilters }
+  
+  const totalReferrals = await prisma.application.count({ where });
 
   const applications = await prisma.application.findMany({
-    where: { EmployeeId: employeeId },
+    where,
     include: {
       Referral: true,
       Candidate: true,

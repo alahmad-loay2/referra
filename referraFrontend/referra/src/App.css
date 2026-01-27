@@ -14,7 +14,7 @@
   --fs-small: 0.875rem;
   --fs-medium: 1rem;
   --fs-large: 1.3rem;
-  --fs-xlarge: 1.6rem;
+  --fs-xlarge: 1.8rem;
   --fs-xxlarge: clamp(2.8rem, 4.5vw, 4.2rem);
 }
 

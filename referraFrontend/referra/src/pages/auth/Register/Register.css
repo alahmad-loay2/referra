@@ -21,14 +21,14 @@
 }
 
 .register-left h1 {
-  font-size: 2.3rem;
+  font-size: var(--fs-xlarge);
   margin-bottom: 1rem;
 }
 
 .register-left p {
   max-width: 420px;
   margin-bottom: 2rem;
-  font-size: 1.05rem;
+  font-size: var(--fs-medium);
   line-height: 1.6;
 }
 
