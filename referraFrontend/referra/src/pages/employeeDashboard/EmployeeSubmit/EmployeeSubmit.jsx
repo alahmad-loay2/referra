@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getVisiblePositions } from "../../../api/positions.api";
 import { submitReferral } from "../../../api/employee.api";
+import { Briefcase, Upload } from "lucide-react";
 
 import "./EmployeeSubmit.css";
 
@@ -154,7 +155,11 @@ const EmployeeSubmit = () => {
 
       {/* Select Position */}
       <div className="employeeSubmit-card">
-        <h4>Select Position</h4>
+        <h4 className="employeeSubmit-title">
+          <Briefcase size={18} className="employeeSubmit-titleIcon" />
+          Select Position
+        </h4>
+
         <p>Choose the position you're referring the candidate for</p>
         {positionsError && <p>{positionsError}</p>}
 
@@ -183,12 +188,15 @@ const EmployeeSubmit = () => {
 
         <div className="employeeSubmit-formGrid">
           <div className="employeeSubmit-field">
+            <label className="employeeSubmit-label">
+              First Name <span>*</span>
+            </label>
             <input
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
               className="employeeSubmit-input"
-              placeholder="First Name *"
+              placeholder="Jana"
             />
             {errors.firstName && (
               <p className="errorText">{errors.firstName}</p>
@@ -196,34 +204,43 @@ const EmployeeSubmit = () => {
           </div>
 
           <div className="employeeSubmit-field">
+            <label className="employeeSubmit-label">
+              Last Name <span>*</span>
+            </label>
             <input
               name="lastName"
               value={form.lastName}
               onChange={handleChange}
               className="employeeSubmit-input"
-              placeholder="Last Name *"
+              placeholder="Al-Mawla"
             />
             {errors.lastName && <p className="errorText">{errors.lastName}</p>}
           </div>
 
           <div className="employeeSubmit-field">
+            <label className="employeeSubmit-label">
+              Email <span>*</span>
+            </label>
             <input
               name="email"
               value={form.email}
               onChange={handleChange}
               className="employeeSubmit-input"
-              placeholder="Email *"
+              placeholder="you@example.com"
             />
             {errors.email && <p className="errorText">{errors.email}</p>}
           </div>
 
           <div className="employeeSubmit-field">
+            <label className="employeeSubmit-label">
+              Total Years of Experience <span>*</span>
+            </label>
             <input
               name="experience"
               value={form.experience}
               onChange={handleChange}
               className="employeeSubmit-input"
-              placeholder="Total Years of Experience *"
+              placeholder="5"
             />
             {errors.experience && (
               <p className="errorText">{errors.experience}</p>
@@ -237,7 +254,7 @@ const EmployeeSubmit = () => {
           onDragOver={handleDragOver}
           onClick={() => document.getElementById("cvUpload").click()}
         >
-          <span>⬆</span>
+          <Upload size={28} className="employeeSubmit-uploadIcon" />
 
           {cvFile ? (
             <div className="employeeSubmit-filePreview">

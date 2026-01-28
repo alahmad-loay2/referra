@@ -54,6 +54,22 @@ export const createReferral = async (payload) => {
     error.statusCode = 404;
     throw error;
   }
+  const now = new Date();
+
+  // 🔒 HARD BLOCK expired or closed positions
+  if (position.PositionState !== "OPEN" || position.Deadline < now) {
+    // Optional: auto-close immediately
+    if (position.PositionState === "OPEN" && position.Deadline < now) {
+      await prisma.position.update({
+        where: { PositionId: positionId },
+        data: { PositionState: "CLOSED" },
+      });
+    }
+
+    const error = new Error("This position is closed or has expired");
+    error.statusCode = 400;
+    throw error;
+  }
 
   const employee = await prisma.employee.findUnique({
     where: { EmployeeId: employeeId },
@@ -344,8 +360,8 @@ export const getEmployeeReferrals = async ({
   page = 1,
   pageSize = 10,
   search,
-  status, 
-  createdAt
+  status,
+  createdAt,
 }) => {
   if (!employeeId) {
     const error = new Error("Employee ID is required");
