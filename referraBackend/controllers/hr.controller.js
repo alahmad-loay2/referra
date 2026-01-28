@@ -189,7 +189,7 @@ export const FinalizeReferral = async (req, res, next) => {
     }
 
     const { referralId } = req.params;
-    const { action } = req.body;
+    const { action, compensation } = req.body;
 
     if (!referralId || !action) {
       const error = new Error("Referral ID and action are required");
@@ -197,7 +197,7 @@ export const FinalizeReferral = async (req, res, next) => {
       throw error;
     }
 
-    const candidate = await finalizeReferral(referralId, action, hr);
+    const candidate = await finalizeReferral(referralId, action, hr, compensation);
 
     res.status(200).json({
       message: `Referral ${action} completed successfully`,

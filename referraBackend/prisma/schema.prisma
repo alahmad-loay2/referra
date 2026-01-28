@@ -39,12 +39,13 @@ model Employee {
   UserId String @unique
   User Users @relation(fields: [UserId], references: [UserId])
   Department String
-  TotalCompensation Int
+  TotalCompensation Int @default(0)
   Position String
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
 
   Application Application[]
+  Compensations Compensation[]
 }
 
 model Hr {
@@ -53,6 +54,7 @@ model Hr {
   User Users @relation(fields: [UserId], references: [UserId])
 
   Departments HrDepartment[]
+  Compensations Compensation[]
 }
 
 
@@ -141,4 +143,18 @@ model HrDepartment {
   Department Department @relation(fields: [DepartmentId], references: [DepartmentId])
 
   @@id([HrId, DepartmentId])
+}
+
+
+model Compensation {
+  CompensationId String @id @default(uuid())
+
+  HrId String
+  EmployeeId String
+
+  Hr   Hr @relation(fields: [HrId], references: [HrId])
+  Employee   Employee @relation(fields: [EmployeeId], references: [EmployeeId])
+
+  Amount Int
+  CreatedAt DateTime @default(now())
 }

@@ -160,22 +160,31 @@ export const advanceReferralStage = async (referralId, hrUser) => {
     data: { Status: nextState },
   });
 
+  const updatedApplication = await prisma.application.findUnique({
+    where: { ReferralId: referralId },
+    include: {
+      Candidate: true,
+      Referral: true,
+    },
+  });
 
-const updatedApplication = await prisma.application.findUnique({
-  where: { ReferralId: referralId },
-  include: {
-    Candidate: true,
-    Referral: true,
-  },
-});
-
-return updatedApplication;
-
+  return updatedApplication;
 };
 
-export const finalizeReferral = async (referralId, action, hrUser) => {
+export const finalizeReferral = async (
+  referralId,
+  action,
+  hrUser,
+  compensation,
+) => {
   if (!referralId || !["Accept", "Prospect"].includes(action)) {
     throw new Error("Referral ID and valid action are required");
+  }
+
+  if (action === "Accept" && (!compensation || compensation <= 0)) {
+    const err = new Error("Compensation amount is required for acceptance");
+    err.statusCode = 400;
+    throw err;
   }
 
   const referral = await prisma.referral.findUnique({
@@ -184,6 +193,7 @@ export const finalizeReferral = async (referralId, action, hrUser) => {
       Application: {
         include: {
           Candidate: true,
+          Employee: true,
           Position: {
             include: {
               Department: {
@@ -213,6 +223,7 @@ export const finalizeReferral = async (referralId, action, hrUser) => {
   }
 
   const candidateId = referral.Application.Candidate.CandidateId;
+  const employeeId = referral.Application.Employee.EmployeeId;
 
   if (action === "Accept") {
     if (referral.Status !== "Acceptance") {
@@ -235,6 +246,23 @@ export const finalizeReferral = async (referralId, action, hrUser) => {
           AcceptedInOtherPosition: true,
         },
       }),
+
+      prisma.compensation.create({
+        data: {
+          HrId: hrUser.HrId,
+          EmployeeId: employeeId,
+          Amount: compensation,
+        },
+      }),
+
+      prisma.employee.update({
+        where: { EmployeeId: employeeId },
+        data: {
+          TotalCompensation: {
+            increment: compensation,
+          },
+        },
+      }),
     ]);
   }
 
@@ -248,8 +276,8 @@ export const finalizeReferral = async (referralId, action, hrUser) => {
   const updatedApplication = await prisma.application.findUnique({
     where: { ReferralId: referralId },
     include: {
-        Candidate: true,
-        Referral: true
+      Candidate: true,
+      Referral: true,
     },
   });
   return updatedApplication;
