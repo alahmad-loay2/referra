@@ -7,6 +7,7 @@ export const getAllConfirmedReferrals = async ({
   search,
   status,
   createdAt,
+  createdAfter,
 }) => {
   if (!hrId) {
     throw new Error("HR ID is required");
@@ -74,6 +75,16 @@ export const getAllConfirmedReferrals = async ({
         CreatedAt: {
           gte: startOfDay,
           lte: endOfDay,
+        },
+      },
+    });
+  }
+
+  if (createdAfter) {
+    andFilters.push({
+      Referral: {
+        CreatedAt: {
+          gt: new Date(createdAfter),
         },
       },
     });
