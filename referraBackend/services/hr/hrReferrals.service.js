@@ -121,6 +121,50 @@ export const getAllConfirmedReferrals = async ({
   };
 };
 
+
+export const getReferralDetails = async ({ referralId, hrId }) => {
+  if (!referralId) throw new Error("Referral ID is required");
+  if (!hrId) throw new Error("HR ID is required");
+
+  const referral = await prisma.referral.findUnique({
+    where: { ReferralId: referralId },
+    include: {
+      Application: {
+        include: {
+          Candidate: true,
+          Employee: true,
+          Position: {
+            include: {
+              Department: {
+                include: {
+                  Hrs: { include: { Hr: true } }, 
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!referral) throw new Error("Referral not found");
+
+  const application = referral.Application;
+
+  const belongsToHrDept = application.Position.Department.Hrs.some(
+    (hrDept) => hrDept.HrId === hrId
+  );
+
+  if (!belongsToHrDept) {
+    throw new Error("HR not allowed to view this referral");
+  }
+
+  return {
+    referral
+  };
+};
+
+
 const workflow = ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
 
 export const advanceReferralStage = async (referralId, hrUser) => {

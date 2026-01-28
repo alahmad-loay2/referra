@@ -7,6 +7,7 @@ import {
   getConfirmedReferrals,
   FinalizeReferral,
   AdvanceReferralStage,
+  getConfirmedReferralDetails,
   // DeletePosition,
 } from "../controllers/hr.controller.js";
 import { authenticate, requireHr } from "../middleware/auth.middleware.js";
@@ -52,6 +53,8 @@ router.put(
 
 
 router.get("/referrals", generalLimiter, authenticate, requireHr, getConfirmedReferrals)
+
+router.get("/referrals/:referralId/details", generalLimiter, authenticate, requireHr, getConfirmedReferralDetails)
 router.patch(
   "/referrals/:referralId/finalize",
   generalLimiter,

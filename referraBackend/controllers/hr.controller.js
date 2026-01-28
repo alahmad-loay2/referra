@@ -5,7 +5,7 @@ import {
   updatePositionDetails,
   //deletePosition,
 } from "../services/hr/hr.service.js";
-import { advanceReferralStage, finalizeReferral, getAllConfirmedReferrals } from "../services/hr/hrReferrals.service.js";
+import { advanceReferralStage, finalizeReferral, getAllConfirmedReferrals, getReferralDetails } from "../services/hr/hrReferrals.service.js";
 
 /**
  * HR – Create Position
@@ -140,6 +140,23 @@ export const getConfirmedReferrals = async (req, res, next) => {
     const referrals = await getAllConfirmedReferrals({ hrId, page, pageSize ,search, status, createdAt, createdAfter });
 
     res.status(200).json(referrals);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getConfirmedReferralDetails = async (req, res, next) => {
+  try {
+    const hrId = req.user?.Hr.HrId;
+    if (!hrId) {
+      return res.status(403).json({ message: "HR access only" });
+    }
+
+    const { referralId } = req.params;
+
+    const details = await getReferralDetails({ referralId, hrId });
+
+    res.status(200).json(details);
   } catch (err) {
     next(err);
   }
