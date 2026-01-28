@@ -5,6 +5,7 @@ import {
   updatePositionDetails,
   //deletePosition,
 } from "../services/hr/hr.service.js";
+import { advanceReferralStage, finalizeReferral, getAllConfirmedReferrals } from "../services/hr/hrReferrals.service.js";
 
 /**
  * HR – Create Position
@@ -128,3 +129,81 @@ export const UpdatePosition = async (req, res, next) => {
   }
 };
 */
+
+export const getConfirmedReferrals = async (req, res, next) => {
+  try {
+    const hrId = req.user?.Hr.HrId;
+    if (!hrId) {
+      return res.status(403).json({ message: "HR access only" });
+    }
+    const { page, pageSize, search, status, createdAt } = req.query;
+    const referrals = await getAllConfirmedReferrals({ hrId, page, pageSize ,search, status, createdAt });
+
+    res.status(200).json(referrals);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+export const AdvanceReferralStage = async (req, res, next) => {
+  try {
+    const hr = req.user?.Hr;
+    if (!hr) {
+      const error = new Error("HR profile not found");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const { referralId } = req.params;
+
+    if (!referralId) {
+      const error = new Error("Referral ID is required");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const updatedReferral = await advanceReferralStage(referralId, hr);
+
+    res.status(200).json({
+      message: "Referral advanced to next stage successfully",
+      referral: updatedReferral,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+
+
+export const FinalizeReferral = async (req, res, next) => {
+  try {
+    const hr = req.user?.Hr;
+    if (!hr) {
+      const error = new Error("HR profile not found");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const { referralId } = req.params;
+    const { action } = req.body;
+
+    if (!referralId || !action) {
+      const error = new Error("Referral ID and action are required");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const candidate = await finalizeReferral(referralId, action, hr);
+
+    res.status(200).json({
+      message: `Referral ${action} completed successfully`,
+      candidate
+    });
+  } catch (err) {
+    next(err);
+  }
+};

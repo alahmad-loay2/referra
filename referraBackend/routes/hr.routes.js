@@ -4,6 +4,9 @@ import {
   GetVisiblePositions,
   UpdatePositionState,
   UpdatePosition,
+  getConfirmedReferrals,
+  FinalizeReferral,
+  AdvanceReferralStage,
   // DeletePosition,
 } from "../controllers/hr.controller.js";
 import { authenticate, requireHr } from "../middleware/auth.middleware.js";
@@ -46,4 +49,23 @@ router.put(
   requireHr,
   DeletePosition,
 );*/
+
+
+router.get("/referrals", generalLimiter, authenticate, requireHr, getConfirmedReferrals)
+router.patch(
+  "/referrals/:referralId/finalize",
+  generalLimiter,
+  authenticate,
+  requireHr,
+  FinalizeReferral
+);
+
+router.patch(
+  "/referrals/:referralId/advance",
+  generalLimiter,
+  authenticate,
+  requireHr,
+  AdvanceReferralStage
+);
+
 export default router;
