@@ -5,6 +5,9 @@ import {
   UpdatePositionState,
   UpdatePosition,
   // DeletePosition,
+  getDashboardStatsController,
+  getHrPositionsController,
+  getHrPositionDetailsController,
 } from "../controllers/hr.controller.js";
 import { authenticate, requireHr } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
@@ -19,8 +22,13 @@ router.post(
   requireHr,
   CreatePosition,
 );
-// GET visible positions (for Employee vs HR) may be fixed later to seperate employee and HR routes
-router.get("/positions", generalLimiter, authenticate, GetVisiblePositions);
+// GET visible positions (for Employee)
+router.get(
+  "/positions-employee",
+  generalLimiter,
+  authenticate,
+  GetVisiblePositions,
+);
 // update position state for toggle =
 router.patch(
   "/positions/:positionId/state",
@@ -36,6 +44,22 @@ router.put(
   authenticate,
   requireHr,
   UpdatePosition,
+);
+// HR dashboard stats
+router.get(
+  "/dashboard-stats",
+  authenticate,
+  requireHr,
+  getDashboardStatsController,
+);
+
+router.get("/positions-hr", authenticate, requireHr, getHrPositionsController);
+
+router.get(
+  "/positions-hr/:positionId",
+  authenticate,
+  requireHr,
+  getHrPositionDetailsController,
 );
 
 //  DELETE POSITION

@@ -238,6 +238,34 @@
   border: 1px solid #f5c6cb;
 }
 
+/* Title with icon */
+.employeeSubmit-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-large);
+}
+
+.employeeSubmit-titleIcon {
+  color: var(--primary-color);
+}
+
+/* Upload icon */
+.employeeSubmit-uploadIcon {
+  color: var(--gray-dark);
+  margin-bottom: 6px;
+}
+.employeeSubmit-label {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--secondary-color);
+  margin-bottom: 6px;
+}
+
+.employeeSubmit-label span {
+  color: var(--secondary-color);
+}
+
 /* Small animation */
 @keyframes fadeSlideIn {
   from {
