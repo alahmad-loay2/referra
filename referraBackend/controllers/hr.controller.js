@@ -7,8 +7,14 @@ import {
   getHrDashboardStats,
   getHrPositions,
   getHrPositionDetails,
+  getDepartmentsByHr,
 } from "../services/hr/hr.service.js";
-import { advanceReferralStage, finalizeReferral, getAllConfirmedReferrals, getReferralDetails } from "../services/hr/hrReferrals.service.js";
+import {
+  advanceReferralStage,
+  finalizeReferral,
+  getAllConfirmedReferrals,
+  getReferralDetails,
+} from "../services/hr/hrReferrals.service.js";
 
 /**
  * HR – Create Position
@@ -158,6 +164,22 @@ export const getHrPositionDetailsController = async (req, res, next) => {
   }
 };
 
+export const getHrDepartmentsController = async (req, res, next) => {
+  try {
+    const hrId = req.user.Hr?.HrId;
+
+    if (!hrId) {
+      const error = new Error("HR profile not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const departments = await getDepartmentsByHr(hrId);
+    res.status(200).json(departments);
+  } catch (error) {
+    next(error);
+  }
+};
 /*export const DeletePosition = async (req, res, next) => {
   try {
     const hr = req.user?.Hr;
@@ -188,8 +210,17 @@ export const getConfirmedReferrals = async (req, res, next) => {
     if (!hrId) {
       return res.status(403).json({ message: "HR access only" });
     }
-    const { page, pageSize, search, status, createdAt, createdAfter } = req.query;
-    const referrals = await getAllConfirmedReferrals({ hrId, page, pageSize ,search, status, createdAt, createdAfter });
+    const { page, pageSize, search, status, createdAt, createdAfter } =
+      req.query;
+    const referrals = await getAllConfirmedReferrals({
+      hrId,
+      page,
+      pageSize,
+      search,
+      status,
+      createdAt,
+      createdAfter,
+    });
 
     res.status(200).json(referrals);
   } catch (err) {
@@ -213,8 +244,6 @@ export const getConfirmedReferralDetails = async (req, res, next) => {
     next(err);
   }
 };
-
-
 
 export const AdvanceReferralStage = async (req, res, next) => {
   try {
@@ -244,10 +273,6 @@ export const AdvanceReferralStage = async (req, res, next) => {
   }
 };
 
-
-
-
-
 export const FinalizeReferral = async (req, res, next) => {
   try {
     const hr = req.user?.Hr;
@@ -266,11 +291,16 @@ export const FinalizeReferral = async (req, res, next) => {
       throw error;
     }
 
-    const candidate = await finalizeReferral(referralId, action, hr, compensation);
+    const candidate = await finalizeReferral(
+      referralId,
+      action,
+      hr,
+      compensation,
+    );
 
     res.status(200).json({
       message: `Referral ${action} completed successfully`,
-      candidate
+      candidate,
     });
   } catch (err) {
     next(err);

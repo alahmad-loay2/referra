@@ -401,6 +401,29 @@ export const getHrPositionDetails = async (hr, positionId) => {
   };
 };
 
+export const getDepartmentsByHr = async (hrId) => {
+  if (!hrId) {
+    const error = new Error("HR ID is required");
+    error.statusCode = 400;
+    throw error;
+  }
+  const departments = await prisma.hrDepartment.findMany({
+    where: {
+      HrId: hrId,
+    },
+    select: {
+      Department: {
+        select: {
+          DepartmentId: true,
+          DepartmentName: true,
+        },
+      },
+    },
+  });
+
+  return departments.map((d) => d.Department);
+};
+
 /*
 export const deletePosition = async (positionId, hrUser) => {
   if (!positionId) {

@@ -12,6 +12,7 @@ import {
   getDashboardStatsController,
   getHrPositionsController,
   getHrPositionDetailsController,
+  getHrDepartmentsController,
 } from "../controllers/hr.controller.js";
 import { authenticate, requireHr } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
@@ -75,16 +76,27 @@ router.get(
   DeletePosition,
 );*/
 
+router.get(
+  "/referrals",
+  generalLimiter,
+  authenticate,
+  requireHr,
+  getConfirmedReferrals,
+);
 
-router.get("/referrals", generalLimiter, authenticate, requireHr, getConfirmedReferrals)
-
-router.get("/referrals/:referralId/details", generalLimiter, authenticate, requireHr, getConfirmedReferralDetails)
+router.get(
+  "/referrals/:referralId/details",
+  generalLimiter,
+  authenticate,
+  requireHr,
+  getConfirmedReferralDetails,
+);
 router.patch(
   "/referrals/:referralId/finalize",
   generalLimiter,
   authenticate,
   requireHr,
-  FinalizeReferral
+  FinalizeReferral,
 );
 
 router.patch(
@@ -92,7 +104,13 @@ router.patch(
   generalLimiter,
   authenticate,
   requireHr,
-  AdvanceReferralStage
+  AdvanceReferralStage,
 );
 
+router.get(
+  "/departments-hr",
+  authenticate,
+  requireHr,
+  getHrDepartmentsController,
+);
 export default router;
