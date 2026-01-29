@@ -22,44 +22,51 @@ import EmployeeReferrals from "../pages/employeeDashboard/EmployeeReferrals/Empl
 import EmployeePositions from "../pages/employeeDashboard/EmployeePositions/EmployeePositions.jsx";
 import EmployeeSubmit from "../pages/employeeDashboard/EmployeeSubmit/EmployeeSubmit.jsx";
 import HrCreatePosition from "../pages/hrDashboard/HrCreatePosition/HrCreatePosition.jsx";
-
+import EmployeeReferralHD from "../pages/employeeDashboard/EmployeeReferralHD/EmployeeReferralHD.jsx";
 const AppRoutes = () => {
   return (
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route element={<AuthProtection />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<Register />} />
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route element={<AuthProtection />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+      <Route
+        path="/auth/verify-email-success"
+        element={<VerifyEmailSuccess />}
+      />
+      <Route
+        path="/auth/signup-verification"
+        element={<SignupVerification />}
+      />
+      <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+      <Route path="/auth/reset-password" element={<ResetPassword />} />
+      <Route
+        path="/referral/confirm/:referralId"
+        element={<ConfirmReferral />}
+      />
+      <Route element={<HrProtected />}>
+        <Route path="/dashboard/hr" element={<HrDashboard />}>
+          <Route index element={<HrDashboardHome />} />
+          <Route path="referrals" element={<HrReferrals />} />
+          <Route path="positions" element={<HrPositions />} />
+          <Route
+            path="positions/create-position"
+            element={<HrCreatePosition />}
+          />
+          <Route path="team" element={<HrTeam />} />
         </Route>
-        <Route
-          path="/auth/verify-email-success"
-          element={<VerifyEmailSuccess />}
-        />
-        <Route
-          path="/auth/signup-verification"
-          element={<SignupVerification />}
-        />
-        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-        <Route path="/auth/reset-password" element={<ResetPassword />} />
-        <Route path="/referral/confirm/:referralId" element={<ConfirmReferral />} />
-        <Route element={<HrProtected />}>
-          <Route path="/dashboard/hr" element={<HrDashboard />}>
-            <Route index element={<HrDashboardHome />} />
-            <Route path="referrals" element={<HrReferrals />} />
-            <Route path="positions" element={<HrPositions />} />
-            <Route path="positions/create-position" element={<HrCreatePosition />} />
-            <Route path="team" element={<HrTeam />} />
-          </Route>
+      </Route>
+      <Route element={<EmployeeProtected />}>
+        <Route path="/dashboard/employee" element={<EmployeeDashboard />}>
+          <Route index element={<EmployeeDashboardHome />} />
+          <Route path="my-referrals" element={<EmployeeReferrals />} />
+          <Route path="open-positions" element={<EmployeePositions />} />
+          <Route path="submit-referrals" element={<EmployeeSubmit />} />
+          <Route path="referral-details" element={<EmployeeReferralHD />} />
         </Route>
-        <Route element={<EmployeeProtected />}>
-          <Route path="/dashboard/employee" element={<EmployeeDashboard />}>
-            <Route index element={<EmployeeDashboardHome />} />
-            <Route path="my-referrals" element={<EmployeeReferrals />} />
-            <Route path="open-positions" element={<EmployeePositions />} />
-            <Route path="submit-referrals" element={<EmployeeSubmit />} />
-          </Route>        
-        </Route>
-      </Routes>
+      </Route>
+    </Routes>
   );
 };
 

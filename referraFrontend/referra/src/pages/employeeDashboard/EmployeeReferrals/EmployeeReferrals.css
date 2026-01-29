@@ -3,6 +3,7 @@
   min-height: calc(100vh - 120px); /* header + padding */
   display: flex;
   flex-direction: column;
+  min-width: 1000px;
 }
 
 /* Header */
@@ -301,4 +302,17 @@
 
 .pagination .dots {
   padding: 0 6px;
+}
+.apply-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: var(--fs-small);
+}
+
+.apply-btn:hover {
+  opacity: 0.9;
 }

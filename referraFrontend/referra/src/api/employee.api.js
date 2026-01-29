@@ -31,17 +31,31 @@ export const submitReferral = async (form, cvFile) => {
 
   return data;
 };
+export const fetchEmployeeApplications = async ({
+  page,
+  pageSize,
+  search,
+  status,
+  createdAt,
+} = {}) => {
+  const params = new URLSearchParams();
 
-export const fetchEmployeeApplications = async (params = {}) => {
-  const query = new URLSearchParams(params).toString();
+  if (page) params.append("page", page);
+  if (pageSize) params.append("pageSize", pageSize);
+  if (search) params.append("search", search);
+  if (status) params.append("status", status);
+  if (createdAt) params.append("createdAt", createdAt);
 
-  const res = await fetch(`${API_BASE_URL}/employee/applications?${query}`, {
-    method: "GET",
-    credentials: "include", // ✅ THIS is the key
-    headers: {
-      "Content-Type": "application/json",
+  const res = await fetch(
+    `${API_BASE_URL}/employee/applications?${params.toString()}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 
   const text = await res.text();
 
