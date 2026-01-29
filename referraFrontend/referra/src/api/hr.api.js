@@ -1,0 +1,97 @@
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
+
+  export const getDashboardStats = async() => {
+     try {
+    const res = await fetch(`${API_BASE_URL}/hr/dashboard-stats`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return await res.json();
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getHrPositions = async ({
+  page = 1,
+  limit = 10,
+  search = "",
+  status = "",
+  departmentId = "",
+} = {}) => {
+  const params = new URLSearchParams();
+
+  params.append("page", page);
+  params.append("limit", limit);
+
+  if (search) params.append("search", search);
+  if (status) params.append("status", status);
+  if (departmentId) params.append("departmentId", departmentId);
+
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/hr/positions-hr?${params.toString()}`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return await res.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+export const updatePositionState = async (positionId, state) => {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/hr/positions/${positionId}/state`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ state }),
+      }
+    );
+
+    return await res.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const createPosition = async (positionData) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/hr/positions`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(positionData),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to create position");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("createPosition error:", error);
+    throw error;
+  }
+};
