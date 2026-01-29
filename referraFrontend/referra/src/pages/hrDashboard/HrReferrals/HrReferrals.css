@@ -1,0 +1,167 @@
+.referralHr {
+    min-width: 1000px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 30px;
+}
+
+.referralHr h3 {
+    font-size: var(--fs-large);
+}
+
+.referralSearchContainer {
+    background-color: var(--gray-light);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: 20px;
+}
+
+.selectContainer {
+  display: flex;
+  gap: 15px;
+}
+
+.searchInputWrapper {
+  position: relative;
+  flex: 1;
+}
+
+.referralSearchContainer input {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    min-width: 200px;
+    font-size: var(--fs-small);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-dark);
+  pointer-events: none;
+}
+
+.referralSearchContainer select {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    min-width: 150px;
+    font-size: var(--fs-small);
+}
+
+.referralSearchContainer input:focus,
+.referralSearchContainer select:focus {
+    outline: none;
+}
+
+.referralSearchContainer button {
+  background-color: var(--primary-color);
+  border: none;
+  padding: 10px 20px;
+  font-size: var(--fs-medium);
+  border-radius: 20px;
+  color: white;
+  transition: all .3s ease;
+}
+
+.referralSearchContainer button:hover {
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+
+.allCandidates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.candidate {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;    
+    gap: 20px;
+}
+
+.candidate .cardLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 60%;
+}
+
+.candidate .cardRight{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.candidate p {
+    font-size: var(--fs-large);
+}
+
+.candidate span {
+    font-size: var(--fs-medium);
+}
+
+.candidate .cardRight span {
+    opacity: .9;
+}
+
+.iconText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconTextLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  width: fit-content;
+}
+
+.status-confirmed {
+  background-color: #e6f7ef;
+  color: #1e7f4d;
+}
+
+.status-interviewone,
+.status-interviewtwo {
+  background-color: #fff4e5;
+  color: #b26a00;
+}
+
+.status-acceptance {
+  background-color: #e8f0ff;
+  color: #2f5fd0;
+}
+
+.iconText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
