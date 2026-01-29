@@ -16,7 +16,7 @@ export const submitReferral = async (form, cvFile) => {
     body: formData,
   });
 
-  const text = await res.text(); // 👈 IMPORTANT
+  const text = await res.text();
 
   let data;
   try {
@@ -27,6 +27,33 @@ export const submitReferral = async (form, cvFile) => {
 
   if (!res.ok) {
     throw new Error(data.message || "Failed to submit referral");
+  }
+
+  return data;
+};
+
+export const fetchEmployeeApplications = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+
+  const res = await fetch(`${API_BASE_URL}/employee/applications?${query}`, {
+    method: "GET",
+    credentials: "include", // ✅ THIS is the key
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const text = await res.text();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(text || "Server error");
+  }
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to fetch referrals");
   }
 
   return data;
