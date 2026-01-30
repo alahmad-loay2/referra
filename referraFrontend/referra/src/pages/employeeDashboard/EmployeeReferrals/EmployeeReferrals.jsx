@@ -124,7 +124,37 @@ const EmployeeReferrals = () => {
       </div>
 
       {loading ? (
-        <div className="loading-state">Loading your referrals…</div>
+        <div className="referrals-list">
+          {[...Array(PAGE_SIZE)].map((_, index) => (
+            <div key={`skeleton-${index}`} className="referral-card-skeleton">
+              <div className="referral-left-skeleton">
+                <div className="skeleton-avatar"></div>
+                <div className="referral-info-skeleton">
+                  <div className="skeleton-name"></div>
+                  <div className="meta-skeleton">
+                    <div className="skeleton-meta-item"></div>
+                    <div className="skeleton-meta-item"></div>
+                    <div className="skeleton-meta-item"></div>
+                  </div>
+                  <div className="timeline-skeleton">
+                    {[...Array(5)].map((_, i) => (
+                      <React.Fragment key={i}>
+                        <div className="skeleton-step">
+                          <div className="skeleton-step-icon"></div>
+                          <div className="skeleton-step-label"></div>
+                        </div>
+                        {i < 4 && <div className="skeleton-line"></div>}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="referral-right-skeleton">
+                <div className="skeleton-button"></div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <>
           <p className="results-info">
