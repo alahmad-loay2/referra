@@ -15,6 +15,7 @@ import {
   getAllConfirmedReferrals,
   getReferralDetails,
 } from "../services/hr/hrReferrals.service.js";
+import { getHrTeam } from "../services/hr/hrTeam.service.js";
 
 /**
  * HR – Create Position
@@ -176,6 +177,15 @@ export const getHrDepartmentsController = async (req, res, next) => {
 
     const departments = await getDepartmentsByHr(hrId);
     res.status(200).json(departments);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getHrTeamController = async (req, res, next) => {
+  try {
+    const result = await getHrTeam(req.query);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }

@@ -13,6 +13,7 @@ import {
   getHrPositionsController,
   getHrPositionDetailsController,
   getHrDepartmentsController,
+  getHrTeamController,
 } from "../controllers/hr.controller.js";
 import { authenticate, requireHr } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
@@ -113,4 +114,12 @@ router.get(
   requireHr,
   getHrDepartmentsController,
 );
+
+router.get(
+  "/team",
+  authenticate,
+  requireHr,
+  getHrTeamController,
+);
+
 export default router;

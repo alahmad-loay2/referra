@@ -90,5 +90,11 @@ export const createHr = async (payload) => {
     credentials: 'include',
     body: JSON.stringify(payload),
   })
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || 'Failed to create HR');
+  }
+
   return res.json()
 }
