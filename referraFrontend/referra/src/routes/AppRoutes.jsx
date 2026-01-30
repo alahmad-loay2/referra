@@ -24,7 +24,6 @@ import EmployeeSubmit from "../pages/employeeDashboard/EmployeeSubmit/EmployeeSu
 import HrCreatePosition from "../pages/hrDashboard/HrCreatePosition/HrCreatePosition.jsx";
 import HrPositionDetails from "../pages/hrDashboard/HrPositionDetails/HrPositionDetails.jsx";
 import HrReferralDetails from "../pages/hrDashboard/HrReferralDetails/HrReferralDetails.jsx";
-import EmployeeReferralHD from "../pages/employeeDashboard/EmployeeReferralHD/EmployeeReferralHD.jsx";
 
 const AppRoutes = () => {
   return (
