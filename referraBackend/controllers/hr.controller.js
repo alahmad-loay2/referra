@@ -8,7 +8,7 @@ import {
   getHrPositions,
   getHrPositionDetails,
   getDepartmentsByHr,
-} from "../services/hr/hr.service.js";
+} from "../services/hr/hrPositions.service.js";
 import {
   advanceReferralStage,
   finalizeReferral,

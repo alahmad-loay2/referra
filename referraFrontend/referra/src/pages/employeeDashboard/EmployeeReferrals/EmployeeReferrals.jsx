@@ -1,6 +1,6 @@
 import React from "react";
 import { Search, Mail, Calendar, Briefcase, Check } from "lucide-react";
-import { fetchEmployeeApplications } from "../../../api/employee.api";
+import { fetchEmployeeApplications } from "../../../api/employeeReferrals.api";
 import Button from "../../../components/button/Button";
 
 import "./EmployeeReferrals.css";

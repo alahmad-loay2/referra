@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./HrCreatePosition.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { createPosition, updatePosition, getPositionDetails, getHrDepartments } from "../../../api/hr.api";
+import { createPosition, updatePosition, getPositionDetails, getHrDepartments } from "../../../api/hrPositions.api";
 
 const HrCreatePosition = () => {
   const navigate = useNavigate();

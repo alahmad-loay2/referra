@@ -5,7 +5,7 @@ import {
   getEmployeeReferrals,
   editCandidate,
   getEmployeeReferralDetails,
-} from "../services/employee/employee.service.js";
+} from "../services/employee/employeeReferrals.service.js";
 
 // controllers for employee related operations
 // business logic is in services

@@ -7,7 +7,7 @@ import {
   getHrPositions,
   updatePositionState,
   getHrDepartments,
-} from "../../../api/hr.api";
+} from "../../../api/hrPositions.api.js";
 import Loading from "../../../components/loading/Loading.jsx";
 import { useNavigate } from "react-router-dom";
 

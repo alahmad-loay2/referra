@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getVisiblePositions } from "../../../api/positions.api";
-import { submitReferral } from "../../../api/employee.api";
+import { submitReferral } from "../../../api/employeeReferrals.api";
 import { Briefcase, Upload } from "lucide-react";
 
 import "./EmployeeSubmit.css";
