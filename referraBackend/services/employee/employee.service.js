@@ -376,13 +376,13 @@ export const getEmployeeReferrals = async ({
   if (search && search.trim() !== "") {
     andFilters.push({
       Candidate: {
-      OR: [
-        { FirstName: { contains: search, mode: "insensitive" } },
-        { LastName: { contains: search, mode: "insensitive" } },
-        { Email: { contains: search, mode: "insensitive" } },
-      ],
-      }
-    })
+        OR: [
+          { FirstName: { contains: search, mode: "insensitive" } },
+          { LastName: { contains: search, mode: "insensitive" } },
+          { Email: { contains: search, mode: "insensitive" } },
+        ],
+      },
+    });
   }
 
   if (status) {
@@ -402,8 +402,8 @@ export const getEmployeeReferrals = async ({
     });
   }
 
-  const where = { AND: andFilters }
-  
+  const where = { AND: andFilters };
+
   const totalReferrals = await prisma.application.count({ where });
 
   const applications = await prisma.application.findMany({
@@ -577,4 +577,42 @@ export const editCandidate = async (payload) => {
   }
 
   return { updatedCandidate };
+};
+
+//employee referral history details backend
+export const getEmployeeReferralDetails = async ({
+  employeeId,
+  referralId,
+}) => {
+  if (!employeeId) {
+    const error = new Error("Employee ID is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!referralId) {
+    const error = new Error("Referral ID is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const application = await prisma.application.findFirst({
+    where: {
+      ReferralId: referralId,
+      EmployeeId: employeeId,
+    },
+    include: {
+      Referral: true,
+      Candidate: true,
+      Position: true,
+    },
+  });
+
+  if (!application) {
+    const error = new Error("Referral not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return application;
 };

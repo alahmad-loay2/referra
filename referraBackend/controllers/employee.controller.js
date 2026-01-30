@@ -4,6 +4,7 @@ import {
   deleteCandidate,
   getEmployeeReferrals,
   editCandidate,
+  getEmployeeReferralDetails,
 } from "../services/employee/employee.service.js";
 
 // controllers for employee related operations
@@ -130,7 +131,7 @@ export const getApplicationsByEmployee = async (req, res, next) => {
         throw error;
       }
 
-      status = statusQuery; 
+      status = statusQuery;
     }
 
     const createdAt = req.query.createdAt || undefined;
@@ -189,6 +190,28 @@ export const EditCandidate = async (req, res, next) => {
     };
 
     const result = await editCandidate(payload);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetReferralDetails = async (req, res, next) => {
+  try {
+    const employeeId = req.user.Employee?.EmployeeId;
+    const { referralId } = req.params;
+
+    if (!employeeId) {
+      const error = new Error("Employee profile not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const result = await getEmployeeReferralDetails({
+      employeeId,
+      referralId,
+    });
+
     res.status(200).json(result);
   } catch (error) {
     next(error);
