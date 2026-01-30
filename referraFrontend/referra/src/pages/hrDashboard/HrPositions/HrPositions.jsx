@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./HrPositions.css";
-import { Briefcase, Users, Layers, Search } from "lucide-react";
+import { Briefcase, Users, Layers, Search, MoreVertical } from "lucide-react";
 import Button from "../../../components/button/Button";
 import {
   getDashboardStats,
   getHrPositions,
   updatePositionState,
+  getHrDepartments,
 } from "../../../api/hr.api";
 import Loading from "../../../components/loading/Loading.jsx";
+import { useNavigate } from "react-router-dom";
 
 const HrPositions = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalPositions: 0,
     openPositions: 0,
@@ -24,6 +27,10 @@ const HrPositions = () => {
   const [status, setStatus] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [error, setError] = useState(false);
+  const [positionsLoading, setPositionsLoading] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRefs = useRef({});
+  const [departments, setDepartments] = useState([]);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -68,7 +75,21 @@ const HrPositions = () => {
   }, []);
 
   useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const depts = await getHrDepartments();
+        setDepartments(depts);
+      } catch (err) {
+        console.error("Failed to load departments", err);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
+
+  useEffect(() => {
     const fetchHrPositions = async () => {
+      setPositionsLoading(true);
       try {
         setError(false);
         const data = await getHrPositions({
@@ -93,6 +114,8 @@ const HrPositions = () => {
         setHrPositions([]);
         setTotalPages(1);
         setError(true);
+      } finally {
+        setPositionsLoading(false);
       }
     };
 
@@ -107,6 +130,58 @@ const HrPositions = () => {
       departmentId,
     });
   };
+
+  const goToPage = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setPage(newPage);
+  };
+
+  const goNext = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
+  const goPrev = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const getVisiblePages = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
+
+  const toggleDropdown = (positionId) => {
+    setOpenDropdown(openDropdown === positionId ? null : positionId);
+  };
+
+  const handleEditPosition = (positionId) => {
+    setOpenDropdown(null);
+    navigate(`/dashboard/hr/positions/edit/${positionId}`);
+  };
+
+  const handleViewDetails = (positionId) => {
+    setOpenDropdown(null);
+    navigate(`/dashboard/hr/positions/${positionId}`);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        openDropdown &&
+        dropdownRefs.current[openDropdown] &&
+        !dropdownRefs.current[openDropdown].contains(event.target)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openDropdown]);
 
   return (
     <div className="positionsHR">
@@ -158,9 +233,11 @@ const HrPositions = () => {
             onChange={(e) => setDepartmentId(e.target.value)}
           >
             <option value="">All Departments</option>
-            <option value="1">HR</option>
-            <option value="2">IT</option>
-            <option value="3">Sales</option>
+            {departments.map((dept) => (
+              <option key={dept.DepartmentId} value={dept.DepartmentId}>
+                {dept.DepartmentName}
+              </option>
+            ))}
           </select>
           <select
             name="status"
@@ -171,7 +248,9 @@ const HrPositions = () => {
             <option value="OPEN">Open</option>
             <option value="CLOSED">Closed</option>
           </select>
-          <button onClick={handleApplyFilters}>apply</button>
+          <button className="apply-btn" onClick={handleApplyFilters}>
+            Apply
+          </button>
         </div>
       </div>
 
@@ -194,7 +273,21 @@ const HrPositions = () => {
             </tr>
           </thead>
           <tbody>
-            {!error ? (
+            {positionsLoading ? (
+              <>
+                {[...Array(10)].map((_, index) => (
+                  <tr key={`skeleton-${index}`} className="skeleton-row">
+                    <td><div className="skeleton-text"></div></td>
+                    <td><div className="skeleton-text"></div></td>
+                    <td><div className="skeleton-text"></div></td>
+                    <td><div className="skeleton-text"></div></td>
+                    <td><div className="skeleton-text"></div></td>
+                    <td><div className="skeleton-status"></div></td>
+                    <td><div className="skeleton-text"></div></td>
+                  </tr>
+                ))}
+              </>
+            ) : !error ? (
               hrPositions.map((p) => (
                 <tr key={p.PositionId}>
                   <td>{p.PositionTitle}</td>
@@ -220,7 +313,27 @@ const HrPositions = () => {
                     </div>
                   </td>
                   <td>
-                    <button>...</button>
+                    <div className="actions-cell">
+                      <button
+                        className="actions-button"
+                        onClick={() => toggleDropdown(p.PositionId)}
+                      >
+                        <MoreVertical size={18} />
+                      </button>
+                      {openDropdown === p.PositionId && (
+                        <div
+                          className="actions-dropdown"
+                          ref={(el) => (dropdownRefs.current[p.PositionId] = el)}
+                        >
+                          <button onClick={() => handleEditPosition(p.PositionId)}>
+                            Edit Position
+                          </button>
+                          <button onClick={() => handleViewDetails(p.PositionId)}>
+                            View Details
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -237,19 +350,22 @@ const HrPositions = () => {
           </tbody>
         </table>
         <div className="pagination">
-          <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-            Prev
+          <button className="nav" onClick={goPrev} disabled={page === 1}>
+            ← Previous
           </button>
 
-          <span>
-            Page {page} of {totalPages}
-          </span>
+          {getVisiblePages().map((p) => (
+            <button
+              key={p}
+              className={p === page ? "active" : ""}
+              onClick={() => goToPage(p)}
+            >
+              {p}
+            </button>
+          ))}
 
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
+          <button className="nav" onClick={goNext} disabled={page === totalPages}>
+            Next →
           </button>
         </div>
       </div>

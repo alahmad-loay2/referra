@@ -22,7 +22,10 @@ import EmployeeReferrals from "../pages/employeeDashboard/EmployeeReferrals/Empl
 import EmployeePositions from "../pages/employeeDashboard/EmployeePositions/EmployeePositions.jsx";
 import EmployeeSubmit from "../pages/employeeDashboard/EmployeeSubmit/EmployeeSubmit.jsx";
 import HrCreatePosition from "../pages/hrDashboard/HrCreatePosition/HrCreatePosition.jsx";
+import HrPositionDetails from "../pages/hrDashboard/HrPositionDetails/HrPositionDetails.jsx";
+import HrReferralDetails from "../pages/hrDashboard/HrReferralDetails/HrReferralDetails.jsx";
 import EmployeeReferralHD from "../pages/employeeDashboard/EmployeeReferralHD/EmployeeReferralHD.jsx";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -49,10 +52,19 @@ const AppRoutes = () => {
         <Route path="/dashboard/hr" element={<HrDashboard />}>
           <Route index element={<HrDashboardHome />} />
           <Route path="referrals" element={<HrReferrals />} />
+          <Route path="referrals/:referralId" element={<HrReferralDetails />} />
           <Route path="positions" element={<HrPositions />} />
           <Route
             path="positions/create-position"
             element={<HrCreatePosition />}
+          />
+          <Route
+            path="positions/edit/:positionId"
+            element={<HrCreatePosition />}
+          />
+          <Route
+            path="positions/:positionId"
+            element={<HrPositionDetails />}
           />
           <Route path="team" element={<HrTeam />} />
         </Route>
@@ -63,7 +75,6 @@ const AppRoutes = () => {
           <Route path="my-referrals" element={<EmployeeReferrals />} />
           <Route path="open-positions" element={<EmployeePositions />} />
           <Route path="submit-referrals" element={<EmployeeSubmit />} />
-          <Route path="referral-details" element={<EmployeeReferralHD />} />
         </Route>
       </Route>
     </Routes>

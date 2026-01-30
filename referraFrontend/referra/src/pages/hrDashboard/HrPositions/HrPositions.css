@@ -44,6 +44,21 @@
     margin-bottom: 5px;
 }
 
+/* Smaller loading spinner for position cards */
+.positionCardsText .loading-spinner {
+    padding: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.positionCardsText .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--gray-light);
+    border-top: 2px solid var(--primary-color);
+}
+
 .positionsSearchContainer {
     background-color: var(--gray-light);
     display: flex;
@@ -96,19 +111,18 @@
     outline: none;
 }
 
-.positionsSearchContainer button {
-  background-color: var(--primary-color);
-  border: none;
-  padding: 10px 20px;
-  font-size: var(--fs-medium);
-  border-radius: 20px;
+.apply-btn {
+  background: var(--primary-color);
   color: white;
-  transition: all .3s ease;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: var(--fs-small);
 }
 
-.positionsSearchContainer button:hover {
-  transform: translateY(-2px);
-  cursor: pointer;
+.apply-btn:hover {
+  opacity: 0.9;
 }
 
 
@@ -158,6 +172,61 @@
     border: none;
     background: none;
     cursor: pointer;
+}
+
+.actions-cell {
+  position: relative;
+}
+
+.actions-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  color: var(--gray-dark);
+}
+
+.actions-button:hover {
+  background: var(--gray-light);
+  border-radius: 4px;
+}
+
+.actions-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 150px;
+  margin-top: 4px;
+}
+
+.actions-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: var(--fs-small);
+  color: var(--gray-dark);
+}
+
+.actions-dropdown button:hover {
+  background: var(--gray-light);
+}
+
+.actions-dropdown button:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.actions-dropdown button:last-child {
+  border-radius: 0 0 8px 8px;
 }
 
 .switch {
@@ -220,18 +289,97 @@
   text-align: left;          
 }
 
+/* Pagination */
 .pagination {
+  margin-top: auto; /* pushes it to bottom */
+  padding: 1.5rem 0;
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
   align-items: center;
-  font-size: var(--fs-medium);
+  justify-content: center;
+  gap: 10px;
+  font-size: var(--fs-small);
+  color: var(--gray-dark);
+}
+.pagination button {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--secondary-color);
+  cursor: pointer;
+  font-size: var(--fs-small);
 }
 
-.pagination button {
-  padding: 5px 10px;
-  border: none;
-  background-color: var(--primary-color);
+.pagination button:hover {
+  background: var(--primary-color);
   color: white;
-  border-radius: 20px;
+}
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination .active {
+  background: var(--secondary-color);
+  color: var(--white);
+}
+.pagination .nav {
+  padding: 0 8px;
+  cursor: pointer;
+  color: var(--gray-dark);
+}
+
+.pagination .dots {
+  padding: 0 6px;
+}
+
+/* Skeleton Loader */
+.skeleton-row {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-text {
+  height: 16px;
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 25%,
+    #e0e0e0 50%,
+    var(--gray-light) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-status {
+  height: 24px;
+  width: 80px;
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 25%,
+    #e0e0e0 50%,
+    var(--gray-light) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 12px;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }

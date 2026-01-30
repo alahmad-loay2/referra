@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./HrCreatePosition.css";
-import { Link, useNavigate } from "react-router-dom";
-import { createPosition } from "../../../api/hr.api";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { createPosition, updatePosition, getPositionDetails, getHrDepartments } from "../../../api/hr.api";
 
 const HrCreatePosition = () => {
   const navigate = useNavigate();
+  const { positionId } = useParams();
+  const isEditMode = !!positionId;
 
   const [formData, setFormData] = useState({
     positionTitle: "",
@@ -18,7 +20,56 @@ const HrCreatePosition = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(isEditMode);
   const [error, setError] = useState("");
+  const [departments, setDepartments] = useState([]);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const depts = await getHrDepartments();
+        setDepartments(depts);
+      } catch (err) {
+        console.error("Failed to load departments", err);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
+
+  useEffect(() => {
+    if (isEditMode) {
+      const fetchPositionData = async () => {
+        try {
+          setLoadingData(true);
+          const position = await getPositionDetails(positionId);
+          
+          // Format deadline date for input
+          const deadlineDate = position.Deadline 
+            ? new Date(position.Deadline).toISOString().split('T')[0]
+            : "";
+
+          setFormData({
+            positionTitle: position.PositionTitle || "",
+            yearsRequired: position.YearsRequired || "",
+            description: position.Description || "",
+            timeZone: position.Timezone || "",
+            deadline: deadlineDate,
+            positionLocation: position.PositionLocation || "",
+            positionState: position.PositionState || "OPEN",
+            departmentId: position.DepartmentId?.toString() || "",
+          });
+        } catch (err) {
+          setError("Failed to load position data");
+        } finally {
+          setLoadingData(false);
+        }
+      };
+
+      fetchPositionData();
+    }
+  }, [positionId, isEditMode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,26 +82,58 @@ const HrCreatePosition = () => {
     setLoading(true);
 
     try {
-      await createPosition(formData);
+      if (isEditMode) {
+        await updatePosition(positionId, formData);
+      } else {
+        await createPosition(formData);
+      }
       setLoading(false);
       navigate("/dashboard/hr/positions");
     } catch (err) {
       setLoading(false);
-      setError("Failed to create position");
+      setError(isEditMode ? "Failed to update position" : "Failed to create position");
     }
+  };
+
+  const handleCancel = (e) => {
+    e.preventDefault();
+    setShowCancelConfirm(true);
+  };
+
+  const handleBack = (e) => {
+    e.preventDefault();
+    setShowCancelConfirm(true);
+  };
+
+  const confirmCancel = () => {
+    setShowCancelConfirm(false);
+    navigate("/dashboard/hr/positions");
+  };
+
+  const hasFormData = () => {
+    return (
+      formData.positionTitle ||
+      formData.yearsRequired ||
+      formData.description ||
+      formData.timeZone ||
+      formData.deadline ||
+      formData.positionLocation ||
+      formData.departmentId
+    );
   };
 
   return (
     <div className="HrCreatePosition">
       <div className="CreatePositionContainer">
         <div className="createPositionHeader">
-          <Link to="/dashboard/hr/positions">&lt;-</Link>
-          <h3>Create New Position</h3>
+          <Link to="/dashboard/hr/positions" onClick={handleBack}>&lt;-</Link>
+          <h3>{isEditMode ? "Edit Position" : "Create New Position"}</h3>
         </div>
-        <p>Add a new job opening for your department</p>
+        <p>{isEditMode ? "Update the job opening details" : "Add a new job opening for your department"}</p>
         {error && <p style={{ color: "red" }}>{error}</p>}
+        {loadingData && <p>Loading position data...</p>}
 
-        <form className="formContainer" onSubmit={handleSubmit}>
+        <form className="formContainer" onSubmit={handleSubmit} style={{ opacity: loadingData ? 0.5 : 1, pointerEvents: loadingData ? 'none' : 'auto' }}>
           <div className="formGroup">
             <div className="labelInput">
               <label>Job Title*</label>
@@ -89,15 +172,20 @@ const HrCreatePosition = () => {
               />
             </div>
             <div className="labelInput">
-              <label>Department ID*</label>
-              <input
-                type="text"
+              <label>Department*</label>
+              <select
                 name="departmentId"
-                placeholder="e.g. 1"
                 required
                 value={formData.departmentId}
                 onChange={handleChange}
-              />
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.DepartmentId} value={dept.DepartmentId}>
+                    {dept.DepartmentName}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -139,17 +227,41 @@ const HrCreatePosition = () => {
           </div>
 
           <div className="buttonGroup">
-            <Link to="/dashboard/hr/positions">
-              <button type="button" className="cancel">
-                Cancel
-              </button>
-            </Link>
-            <button type="submit" className="create" disabled={loading}>
-              {loading ? "Creating..." : "Create Position"}
+            <button type="button" className="cancel" onClick={handleCancel}>
+              Cancel
+            </button>
+            <button type="submit" className="create" disabled={loading || loadingData}>
+              {loading 
+                ? (isEditMode ? "Updating..." : "Creating...") 
+                : (isEditMode ? "Update Position" : "Create Position")}
             </button>
           </div>
         </form>
       </div>
+
+      {showCancelConfirm && (
+        <div className="createPosition-modalOverlay">
+          <div className="createPosition-modal">
+            <h3>Leave without saving?</h3>
+            <p>
+              Are you sure you want to leave? All unsaved changes will be lost.
+            </p>
+
+            <div className="createPosition-modalActions">
+              <button
+                className="createPosition-cancel"
+                onClick={() => setShowCancelConfirm(false)}
+              >
+                Cancel
+              </button>
+
+              <button className="createPosition-confirm" onClick={confirmCancel}>
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -63,6 +63,21 @@
     color: var(--secondary-color);
 }
 
+.labelInput select {
+    padding: 10px;
+    border: 1px solid var(--gray-light);
+    border-radius: 8px;
+    font-size: var(--fs-medium);
+    color: var(--secondary-color);
+    background-color: white;
+    cursor: pointer;
+}
+
+.labelInput select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
 .labelInput textarea {
     padding: 10px;
     border: 1px solid var(--gray-light);
@@ -98,4 +113,64 @@
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
+}
+
+/* Modal overlay */
+.createPosition-modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.createPosition-modal {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.createPosition-modal h3 {
+  margin-bottom: 10px;
+  color: var(--secondary-color);
+}
+
+.createPosition-modal p {
+  font-size: 0.95rem;
+  color: var(--gray-dark);
+  margin-bottom: 20px;
+}
+
+/* Modal actions */
+.createPosition-modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.createPosition-cancel {
+  background: transparent;
+  border: 1px solid var(--gray-light);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.createPosition-confirm {
+  background: var(--secondary-color);
+  color: var(--white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.createPosition-confirm:hover {
+  opacity: 0.9;
 } 

@@ -63,19 +63,18 @@
     outline: none;
 }
 
-.referralSearchContainer button {
-  background-color: var(--primary-color);
-  border: none;
-  padding: 10px 20px;
-  font-size: var(--fs-medium);
-  border-radius: 20px;
+.apply-btn {
+  background: var(--primary-color);
   color: white;
-  transition: all .3s ease;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: var(--fs-small);
 }
 
-.referralSearchContainer button:hover {
-  transform: translateY(-2px);
-  cursor: pointer;
+.apply-btn:hover {
+  opacity: 0.9;
 }
 
 .allCandidates {
@@ -164,4 +163,183 @@
   gap: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.referral-details-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: var(--fs-small);
+  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+  width: fit-content;
+  transition: opacity 0.2s;
+}
+
+.referral-details-btn:hover {
+  opacity: 0.9;
+}
+
+/* Pagination */
+.pagination {
+  margin-top: auto; /* pushes it to bottom */
+  padding: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: var(--fs-small);
+  color: var(--gray-dark);
+}
+.pagination button {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--secondary-color);
+  cursor: pointer;
+  font-size: var(--fs-small);
+}
+
+.pagination button:hover {
+  background: var(--primary-color);
+  color: white;
+}
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination .active {
+  background: var(--secondary-color);
+  color: var(--white);
+}
+.pagination .nav {
+  padding: 0 8px;
+  cursor: pointer;
+  color: var(--gray-dark);
+}
+
+.pagination .dots {
+  padding: 0 6px;
+}
+
+/* Skeleton Loader */
+.candidate-skeleton {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 60%;
+}
+
+.skeleton-card-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-name {
+  height: 24px;
+  width: 70%;
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 25%,
+    #e0e0e0 50%,
+    var(--gray-light) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-email {
+  height: 16px;
+  width: 85%;
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 25%,
+    #e0e0e0 50%,
+    var(--gray-light) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-badge {
+  height: 24px;
+  width: 100px;
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 25%,
+    #e0e0e0 50%,
+    var(--gray-light) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 999px;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-text-small {
+  height: 16px;
+  width: 120px;
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 25%,
+    #e0e0e0 50%,
+    var(--gray-light) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-button {
+  height: 28px;
+  width: 120px;
+  margin-top: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 25%,
+    #e0e0e0 50%,
+    var(--gray-light) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 6px;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
