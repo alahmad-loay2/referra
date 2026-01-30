@@ -95,3 +95,73 @@ export const createPosition = async (positionData) => {
     throw error;
   }
 };
+
+export const updatePosition = async (positionId, positionData) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/hr/positions/${positionId}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(positionData),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to update position");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("updatePosition error:", error);
+    throw error;
+  }
+};
+
+export const getPositionDetails = async (positionId) => {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/hr/positions-hr/${positionId}`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to get position details");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("getPositionDetails error:", error);
+    throw error;
+  }
+};
+
+export const getHrDepartments = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/hr/departments-hr`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to get departments");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("getHrDepartments error:", error);
+    throw error;
+  }
+};

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Button from "../../../components/button/Button";
-import Loading from "../../../components/loading/Loading.jsx";
+import { Link } from "react-router-dom";
 import "./HrReferrals.css";
 import { Search } from "lucide-react";
 import { getReferrals } from "../../../api/hrReferrals.api.js";
 import { Mail, Briefcase, MapPin } from "lucide-react";
+import Loading from "../../../components/loading/Loading.jsx";
 
-const HrPositions = () => {
+const HrReferrals = () => {
   const [hrReferrals, setHrReferrals] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -16,7 +16,7 @@ const HrPositions = () => {
   const [date, setDate] = useState("");
   const [error, setError] = useState(false);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -61,6 +61,27 @@ const HrPositions = () => {
     });
   };
 
+  const goToPage = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setPage(newPage);
+  };
+
+  const goNext = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
+  const goPrev = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const getVisiblePages = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
+
   return (
     <div className="referralHr">
       <h3>Referrals</h3>
@@ -91,7 +112,9 @@ const HrPositions = () => {
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
-          <button onClick={handleApplyFilters}>apply</button>
+          <button className="apply-btn" onClick={handleApplyFilters}>
+            Apply
+          </button>
         </div>
       </div>
 
@@ -103,7 +126,22 @@ const HrPositions = () => {
 
       <div className="allCandidates">
         {loading ? (
-          <Loading />
+          <>
+            {[...Array(9)].map((_, index) => (
+              <div key={`skeleton-${index}`} className="candidate-skeleton">
+                <div className="skeleton-card-left">
+                  <div className="skeleton-name"></div>
+                  <div className="skeleton-email"></div>
+                </div>
+                <div className="skeleton-card-right">
+                  <div className="skeleton-badge"></div>
+                  <div className="skeleton-text-small"></div>
+                  <div className="skeleton-text-small"></div>
+                  <div className="skeleton-button"></div>
+                </div>
+              </div>
+            ))}
+          </>
         ) : error ? (
           <p style={{ color: "red" }}>Failed to load referrals</p>
         ) : hrReferrals.length === 0 ? (
@@ -141,6 +179,12 @@ const HrPositions = () => {
                     {ref.Position?.Timezone}
                   </span>
                 </span>
+                <Link
+                  to={`/dashboard/hr/referrals/${ref.id || ref.Referral?.ReferralId}`}
+                  className="referral-details-btn"
+                >
+                  Referral Details
+                </Link>
               </div>
             </div>
           ))
@@ -148,21 +192,26 @@ const HrPositions = () => {
       </div>
 
       <div className="pagination">
-        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-          Prev
+        <button className="nav" onClick={goPrev} disabled={page === 1}>
+          ← Previous
         </button>
-        <span>
-          Page {page} of {totalPages}
-        </span>
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          Next
+
+        {getVisiblePages().map((p) => (
+          <button
+            key={p}
+            className={p === page ? "active" : ""}
+            onClick={() => goToPage(p)}
+          >
+            {p}
+          </button>
+        ))}
+
+        <button className="nav" onClick={goNext} disabled={page === totalPages}>
+          Next →
         </button>
       </div>
     </div>
   );
 };
 
-export default HrPositions;
+export default HrReferrals;

@@ -1,8 +1,11 @@
 import React from 'react'
+import './Loading.css'
 
 const Loading = () => {
   return (
-    <div>loading...</div>
+    <div className="loading-spinner">
+      <div className="spinner"></div>
+    </div>
   )
 }
 
