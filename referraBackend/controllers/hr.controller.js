@@ -210,8 +210,8 @@ export const getConfirmedReferrals = async (req, res, next) => {
     if (!hrId) {
       return res.status(403).json({ message: "HR access only" });
     }
-    const { page = "1", pageSize = "10", search, status, createdAt, createdAfter } = req.query;
-    const referrals = await getAllConfirmedReferrals({ hrId, page: parseInt(page, 10), pageSize: parseInt(pageSize, 10) ,search, status, createdAt, createdAfter });
+    const { page = "1", pageSize = "10", search, status, createdAt, createdAfter, positionId } = req.query;
+    const referrals = await getAllConfirmedReferrals({ hrId, page: parseInt(page, 10), pageSize: parseInt(pageSize, 10) ,search, status, createdAt, createdAfter, positionId });
 
     res.status(200).json(referrals);
   } catch (err) {

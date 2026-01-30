@@ -266,9 +266,9 @@ export const confirmReferral = async (referralId) => {
 };
 
 // Employee deletes a candidate's application and referral if status is still pending
-export const deleteCandidate = async (candidateId, employeeId) => {
-  if (!candidateId) {
-    const error = new Error("Candidate ID is required");
+export const deleteCandidate = async (referralId, employeeId) => {
+  if (!referralId) {
+    const error = new Error("Referral ID is required");
     error.statusCode = 400;
     throw error;
   }
@@ -279,63 +279,81 @@ export const deleteCandidate = async (candidateId, employeeId) => {
     throw error;
   }
 
-  const candidate = await prisma.candidate.findUnique({
-    where: { CandidateId: candidateId },
+  // Find the application by referralId and employeeId
+  const application = await prisma.application.findFirst({
+    where: {
+      ReferralId: referralId,
+      EmployeeId: employeeId,
+    },
     include: {
-      Application: {
+      Referral: true,
+      Candidate: {
         include: {
-          Referral: true,
-          Employee: true,
+          Application: {
+            include: {
+              Referral: true,
+            },
+          },
         },
       },
     },
   });
 
-  if (!candidate) {
-    const error = new Error("Candidate not found");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  const application = candidate.Application.find(
-    (app) => app.EmployeeId === employeeId,
-  );
-
   if (!application) {
-    const error = new Error("Application not found for this employee");
+    const error = new Error("Application not found for this employee and referral");
     error.statusCode = 404;
     throw error;
   }
 
+  const candidate = application.Candidate;
+  const candidateId = candidate.CandidateId;
+
+  // Only allow deletion if this specific referral is Pending
   if (application.Referral.Status !== "Pending") {
     const error = new Error(
-      `Cannot delete candidate. Referral status is ${application.Referral.Status}, not Pending`,
+      `Cannot delete application. Referral status is ${application.Referral.Status}, not Pending`,
     );
     error.statusCode = 400;
     throw error;
   }
 
-  const allApplications = await prisma.application.findMany({
-    where: {
-      CandidateId: candidateId,
-    },
-  });
+  // Check if candidate has any other referrals that are Confirmed or above
+  // Statuses: Pending < Confirmed < InterviewOne < InterviewTwo < Acceptance
+  const statusOrder = ["Pending", "Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
+  const hasConfirmedOrAbove = candidate.Application.some(
+    (app) => {
+      // Skip the current application we're deleting
+      if (app.ReferralId === referralId) {
+        return false;
+      }
+      const statusIndex = statusOrder.indexOf(app.Referral.Status);
+      const confirmedIndex = statusOrder.indexOf("Confirmed");
+      return statusIndex >= confirmedIndex;
+    }
+  );
 
-  const willDeleteCandidate = allApplications.length === 1;
+  // Only delete candidate if:
+  // 1. This is their only application (so we can safely delete without foreign key issues), AND
+  // 2. They have no other referrals that are Confirmed or above
+  // Since if this is their only application, they can't have other referrals, 
+  // this simplifies to: delete if this is their only application
+  const willDeleteCandidate = candidate.Application.length === 1 && !hasConfirmedOrAbove;
 
   const result = await prisma.$transaction(async (tx) => {
+    // Always delete the application and referral (if Pending)
     await tx.application.delete({
       where: {
-        ReferralId: application.ReferralId,
+        ReferralId: referralId,
       },
     });
 
     await tx.referral.delete({
       where: {
-        ReferralId: application.ReferralId,
+        ReferralId: referralId,
       },
     });
 
+    // Only delete candidate if they have no other referrals that are Confirmed or above
     if (willDeleteCandidate) {
       await tx.candidate.delete({
         where: {
@@ -455,7 +473,6 @@ export const editCandidate = async (payload) => {
     where: { CandidateId: candidateId },
     include: {
       Application: {
-        where: { EmployeeId: employeeId },
         include: {
           Referral: true,
           Position: true,
@@ -471,16 +488,44 @@ export const editCandidate = async (payload) => {
     throw error;
   }
 
-  const application = candidate.Application[0];
+  // Find the specific application for this employee
+  const application = candidate.Application.find(
+    (app) => app.EmployeeId === employeeId,
+  );
+
   if (!application) {
     const error = new Error("Application not found for this employee");
     error.statusCode = 404;
     throw error;
   }
 
+  // Check if THIS specific referral is Pending
   if (application.Referral.Status !== "Pending") {
     const error = new Error(
       `Cannot edit candidate. Referral status is ${application.Referral.Status}, not Pending`,
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Check if candidate has ANY other referral that is NOT Pending
+  // If they have any referral that is Confirmed or above, don't allow edit
+  const statusOrder = ["Pending", "Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
+  const hasNonPendingReferral = candidate.Application.some(
+    (app) => {
+      // Skip the current application we're editing
+      if (app.ReferralId === application.ReferralId) {
+        return false;
+      }
+      const statusIndex = statusOrder.indexOf(app.Referral.Status);
+      const pendingIndex = statusOrder.indexOf("Pending");
+      return statusIndex > pendingIndex;
+    }
+  );
+
+  if (hasNonPendingReferral) {
+    const error = new Error(
+      "Cannot edit candidate. Candidate has other referrals that are not Pending",
     );
     error.statusCode = 400;
     throw error;

@@ -87,15 +87,15 @@ export const DeleteCandidate = async (req, res, next) => {
       throw error;
     }
 
-    const { candidateId } = req.params;
+    const { referralId } = req.params;
 
-    if (!candidateId) {
-      const error = new Error("Candidate ID is required");
+    if (!referralId) {
+      const error = new Error("Referral ID is required");
       error.statusCode = 400;
       throw error;
     }
 
-    const result = await deleteCandidate(candidateId, employeeId);
+    const result = await deleteCandidate(referralId, employeeId);
 
     res.status(200).json({
       message: result.message,

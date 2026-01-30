@@ -7,6 +7,7 @@ const API_BASE_URL =
   status = "",
   search = "",
   createdAt = "",
+  positionId = "",
 } = {}) => {
   const params = new URLSearchParams();
   params.append("page", page);
@@ -14,6 +15,7 @@ const API_BASE_URL =
   if (status) params.append("status", status);
   if (search) params.append("search", search);
   if (createdAt) params.append("createdAt", createdAt);
+  if (positionId) params.append("positionId", positionId);
 
   try {
     const res = await fetch(`${API_BASE_URL}/hr/referrals?${params.toString()}`, {

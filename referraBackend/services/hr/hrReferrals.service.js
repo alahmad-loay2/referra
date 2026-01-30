@@ -1,5 +1,22 @@
 import { prisma } from "../../lib/prisma.js";
 
+
+// how it works: 
+// candidates can be in multiple referrals. 
+// referrals have stages and have accepted in other position flag. if accepted in other position, 
+// the candidate is accepted, and accepted in other position flag is true, and all referrals become acceptance stage.
+// if candidate is accepted but the referral have accepted in other position flag as false, then candidate is accepted in this referral.
+
+
+// get all confirmed referrals for an hr with filters on department and status and pagination and search
+// positionId is the id of the position to filter by
+// status is the status of the referral to filter by
+// createdAt is the date to filter by
+// createdAfter is the date to filter by for polling
+// search is the search term to filter by
+// page is the page number to filter by
+// pageSize is the page size to filter by
+
 export const getAllConfirmedReferrals = async ({
   hrId,
   page = 1,
@@ -8,6 +25,7 @@ export const getAllConfirmedReferrals = async ({
   status,
   createdAt,
   createdAfter,
+  positionId,
 }) => {
   if (!hrId) {
     throw new Error("HR ID is required");
@@ -90,6 +108,12 @@ export const getAllConfirmedReferrals = async ({
     });
   }
 
+  if (positionId) {
+    andFilters.push({
+      PositionId: positionId,
+    });
+  }
+
   const where = { AND: andFilters };
 
   const total = await prisma.application.count({ where });
@@ -121,6 +145,8 @@ export const getAllConfirmedReferrals = async ({
   };
 };
 
+
+// get details of a specific referral for an hr
 
 export const getReferralDetails = async ({ referralId, hrId }) => {
   if (!referralId) throw new Error("Referral ID is required");
@@ -166,6 +192,9 @@ export const getReferralDetails = async ({ referralId, hrId }) => {
 
 
 const workflow = ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
+
+// advance the stage of a referral
+// if hes in acceptance stage, the candidate is a prospect with no action needed from HR
 
 export const advanceReferralStage = async (referralId, hrUser) => {
   if (!referralId) throw new Error("Referral ID is required");
@@ -226,6 +255,12 @@ export const advanceReferralStage = async (referralId, hrUser) => {
   return updatedApplication;
 };
 
+
+// finalize a referral (accept)
+// the referral is in prospect state now with no action needed from HR. Only accept.
+// prospect takes referral to acceptance stage if he is not in it already. HR can still accept after.
+// compensation is the compensation amount for the referral
+// if accept, the candidate is accepted and the employee is compensated and all referrals become accepted in other position
 export const finalizeReferral = async (
   referralId,
   action,

@@ -8,7 +8,7 @@
 }
 
 .referralHr h3 {
-    font-size: var(--fs-large);
+    font-size: var(--fs-xlarge);
 }
 
 .referralSearchContainer {
@@ -17,7 +17,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 30px;
-    padding: 25px;
+    padding: 20px;
     margin: 20px 0;
     border-radius: 20px;
 }
@@ -155,6 +155,36 @@
 .status-acceptance {
   background-color: #e8f0ff;
   color: #2f5fd0;
+}
+
+.statusBadgeSecondary {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.status-badge-accepted {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge-accepted-other {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge-prospect {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-badge-in-progress {
+  background-color: #e2e3e5;
+  color: #383d41;
 }
 
 .iconText {

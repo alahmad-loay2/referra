@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import "./HrReferrals.css";
 import { Search } from "lucide-react";
 import { getReferrals } from "../../../api/hrReferrals.api.js";
+import { getHrPositions } from "../../../api/hrPositions.api.js";
 import { Mail, Briefcase, MapPin } from "lucide-react";
 import Loading from "../../../components/loading/Loading.jsx";
 
 const HrReferrals = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [hrReferrals, setHrReferrals] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -14,6 +16,8 @@ const HrReferrals = () => {
   const [searchInput, setSearchInput] = useState("");
   const [status, setStatus] = useState("");
   const [date, setDate] = useState("");
+  const [positionId, setPositionId] = useState("");
+  const [positions, setPositions] = useState([]);
   const [error, setError] = useState(false);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -22,7 +26,33 @@ const HrReferrals = () => {
     search: "",
     status: "",
     createdAt: "",
+    positionId: "",
   });
+
+  // Read positionId from URL params on mount
+  useEffect(() => {
+    const urlPositionId = searchParams.get("positionId");
+    if (urlPositionId) {
+      setPositionId(urlPositionId);
+      setFilters(prev => ({ ...prev, positionId: urlPositionId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fetch positions for dropdown
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        const data = await getHrPositions({ page: 1, limit: 1000 });
+        if (data && data.positions) {
+          setPositions(data.positions);
+        }
+      } catch (err) {
+        console.error("Failed to fetch positions", err);
+      }
+    };
+    fetchPositions();
+  }, []);
 
   useEffect(() => {
     const fetchReferrals = async () => {
@@ -36,6 +66,7 @@ const HrReferrals = () => {
           status: filters.status,
           search: filters.search,
           createdAt: filters.createdAt,
+          positionId: filters.positionId,
         });
         setHrReferrals(data.referrals || []);
         setTotalPages(data.totalPages || 1);
@@ -54,11 +85,19 @@ const HrReferrals = () => {
 
   const handleApplyFilters = () => {
     setPage(1);
-    setFilters({
+    const newFilters = {
       search: searchInput,
       status,
       createdAt: date,
-    });
+      positionId,
+    };
+    setFilters(newFilters);
+    // Update URL params if positionId is set
+    if (positionId) {
+      setSearchParams({ positionId });
+    } else {
+      setSearchParams({});
+    }
   };
 
   const goToPage = (newPage) => {
@@ -82,6 +121,30 @@ const HrReferrals = () => {
     return pages;
   };
 
+  const getStatusBadge = (referral) => {
+    // First check if candidate is accepted
+    if (referral?.Candidate?.Acceptance === true) {
+      // If accepted, check if accepted in other position
+      if (referral?.Referral?.AcceptedInOtherPosition === false) {
+        return { text: "Accepted", className: "status-badge-accepted" };
+      } else {
+        return { text: "Accepted in Other Position", className: "status-badge-accepted-other" };
+      }
+    }
+    
+    // If not accepted, check if in Acceptance stage
+    if (referral?.Referral?.Status === "Acceptance") {
+      if (referral?.Referral?.AcceptedInOtherPosition === true) {
+        return { text: "Accepted in Other Position", className: "status-badge-accepted-other" };
+      } else {
+        return { text: "Prospect", className: "status-badge-prospect" };
+      }
+    }
+    
+    // Not in Acceptance stage
+    return { text: "In Progress", className: "status-badge-in-progress" };
+  };
+
   return (
     <div className="referralHr">
       <h3>Referrals</h3>
@@ -96,6 +159,18 @@ const HrReferrals = () => {
           <Search className="searchIcon" size={16} />
         </div>
         <div className="selectContainer">
+          <select
+            name="position"
+            value={positionId}
+            onChange={(e) => setPositionId(e.target.value)}
+          >
+            <option value="">All Positions</option>
+            {positions.map((pos) => (
+              <option key={pos.PositionId} value={pos.PositionId}>
+                {pos.PositionTitle}
+              </option>
+            ))}
+          </select>
           <select
             name="status"
             value={status}
@@ -158,6 +233,14 @@ const HrReferrals = () => {
                   <Mail size={14} />
                   <span className="iconTextLabel">{ref.Candidate?.Email}</span>
                 </span>
+                {(() => {
+                  const badge = getStatusBadge(ref);
+                  return (
+                    <span className={`statusBadgeSecondary ${badge.className}`}>
+                      {badge.text}
+                    </span>
+                  );
+                })()}
               </div>
 
               <div className="cardRight">

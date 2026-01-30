@@ -24,7 +24,7 @@ employeeRoutes.post(
 );
 employeeRoutes.get("/referral/confirm/:referralId", ConfirmReferral);
 employeeRoutes.delete(
-  "/candidate/:candidateId",
+  "/referral/:referralId",
   authenticate,
   requireEmployee,
   DeleteCandidate,

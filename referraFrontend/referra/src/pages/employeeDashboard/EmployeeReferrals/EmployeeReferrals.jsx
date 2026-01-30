@@ -93,7 +93,7 @@ const EmployeeReferrals = () => {
               value={statusInput}
               onChange={(e) => setStatusInput(e.target.value)}
             >
-              <option value="">All statuses</option>
+              <option value="">All status</option>
               <option value="Pending">Pending</option>
               <option value="Confirmed">Confirmed</option>
               <option value="InterviewOne">Interview 1</option>
@@ -207,7 +207,7 @@ const EmployeeReferrals = () => {
                   <div className="referral-right">
                     <Button
                       text="View Details"
-                      to={"../referral-details"}
+                      to={`../referral-history/${Referral.ReferralId}`}
                       className="details-btn"
                     />
                   </div>

@@ -163,7 +163,7 @@ const HrPositions = () => {
 
   const handleViewDetails = (positionId) => {
     setOpenDropdown(null);
-    navigate(`/dashboard/hr/positions/${positionId}`);
+    navigate(`/dashboard/hr/referrals?positionId=${positionId}`);
   };
 
   useEffect(() => {

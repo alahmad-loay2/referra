@@ -72,3 +72,78 @@ export const fetchEmployeeApplications = async ({
 
   return data;
 };
+
+export const fetchEmployeeReferralDetails = async (referralId) => {
+  const res = await fetch(
+    `${API_BASE_URL}/employee/referrals/${referralId}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  const data = await res.json();
+
+  return data;
+};
+
+export const editCandidate = async (candidateId, form, cvFile) => {
+  const formData = new FormData();
+
+  formData.append("candidateFirstName", form.firstName);
+  formData.append("candidateLastName", form.lastName);
+  formData.append("candidateEmail", form.email);
+  formData.append("candidateYearOfExperience", form.experience);
+  if (cvFile) {
+    formData.append("cvFile", cvFile);
+  }
+
+  const res = await fetch(`${API_BASE_URL}/employee/candidate/${candidateId}`, {
+    method: "PUT",
+    credentials: "include",
+    body: formData,
+  });
+
+  const text = await res.text();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(text || "Server error");
+  }
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to edit candidate");
+  }
+
+  return data;
+};
+
+export const deleteCandidate = async (referralId) => {
+  const res = await fetch(`${API_BASE_URL}/employee/referral/${referralId}`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const text = await res.text();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(text || "Server error");
+  }
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to delete referral");
+  }
+
+  return data;
+};
