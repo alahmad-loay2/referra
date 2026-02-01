@@ -3,7 +3,7 @@ const API_BASE_URL =
 
 export const getVisiblePositions = async () => {
   try {
-    const res = await fetch(`${API_BASE_URL}/hr/positions-employee`, {
+    const res = await fetch(`${API_BASE_URL}/employee/positions-employee`, {
       method: "GET",
       credentials: "include",
       headers: {

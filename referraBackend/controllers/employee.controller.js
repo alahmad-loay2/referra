@@ -99,7 +99,10 @@ export const DeleteCandidate = async (req, res, next) => {
       throw error;
     }
 
-    const result = await deleteCandidate(referralId, employeeId);
+    // Get access token from cookies for authenticated Supabase operations
+    const accessToken = req.cookies?.accessToken;
+
+    const result = await deleteCandidate(referralId, employeeId, accessToken);
 
     res.status(200).json({
       message: result.message,

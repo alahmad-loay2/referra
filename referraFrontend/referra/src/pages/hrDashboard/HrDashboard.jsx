@@ -35,17 +35,13 @@ const HrDashboard = () => {
     },
   ];
 
-  const user = {
-    firstname: "John"
-  }
-
   return (
     <div className="dashboardContainer">
       <div id="Sidebar">
         <Sidebar pages={pages} />
       </div>
       <div id="Header">
-        <Header  user={user} text="Manage referrals and track hiring progress" buttonText="View Referral" to="/dashboard/hr/referrals" />
+        <Header text="Manage referrals and track hiring progress" buttonText="View Referral" to="/dashboard/hr/referrals" />
       </div>
       <div id="Content">
         <Outlet />

@@ -31,10 +31,6 @@ const EmployeeDashboard = () => {
     },
   ];
 
-  const user = {
-    firstname: "John",
-  };
-
   const hideHeader =
     location.pathname === "/dashboard/employee/submit-referrals" ||
     location.pathname.startsWith("/dashboard/employee/referral-history");
@@ -46,7 +42,6 @@ const EmployeeDashboard = () => {
       {!hideHeader && (
         <div id="Header">
           <Header
-            user={user}
             text="Track your referrals and help us build an amazing team"
             buttonText="Submit a Referral"
             to="/dashboard/employee/submit-referrals"

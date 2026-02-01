@@ -111,6 +111,7 @@ router.get(
 
 router.get(
   "/team",
+  generalLimiter,
   authenticate,
   requireHr,
   getHrTeamController,

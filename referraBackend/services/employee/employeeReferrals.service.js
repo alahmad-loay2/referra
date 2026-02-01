@@ -4,8 +4,10 @@ import {
   RESEND_API_KEY,
   FRONTEND_URL,
   SUPABASE_URL,
+  SUPABASE_ANON_KEY,
 } from "../../config/env.js";
 import { supabase } from "../../lib/supabase.js";
+import { createClient } from "@supabase/supabase-js";
 
 const getResend = () => {
   if (!RESEND_API_KEY) {
@@ -266,7 +268,7 @@ export const confirmReferral = async (referralId) => {
 };
 
 // Employee deletes a candidate's application and referral if status is still pending
-export const deleteCandidate = async (referralId, employeeId) => {
+export const deleteCandidate = async (referralId, employeeId, accessToken = null) => {
   if (!referralId) {
     const error = new Error("Referral ID is required");
     error.statusCode = 400;
@@ -338,6 +340,59 @@ export const deleteCandidate = async (referralId, employeeId) => {
   // Since if this is their only application, they can't have other referrals, 
   // this simplifies to: delete if this is their only application
   const willDeleteCandidate = candidate.Application.length === 1 && !hasConfirmedOrAbove;
+
+  // Delete CV file from Supabase if we're deleting the candidate
+  if (willDeleteCandidate && candidate.CVUrl) {
+    try {
+      // Extract filename from CVUrl (format: ${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName})
+      // Handle both full URL and relative path formats
+      let fileName = candidate.CVUrl;
+      
+      // If it's a full URL, extract just the filename
+      if (candidate.CVUrl.includes("/cvs/")) {
+        const cvUrlParts = candidate.CVUrl.split("/cvs/");
+        if (cvUrlParts.length === 2) {
+          fileName = cvUrlParts[1];
+        }
+      } else if (candidate.CVUrl.includes("/")) {
+        // If it's a path, get the last part (filename)
+        fileName = candidate.CVUrl.split("/").pop();
+      }
+      
+      // Remove any query parameters if present
+      fileName = fileName.split("?")[0];
+      
+      // Create authenticated Supabase client with access token
+      // This is needed to satisfy the RLS policy that requires authentication
+      const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: {
+          headers: accessToken ? {
+            Authorization: `Bearer ${accessToken}`,
+          } : {},
+        },
+      });
+      
+      const { data, error: deleteError } = await supabaseClient.storage
+        .from("cvs")
+        .remove([fileName]);
+
+      if (deleteError) {
+        console.error(`Failed to delete CV file from Supabase:`, {
+          fileName,
+          error: deleteError.message,
+          errorDetails: deleteError
+        });
+        // Continue with deletion even if file deletion fails
+      }
+    } catch (error) {
+      console.error(`Error deleting CV file from Supabase:`, {
+        cvUrl: candidate.CVUrl,
+        error: error.message,
+        stack: error.stack
+      });
+      // Continue with deletion even if file deletion fails
+    }
+  }
 
   const result = await prisma.$transaction(async (tx) => {
     // Always delete the application and referral (if Pending)

@@ -20,26 +20,30 @@ const employeeRoutes = Router();
 
 employeeRoutes.post(
   "/referral",
+  generalLimiter,
   authenticate,
   requireEmployee,
   uploadCV,
   CreateReferral,
 );
-employeeRoutes.get("/referral/confirm/:referralId", ConfirmReferral);
+employeeRoutes.get("/referral/confirm/:referralId", generalLimiter, ConfirmReferral);
 employeeRoutes.delete(
   "/referral/:referralId",
+  generalLimiter,
   authenticate,
   requireEmployee,
   DeleteCandidate,
 );
 employeeRoutes.get(
   "/applications",
+  generalLimiter,
   authenticate,
   requireEmployee,
   getApplicationsByEmployee,
 );
 employeeRoutes.put(
   "/candidate/:candidateId",
+  generalLimiter,
   authenticate,
   requireEmployee,
   uploadCV,
@@ -47,6 +51,7 @@ employeeRoutes.put(
 );
 employeeRoutes.get(
   "/referrals/:referralId",
+  generalLimiter,
   authenticate,
   requireEmployee,
   GetReferralDetails,

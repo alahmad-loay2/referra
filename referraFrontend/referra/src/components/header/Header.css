@@ -9,12 +9,36 @@
 
 .headerContainer h3 {
     font-size: var(--fs-xlarge);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .headerContainer p {
     font-size: var(--fs-medium);
     color: var(--gray-dark);
     margin-top: 4px;
+}
+
+.roleBadge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.roleBadge.hr {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.roleBadge.employee {
+    background-color: #10b981;
+    color: white;
 }
 
 @media (max-width: 768px) {
