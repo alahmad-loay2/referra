@@ -88,8 +88,6 @@ export const authenticate = async (req, res, next) => {
       throwAuthError();
     }
 
-    const isProd = NODE_ENV === "production";
-
     res.cookie("accessToken", refreshed.session.access_token, {
       httpOnly: true,
       secure: true,

@@ -1,7 +1,6 @@
 import { Router } from "express";
 import {
   CreatePosition,
-  GetVisiblePositions,
   UpdatePositionState,
   UpdatePosition,
   getConfirmedReferrals,
@@ -28,13 +27,8 @@ router.post(
   requireHr,
   CreatePosition,
 );
-// GET visible positions (for Employee)
-router.get(
-  "/positions-employee",
-  generalLimiter,
-  authenticate,
-  GetVisiblePositions,
-);
+
+
 // update position state for toggle =
 router.patch(
   "/positions/:positionId/state",

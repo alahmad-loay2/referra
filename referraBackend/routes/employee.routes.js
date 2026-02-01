@@ -6,12 +6,15 @@ import {
   getApplicationsByEmployee,
   EditCandidate,
   GetReferralDetails,
+  GetVisiblePositions,
+  GetPositionDetails,
 } from "../controllers/employee.controller.js";
 import {
   authenticate,
   requireEmployee,
 } from "../middleware/auth.middleware.js";
 import { uploadCV } from "../middleware/upload.middleware.js";
+import { generalLimiter } from "../middleware/rateLimit.middleware.js";
 
 const employeeRoutes = Router();
 
@@ -47,6 +50,22 @@ employeeRoutes.get(
   authenticate,
   requireEmployee,
   GetReferralDetails,
+);
+
+employeeRoutes.get(
+  "/positions-employee",
+  generalLimiter,
+  authenticate,
+  requireEmployee,
+  GetVisiblePositions,
+);
+
+employeeRoutes.get(
+  "/positions-employee/:positionId",
+  generalLimiter,
+  authenticate,
+  requireEmployee,
+  GetPositionDetails,
 );
 
 export default employeeRoutes;

@@ -1,4 +1,8 @@
 import {
+  getVisiblePositions,
+  getPositionDetails,
+} from "../services/employee/employeePositions.service.js";
+import {
   createReferral,
   confirmReferral,
   deleteCandidate,
@@ -211,6 +215,28 @@ export const GetReferralDetails = async (req, res, next) => {
       employeeId,
       referralId,
     });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const GetVisiblePositions = async (req, res, next) => {
+  try {
+    const result = await getVisiblePositions(req.user, req.query);
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetPositionDetails = async (req, res, next) => {
+  try {
+    const { positionId } = req.params;
+    const result = await getPositionDetails(req.user, positionId);
 
     res.status(200).json(result);
   } catch (error) {

@@ -1,6 +1,5 @@
 import {
   createPosition,
-  getVisiblePositions,
   updatePositionState,
   updatePositionDetails,
   //deletePosition,
@@ -36,21 +35,6 @@ export const CreatePosition = async (req, res, next) => {
       message: "Position created successfully",
       position,
     });
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * GET visible positions
- * Employee → open positions
- * HR → positions in HR departments
- */
-export const GetVisiblePositions = async (req, res, next) => {
-  try {
-    const result = await getVisiblePositions(req.user, req.query);
-
-    res.status(200).json(result);
   } catch (error) {
     next(error);
   }

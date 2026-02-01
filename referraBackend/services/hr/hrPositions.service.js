@@ -59,58 +59,6 @@ export const createPosition = async (payload, hr) => {
   });
 };
 
-/* =========================
-   GET VISIBLE POSITIONS
-   (EMPLOYEE ) 
-   ========================= */
-export const getVisiblePositions = async (user, query) => {
-  if (user.Role !== "Employee") {
-    const error = new Error("Employee access only");
-    error.statusCode = 403;
-    throw error;
-  }
-
-  const page = Math.max(Number(query.page) || 1, 1);
-  const limit = Math.min(Number(query.limit) || 10, 50);
-  const skip = (page - 1) * limit;
-
-  const whereClause = {
-    PositionState: "OPEN",
-    Deadline: {
-      gt: new Date(), // DO NOT show expired positions
-    },
-  };
-
-  const total = await prisma.position.count({ where: whereClause });
-
-  const positions = await prisma.position.findMany({
-    where: whereClause,
-    include: { Department: true },
-    orderBy: { CreatedAt: "desc" },
-    skip,
-    take: limit,
-  });
-
-  return {
-    positions: positions,
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-      hasNextPage: page * limit < total,
-      hasPrevPage: page > 1,
-    },
-    positions,
-    total,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit),
-    hasNextPage: page * limit < total,
-    hasPrevPage: page > 1,
-  };
-};
-
 // update position state (OPEN/CLOSED) toggle switch
 export const updatePositionState = async (positionId, newState, hrUser) => {
   if (!positionId || !newState) {
