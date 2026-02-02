@@ -24,6 +24,7 @@ import EmployeeSubmit from "../pages/employeeDashboard/EmployeeSubmit/EmployeeSu
 import HrCreatePosition from "../pages/hrDashboard/HrCreatePosition/HrCreatePosition.jsx";
 import HrReferralDetails from "../pages/hrDashboard/HrReferralDetails/HrReferralDetails.jsx";
 import EmployeeReferralHD from "../pages/employeeDashboard/EmployeeReferralHD/EmployeeReferralHD.jsx";
+import Account from "../pages/Account/Account.jsx";
 
 const AppRoutes = () => {
   return (
@@ -62,6 +63,7 @@ const AppRoutes = () => {
             element={<HrCreatePosition />}
           />
           <Route path="team" element={<HrTeam />} />
+          <Route path="account" element={<Account />} />
         </Route>
       </Route>
       <Route element={<EmployeeProtected />}>
@@ -71,6 +73,7 @@ const AppRoutes = () => {
           <Route path="open-positions" element={<EmployeePositions />} />
           <Route path="submit-referrals" element={<EmployeeSubmit />} />
           <Route path="referral-history/:referralId" element={<EmployeeReferralHD />} />
+          <Route path="account" element={<Account />} />
         </Route>
       </Route>
     </Routes>

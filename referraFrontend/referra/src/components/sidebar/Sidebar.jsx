@@ -1,9 +1,112 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./Sidebar.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getUserInfo } from "../../api/user.api.js";
+import { logout } from "../../api/auth.api.js";
 
 const Sidebar = (props) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const accountRef = useRef(null);
+
+  const fetchUser = async () => {
+    try {
+      const userData = await getUserInfo();
+      setUser(userData);
+    } catch (error) {
+      console.error("Failed to fetch user info:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  // Listen for profile picture updates
+  useEffect(() => {
+    const handleProfilePictureUpdate = () => {
+      fetchUser();
+    };
+
+    window.addEventListener('profilePictureUpdated', handleProfilePictureUpdate);
+    return () => {
+      window.removeEventListener('profilePictureUpdated', handleProfilePictureUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        accountRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !accountRef.current.contains(event.target)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const getFullName = () => {
+    if (!user) return "User";
+    const firstName = user.FirstName || "";
+    const lastName = user.LastName || "";
+    return `${firstName} ${lastName}`.trim() || "User";
+  };
+
+  const getInitials = () => {
+    if (!user) return "U";
+    const firstName = user.FirstName || "";
+    const lastName = user.LastName || "";
+    const firstInitial = firstName.charAt(0).toUpperCase() || "";
+    const lastInitial = lastName.charAt(0).toUpperCase() || "";
+    return `${firstInitial}${lastInitial}` || "U";
+  };
+
+  const getRoleBadge = () => {
+    if (!user || !user.Role) return null;
+    const role = user.Role;
+    return (
+      <span className={`sidebarRoleBadge ${role.toLowerCase()}`}>
+        {role}
+      </span>
+    );
+  };
+
+  const handleAccountClick = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  const handleGoToAccount = (e) => {
+    e.stopPropagation();
+    setShowDropdown(false);
+    const basePath = location.pathname.startsWith("/dashboard/hr")
+      ? "/dashboard/hr"
+      : "/dashboard/employee";
+    navigate(`${basePath}/account`);
+  };
+
+  const handleLogout = async (e) => {
+    e.stopPropagation();
+    try {
+      await logout();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      navigate("/login");
+    }
+  };
 
   return (
     <div className="sidebarContainer">
@@ -29,7 +132,49 @@ const Sidebar = (props) => {
 
       <div className="sidebarBottom">
         <div className="divider divider-bottom"></div>
-        <div className="sidebarAccount">Account</div>
+        <div
+          className="sidebarAccount"
+          ref={accountRef}
+          onClick={handleAccountClick}
+        >
+          <div className="sidebarAccountContent">
+            <div className="sidebarAccountAvatar">
+              {loading ? (
+                <span>...</span>
+              ) : user?.ProfileUrl ? (
+                <img 
+                  src={user.ProfileUrl} 
+                  alt="Profile" 
+                  className="sidebarAccountAvatarImage"
+                />
+              ) : (
+                <span>{getInitials()}</span>
+              )}
+            </div>
+            <div className="sidebarAccountInfo">
+              <div className="sidebarAccountName">
+                {loading ? "Loading..." : getFullName()}
+              </div>
+              {user && getRoleBadge()}
+            </div>
+          </div>
+          {showDropdown && (
+            <div className="sidebarAccountDropdown" ref={dropdownRef}>
+              <button
+                className="sidebarAccountDropdownItem"
+                onClick={handleGoToAccount}
+              >
+                Go to account
+              </button>
+              <button
+                className="sidebarAccountDropdownItem"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

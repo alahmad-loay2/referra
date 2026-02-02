@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import "./HrDashboard.css";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import {
@@ -11,6 +11,7 @@ import {
 import Header from "../../components/header/Header.jsx";
 
 const HrDashboard = () => {
+  const location = useLocation();
 
   const pages = [
     {
@@ -35,14 +36,18 @@ const HrDashboard = () => {
     },
   ];
 
+  const hideHeader = location.pathname === "/dashboard/hr/account";
+
   return (
     <div className="dashboardContainer">
       <div id="Sidebar">
         <Sidebar pages={pages} />
       </div>
-      <div id="Header">
-        <Header text="Manage referrals and track hiring progress" buttonText="View Referral" to="/dashboard/hr/referrals" />
-      </div>
+      {!hideHeader && (
+        <div id="Header">
+          <Header text="Manage referrals and track hiring progress" buttonText="View Referral" to="/dashboard/hr/referrals" />
+        </div>
+      )}
       <div id="Content">
         <Outlet />
       </div>

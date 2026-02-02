@@ -34,3 +34,21 @@ export const updateUserInfo = async (payload) => {
 
   return res.json()
 }
+
+export const updateProfilePicture = async (imageFile) => {
+  const formData = new FormData();
+  formData.append('profileImage', imageFile);
+
+  const res = await fetch(`${API_BASE_URL}/user/me/profile-picture`, {
+    method: 'PUT',
+    credentials: 'include',
+    body: formData,
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || 'Failed to update profile picture.');
+  }
+
+  return res.json()
+}

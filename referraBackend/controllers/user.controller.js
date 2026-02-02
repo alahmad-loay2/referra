@@ -1,4 +1,4 @@
-import { getUserInfo, updateUserInfo } from "../services/user/user.service.js";
+import { getUserInfo, updateUserInfo, updateProfilePicture } from "../services/user/user.service.js";
 
 /**
  * Get current authenticated user information
@@ -38,6 +38,35 @@ export const UpdateUserInfo = async (req, res, next) => {
     }
 
     const updatedUser = await updateUserInfo(userId, req.body);
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Update current authenticated user's profile picture
+ * Accepts image file upload
+ */
+export const UpdateProfilePicture = async (req, res, next) => {
+  try {
+    const userId = req.user?.UserId;
+
+    if (!userId) {
+      const error = new Error("User not authenticated");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (!req.file) {
+      const error = new Error("Profile image file is required");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const accessToken = req.cookies?.accessToken || null;
+    const updatedUser = await updateProfilePicture(userId, req.file, accessToken);
 
     res.status(200).json(updatedUser);
   } catch (error) {

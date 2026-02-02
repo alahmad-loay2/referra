@@ -27,23 +27,11 @@ const Header = (props) => {
     return user.FirstName || "User";
   };
 
-  const getRoleBadge = () => {
-    if (!user || !user.Role) return null;
-    
-    const role = user.Role;
-    return (
-      <span className={`roleBadge ${role.toLowerCase()}`}>
-        {role}
-      </span>
-    );
-  };
-
   return (
     <div className="headerContainer">
       <div>
         <h3>
           Hello {loading ? "..." : getDisplayName()}
-          {user && getRoleBadge()}
         </h3>
         <p>{props.text}</p>
       </div>

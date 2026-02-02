@@ -33,7 +33,8 @@ const EmployeeDashboard = () => {
 
   const hideHeader =
     location.pathname === "/dashboard/employee/submit-referrals" ||
-    location.pathname.startsWith("/dashboard/employee/referral-history");
+    location.pathname.startsWith("/dashboard/employee/referral-history") ||
+    location.pathname === "/dashboard/employee/account";
   return (
     <div className="employeeDashboardContainer">
       <div id="Sidebar">
