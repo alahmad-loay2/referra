@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { GetUserInfo, UpdateUserInfo } from "../controllers/user.controller.js";
+import { GetUserInfo, UpdateUserInfo, UpdateProfilePicture } from "../controllers/user.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
+import { uploadProfileImage } from "../middleware/upload.middleware.js";
 
 const userRoutes = Router();
 
@@ -19,6 +20,15 @@ userRoutes.put(
   generalLimiter,
   authenticate,
   UpdateUserInfo,
+);
+
+// Update current user profile picture
+userRoutes.put(
+  "/me/profile-picture",
+  generalLimiter,
+  authenticate,
+  uploadProfileImage,
+  UpdateProfilePicture,
 );
 
 export default userRoutes;

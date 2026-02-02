@@ -30,6 +30,7 @@ const HrDashboard = () => {
       icon: <UserCog size={18} />,
     },
   ];
+
   const hideHeader =
     location.pathname.startsWith("/dashboard/hr/referrals/") &&
     location.pathname !== "/dashboard/hr/referrals";
@@ -43,7 +44,7 @@ const HrDashboard = () => {
         <div id="Header">
           <Header
             text="Manage referrals and track hiring progress"
-            buttonText="View Referrals"
+            buttonText="View Referral"
             to="/dashboard/hr/referrals"
           />
         </div>
