@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma.js";
 export const createPosition = async (payload, hr) => {
   const {
     positionTitle,
+    companyName,
     yearsRequired,
     description,
     timeZone,
@@ -15,6 +16,7 @@ export const createPosition = async (payload, hr) => {
 
   if (
     !positionTitle ||
+    !companyName ||
     !yearsRequired ||
     !description ||
     !timeZone ||
@@ -48,6 +50,7 @@ export const createPosition = async (payload, hr) => {
   return prisma.position.create({
     data: {
       PositionTitle: positionTitle,
+      CompanyName: companyName,
       YearsRequired: Number(yearsRequired),
       Description: description,
       Timezone: timeZone,
@@ -150,9 +153,21 @@ export const updatePositionState = async (positionId, newState, hrUser) => {
     throw error;
   }
 
+  const updateData = {
+    PositionState: state,
+  };
+
+  // If HR reopened the position extend deadline by 10 days from NOW
+  if (position.PositionState === "CLOSED" && state === "OPEN") {
+    const newDeadline = new Date();
+    newDeadline.setDate(newDeadline.getDate() + 10);
+
+    updateData.Deadline = newDeadline;
+  }
+
   return prisma.position.update({
     where: { PositionId: positionId },
-    data: { PositionState: state },
+    data: updateData,
   });
 };
 
@@ -190,6 +205,7 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
 
   const {
     positionTitle,
+    companyName,
     yearsRequired,
     description,
     timeZone,
@@ -209,6 +225,7 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
     where: { PositionId: positionId },
     data: {
       ...(positionTitle && { PositionTitle: positionTitle }),
+      ...(companyName && { CompanyName: companyName }),
       ...(yearsRequired && {
         YearsRequired: Number(yearsRequired),
       }),
@@ -249,6 +266,11 @@ export const getHrDashboardStats = async (hr) => {
         where: {
           Position: {
             DepartmentId: { in: departmentIds },
+          },
+          Referral: {
+            Status: {
+              not: "Pending",
+            },
           },
         },
       }),
@@ -314,14 +336,6 @@ export const getHrPositions = async (hr, query) => {
   //  Sorting
   let orderBy = { CreatedAt: "desc" }; // default
 
-  if (sortBy === "applicants") {
-    orderBy = {
-      Application: {
-        _count: sortOrder === "asc" ? "asc" : "desc",
-      },
-    };
-  }
-
   const total = await prisma.position.count({
     where: whereClause,
   });
@@ -330,21 +344,34 @@ export const getHrPositions = async (hr, query) => {
     where: whereClause,
     include: {
       Department: true,
-      _count: {
-        select: {
-          Application: true,
-        },
-      },
     },
     orderBy,
     skip,
     take: limit,
   });
+  // Count NON-pending applicants per position
+  const positionIds = positions.map((p) => p.PositionId);
 
-  //  Clean response for frontend
+  const applicantsCounts = await prisma.application.groupBy({
+    by: ["PositionId"],
+    where: {
+      PositionId: { in: positionIds },
+      Referral: {
+        Status: {
+          not: "Pending",
+        },
+      },
+    },
+    _count: true,
+  });
+
+  const countMap = Object.fromEntries(
+    applicantsCounts.map((c) => [c.PositionId, c._count]),
+  );
+
   const formattedPositions = positions.map((p) => ({
     ...p,
-    applicantsCount: p._count.Application,
+    applicantsCount: countMap[p.PositionId] || 0,
   }));
 
   return {
@@ -381,11 +408,6 @@ export const getHrPositionDetails = async (hr, positionId) => {
     },
     include: {
       Department: true,
-      _count: {
-        select: {
-          Application: true, //  applicants per position
-        },
-      },
     },
   });
 
@@ -394,10 +416,20 @@ export const getHrPositionDetails = async (hr, positionId) => {
     error.statusCode = 404;
     throw error;
   }
+  const applicantsCount = await prisma.application.count({
+    where: {
+      PositionId: positionId,
+      Referral: {
+        Status: {
+          not: "Pending",
+        },
+      },
+    },
+  });
 
   return {
     ...position,
-    applicantsCount: position._count.Application,
+    applicantsCount,
   };
 };
 
