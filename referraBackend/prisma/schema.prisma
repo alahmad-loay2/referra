@@ -115,6 +115,7 @@ enum PositionState {
 model Position {
   PositionId String @id @default(uuid())
   PositionTitle String
+  CompanyName String 
   PositionState PositionState @default(OPEN)
   YearsRequired Int
   Description String
@@ -127,6 +128,11 @@ model Position {
   Department Department @relation(fields: [DepartmentId], references: [DepartmentId])
 
   Application Application[]
+    @@index([DepartmentId])
+  @@index([PositionState])
+  @@index([PositionTitle])
+  @@index([CreatedAt])
+
 }
 model Department {
   DepartmentId String @id @default(uuid())
