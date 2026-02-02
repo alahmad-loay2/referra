@@ -1,12 +1,10 @@
 import { prisma } from "../../lib/prisma.js";
 
-
-// how it works: 
-// candidates can be in multiple referrals. 
-// referrals have stages and have accepted in other position flag. if accepted in other position, 
+// how it works:
+// candidates can be in multiple referrals.
+// referrals have stages and have accepted in other position flag. if accepted in other position,
 // the candidate is accepted, and accepted in other position flag is true, and all referrals become acceptance stage.
 // if candidate is accepted but the referral have accepted in other position flag as false, then candidate is accepted in this referral.
-
 
 // get all confirmed referrals for an hr with filters on department and status and pagination and search
 // positionId is the id of the position to filter by
@@ -145,7 +143,6 @@ export const getAllConfirmedReferrals = async ({
   };
 };
 
-
 // get details of a specific referral for an hr
 
 export const getReferralDetails = async ({ referralId, hrId }) => {
@@ -158,12 +155,16 @@ export const getReferralDetails = async ({ referralId, hrId }) => {
       Application: {
         include: {
           Candidate: true,
-          Employee: true,
+          Employee: {
+            include: {
+              User: true,
+            },
+          },
           Position: {
             include: {
               Department: {
                 include: {
-                  Hrs: { include: { Hr: true } }, 
+                  Hrs: { include: { Hr: true } },
                 },
               },
             },
@@ -178,7 +179,7 @@ export const getReferralDetails = async ({ referralId, hrId }) => {
   const application = referral.Application;
 
   const belongsToHrDept = application.Position.Department.Hrs.some(
-    (hrDept) => hrDept.HrId === hrId
+    (hrDept) => hrDept.HrId === hrId,
   );
 
   if (!belongsToHrDept) {
@@ -186,10 +187,9 @@ export const getReferralDetails = async ({ referralId, hrId }) => {
   }
 
   return {
-    referral
+    referral,
   };
 };
-
 
 const workflow = ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
 
@@ -254,7 +254,6 @@ export const advanceReferralStage = async (referralId, hrUser) => {
 
   return updatedApplication;
 };
-
 
 // finalize a referral (accept)
 // the referral is in prospect state now with no action needed from HR. Only accept.

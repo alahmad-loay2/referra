@@ -1,16 +1,12 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import "./HrDashboard.css";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
-import {
-  LayoutDashboard,
-  Users,
-  Briefcase,
-  UserCog,
-} from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, UserCog } from "lucide-react";
 import Header from "../../components/header/Header.jsx";
 
 const HrDashboard = () => {
+  const location = useLocation();
 
   const pages = [
     {
@@ -34,15 +30,24 @@ const HrDashboard = () => {
       icon: <UserCog size={18} />,
     },
   ];
-
+  const hideHeader =
+    location.pathname.startsWith("/dashboard/hr/referrals/") &&
+    location.pathname !== "/dashboard/hr/referrals";
   return (
     <div className="dashboardContainer">
       <div id="Sidebar">
         <Sidebar pages={pages} />
       </div>
-      <div id="Header">
-        <Header text="Manage referrals and track hiring progress" buttonText="View Referral" to="/dashboard/hr/referrals" />
-      </div>
+
+      {!hideHeader && (
+        <div id="Header">
+          <Header
+            text="Manage referrals and track hiring progress"
+            buttonText="View Referrals"
+            to="/dashboard/hr/referrals"
+          />
+        </div>
+      )}
       <div id="Content">
         <Outlet />
       </div>

@@ -27,6 +27,7 @@ model Users {
   Gender String
   Email String @unique
   Role Role @default(Employee)
+  ProfileUrl String?
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
 
