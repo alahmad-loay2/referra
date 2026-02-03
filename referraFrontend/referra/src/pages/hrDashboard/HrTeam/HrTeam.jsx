@@ -1,131 +1,355 @@
-import React, { useState, useEffect } from "react";
-import { createHr } from "../../../api/auth.api.js";
+import React, { useEffect, useState } from "react";
+import {
+  Briefcase,
+  Users,
+  Search,
+  Phone,
+  Calendar,
+  Building2,
+  Mail,
+} from "lucide-react";
+import Loading from "../../../components/loading/Loading.jsx";
+import { getHrTeam } from "../../../api/hrTeam.api";
 import { getHrDepartments } from "../../../api/hrPositions.api.js";
 
+import AddHr from "./AddHr";
+import "./HrTeam.css";
+
 const HrTeam = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [age, setAge] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [gender, setGender] = useState("");
-  const [email, setEmail] = useState("");
+  const [stats, setStats] = useState({
+    totalMembers: 0,
+    departmentsCount: 0,
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  const [hrMembers, setHrMembers] = useState([]);
+  const [tableLoading, setTableLoading] = useState(false);
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
+
+  const [searchInput, setSearchInput] = useState("");
   const [departmentId, setDepartmentId] = useState("");
+  const [filters, setFilters] = useState({
+    search: "",
+    departmentId: "",
+    page: 1,
+  });
+
   const [departments, setDepartments] = useState([]);
-  const [createMessage, setCreateMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const [showAddHr, setShowAddHr] = useState(false);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getHrTeam(); // no filters
+
+        const deptSet = new Set();
+        data.hrMembers.forEach((hr) =>
+          hr.departments.forEach((d) => deptSet.add(d.DepartmentId)),
+        );
+
+        setStats({
+          totalMembers: data.pagination.total,
+          departmentsCount: deptSet.size,
+        });
+      } catch (err) {
+        console.error("Failed to fetch HR stats", err);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const depts = await getHrDepartments();
-        setDepartments(depts);
-      } catch (error) {
-        console.error("Failed to fetch departments:", error);
-        setCreateMessage("Failed to load departments.");
+        const data = await getHrDepartments();
+        setDepartments(data);
+      } catch (err) {
+        console.error("Failed to fetch departments", err);
       }
     };
+
     fetchDepartments();
   }, []);
 
-  const handleCreateHr = async () => {
-    if (!departmentId) {
-      setCreateMessage("Please select a department.");
-      return;
-    }
+  useEffect(() => {
+    const fetchTeam = async () => {
+      setTableLoading(true);
+      try {
+        const data = await getHrTeam({
+          search: filters.search,
+          departmentId: filters.departmentId,
+          page,
+          pageSize: limit,
+        });
 
-    setLoading(true);
-    setCreateMessage("");
-    try {
-      await createHr({
-        firstName,
-        lastName,
-        age,
-        phoneNumber,
-        gender,
-        email,
-        departmentId,
-      });
-      setFirstName("");
-      setLastName("");
-      setAge("");
-      setPhoneNumber("");
-      setGender("");
-      setEmail("");
-      setDepartmentId("");
-      setCreateMessage("HR created successfully.");
-    } catch (e) {
-      setCreateMessage(e.message || "Failed to create HR.");
-    } finally {
-      setLoading(false);
+        setHrMembers(data.hrMembers);
+        setTotalPages(data.pagination.totalPages);
+      } catch (err) {
+        console.error("Failed to fetch HR team", err);
+        setHrMembers([]);
+      } finally {
+        setTableLoading(false);
+      }
+    };
+
+    fetchTeam();
+  }, [filters, page]);
+
+  const handleApplyFilters = () => {
+    setPage(1);
+    setFilters({
+      search: searchInput,
+      departmentId,
+    });
+  };
+  const goToPage = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setPage(newPage);
+  };
+
+  const goNext = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
+  const goPrev = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const getVisiblePages = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
     }
+    return pages;
   };
 
   return (
-    <div>
-      <h1>HR Team</h1>
-      <button onClick={handleCreateHr} disabled={loading}>
-        {loading ? "Creating..." : "Create New HR"}
-      </button>
-      <div>
-        <input
-          type="text"
-          placeholder="First Name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Last Name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Age"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Phone Number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Gender"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <select
-          value={departmentId}
-          onChange={(e) => setDepartmentId(e.target.value)}
-          required
-        >
-          <option value="">Select Department</option>
-          {departments.map((dept) => (
-            <option key={dept.DepartmentId} value={dept.DepartmentId}>
-              {dept.DepartmentName}
-            </option>
-          ))}
-        </select>
+    <div className="HRteam">
+      {/* PAGE HEADER */}
+      <div className="pageHeader">
+        <h1 className="pageTitle">HR Team</h1>
+        <p className="pageSubtitle">Manage HR team members</p>
       </div>
-      {createMessage && <p>{createMessage}</p>}
+
+      {/* =======================
+          CARDS
+      ======================== */}
+      <div className="cardsContainer">
+        <div className="HRCards">
+          <div className="CardsIcon">
+            <Briefcase size={20} color="white" />
+          </div>
+          <div className="HRCardsText">
+            <p>Departments Covered</p>
+            <strong>{statsLoading ? "…" : stats.departmentsCount}</strong>
+          </div>
+        </div>
+
+        <div className="HRCards">
+          <div className="CardsIcon">
+            <Users size={20} color="white" />
+          </div>
+          <div className="HRCardsText">
+            <p>Total Members</p>
+            <strong>{statsLoading ? "…" : stats.totalMembers}</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* =======================
+          SEARCH & FILTERS
+      ======================== */}
+      <div className="HRSearchContainer">
+        <div className="searchInputWrapper">
+          <input
+            type="text"
+            className="searchHRInput"
+            placeholder="Search by name or email..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+          <Search className="searchIcon" size={16} />
+        </div>
+
+        <div className="selectContainer">
+          <select
+            value={departmentId}
+            onChange={(e) => setDepartmentId(e.target.value)}
+          >
+            <option value="">All Departments</option>
+            {departments.map((dept) => (
+              <option key={dept.DepartmentId} value={dept.DepartmentId}>
+                {dept.DepartmentName}
+              </option>
+            ))}
+          </select>
+
+          <button className="apply-btn" onClick={handleApplyFilters}>
+            Apply
+          </button>
+        </div>
+      </div>
+
+      {/* =======================
+          TABLE
+      ======================== */}
+      <div className="HRTableContainer">
+        <div className="tableHeader">
+          <h3 className="title">Team Members</h3>
+          <button className="add-btn" onClick={() => setShowAddHr(true)}>
+            + Add New HR
+          </button>
+        </div>
+
+        <table className="HRTable">
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Department</th>
+              <th>Phone</th>
+              <th>Posted</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {tableLoading ? (
+              <>
+                {[...Array(6)].map((_, index) => (
+                  <tr key={`skeleton-${index}`} className="skeleton-row">
+                    <td>
+                      <div className="member-cell">
+                        <div className="skeleton-avatar" />
+                        <div className="member-info">
+                          <div className="skeleton-text short" />
+                          <div className="skeleton-text tiny" />
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div className="skeleton-text" />
+                    </td>
+
+                    <td>
+                      <div className="skeleton-text" />
+                    </td>
+
+                    <td>
+                      <div className="skeleton-text" />
+                    </td>
+                  </tr>
+                ))}
+              </>
+            ) : hrMembers.length === 0 ? (
+              <tr>
+                <td colSpan={4} style={{ textAlign: "center", padding: 20 }}>
+                  No HR members found
+                </td>
+              </tr>
+            ) : (
+              hrMembers.map((hr) => (
+                <tr key={hr.HrId}>
+                  {/* MEMBER */}
+                  <td>
+                    <div className="member-cell">
+                      <div className="avatar">
+                        {hr.User.ProfileUrl ? (
+                          <img
+                            src={hr.User.ProfileUrl}
+                            alt={`${hr.User.FirstName} ${hr.User.LastName}`}
+                            className="avatar-img"
+                          />
+                        ) : (
+                          <span>
+                            {hr.User.FirstName[0]}
+                            {hr.User.LastName[0]}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="member-info">
+                        <strong>
+                          {hr.User.FirstName} {hr.User.LastName}
+                        </strong>
+                        <div className="icon-text">
+                          <Mail size={14} />
+                          <span>{hr.User.Email}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* DEPARTMENT */}
+                  <td>
+                    <div className="icon-text">
+                      <Building2 size={14} />
+                      {hr.departments.map((d) => d.DepartmentName).join(", ")}
+                    </div>
+                  </td>
+
+                  {/* PHONE */}
+                  <td>
+                    <div className="icon-text">
+                      <Phone size={14} />
+                      {hr.User.PhoneNumber || "—"}
+                    </div>
+                  </td>
+
+                  {/* DATE */}
+                  <td>
+                    <div className="icon-text">
+                      <Calendar size={14} />
+                      {new Date(hr.User.CreatedAt).toLocaleDateString()}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+        <div className="pagination">
+          <button className="nav" onClick={goPrev} disabled={page === 1}>
+            ← Previous
+          </button>
+
+          {getVisiblePages().map((p) => (
+            <button
+              key={p}
+              className={p === page ? "active" : ""}
+              onClick={() => goToPage(p)}
+            >
+              {p}
+            </button>
+          ))}
+
+          <button
+            className="nav"
+            onClick={goNext}
+            disabled={page === totalPages}
+          >
+            Next →
+          </button>
+        </div>
+      </div>
+
+      {showAddHr && (
+        <AddHr
+          onClose={() => setShowAddHr(false)}
+          onSuccess={() => {
+            setShowAddHr(false);
+            setFilters((prev) => ({ ...prev })); // refresh table only
+          }}
+        />
+      )}
     </div>
   );
 };
 
 export default HrTeam;
-
