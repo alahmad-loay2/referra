@@ -36,6 +36,40 @@ const EmployeeSubmit = () => {
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [errors, setErrors] = useState({});
 
+  const isFormDirty = () => {
+    return (
+      form.firstName ||
+      form.lastName ||
+      form.email ||
+      form.experience ||
+      form.positionId ||
+      cvFile
+    );
+  };
+  const [pendingHref, setPendingHref] = useState(null);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (!isFormDirty()) return;
+
+      const link = e.target.closest("a");
+      if (!link || !link.href) return;
+
+      // same-page anchors / external links optional
+      if (link.target === "_blank") return;
+
+      e.preventDefault();
+      setPendingHref(link.href);
+      setShowResetConfirm(true);
+    };
+
+    document.addEventListener("click", handleClick, true);
+
+    return () => {
+      document.removeEventListener("click", handleClick, true);
+    };
+  }, [form, cvFile]);
+
   useEffect(() => {
     if (submitSuccess || submitError) {
       const timer = setTimeout(() => {
@@ -136,9 +170,13 @@ const EmployeeSubmit = () => {
     setCvFile(null);
     setCvError("");
     setPositionsError("");
-
     setShowResetConfirm(false);
+
+    if (pendingHref) {
+      window.location.href = pendingHref;
+    }
   };
+
   const handleSubmit = async () => {
     setSubmitError("");
     setSubmitSuccess("");
@@ -160,6 +198,17 @@ const EmployeeSubmit = () => {
       setSubmitLoading(false);
     }
   };
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (!isFormDirty()) return;
+
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [form, cvFile]);
 
   return (
     <div className="employeeSubmit">
@@ -333,7 +382,10 @@ const EmployeeSubmit = () => {
             <div className="employeeSubmit-modalActions">
               <button
                 className="employeeSubmit-cancel"
-                onClick={() => setShowResetConfirm(false)}
+                onClick={() => {
+                  setShowResetConfirm(false);
+                  setPendingHref(null);
+                }}
               >
                 Cancel
               </button>
