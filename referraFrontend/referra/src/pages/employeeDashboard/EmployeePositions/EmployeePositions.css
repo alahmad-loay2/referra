@@ -1,0 +1,150 @@
+.positions-container {
+  padding: 2rem;
+  min-width: 1000px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.positions-header h1 {
+  margin-bottom: 6px;
+  font-size: var(--fs-xlarge);
+}
+
+.positions-header p {
+  color: var(--gray-dark);
+  margin-bottom: 24px;
+}
+
+/* List */
+.positions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Card */
+.position-card {
+  background: white;
+  border-radius: 14px;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Left */
+.left {
+  display: flex;
+  gap: 14px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #18b7be;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info h3 {
+  font-size: var(--fs-meduim);
+  margin-bottom: 4px;
+}
+
+.meta {
+  display: flex;
+  gap: 20px;
+  font-size: var(--fs-small);
+  color: #6b7280;
+}
+
+.meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Button */
+.details-btn {
+  background: #18b7be;
+  color: white;
+  border-radius: 8px;
+  padding: 10px 25px;
+}
+
+/* Pagination */
+.pagination {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination button {
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: #374151;
+}
+
+.pagination .active {
+  background: #374151;
+  color: white;
+  border-radius: 6px;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Skeleton */
+.skeleton {
+  animation: pulse 1.4s infinite;
+}
+
+.skeleton-box,
+.skeleton-line,
+.skeleton-button {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+}
+
+.skeleton-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+.skeleton-line.title {
+  width: 160px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeleton-line.meta {
+  width: 260px;
+  height: 14px;
+  margin-top: 8px;
+  border-radius: 4px;
+}
+
+.skeleton-button {
+  width: 120px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+@keyframes pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

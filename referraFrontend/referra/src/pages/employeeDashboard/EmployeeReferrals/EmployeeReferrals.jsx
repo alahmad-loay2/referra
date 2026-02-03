@@ -55,12 +55,12 @@ const EmployeeReferrals = () => {
 
   const getStatusBadge = (referral) => {
     const prospect = referral?.Referral?.Prospect;
-    
+
     // Only show Prospect badge if prospect is true
     if (prospect) {
       return { text: "Prospect", className: "status-badge-prospect" };
     }
-    
+
     return null;
   };
 
@@ -230,7 +230,9 @@ const EmployeeReferrals = () => {
                                 >
                                   <span className="icon">
                                     {isDone && <Check size={14} />}
-                                    {isActive && !isProspect && <Briefcase size={14} />}
+                                    {isActive && !isProspect && (
+                                      <Briefcase size={14} />
+                                    )}
                                     {isProspect && <X size={14} />}
                                   </span>
                                   <span className="label">{step}</span>
@@ -250,7 +252,9 @@ const EmployeeReferrals = () => {
                         {(() => {
                           const badge = getStatusBadge(ref);
                           return badge ? (
-                            <span className={`status-badge-secondary ${badge.className}`}>
+                            <span
+                              className={`status-badge-secondary ${badge.className}`}
+                            >
                               {badge.text}
                             </span>
                           ) : null;

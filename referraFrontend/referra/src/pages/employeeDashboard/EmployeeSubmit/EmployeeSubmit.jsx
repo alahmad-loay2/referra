@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getVisiblePositions } from "../../../api/positions.api";
 import { submitReferral } from "../../../api/employeeReferrals.api";
 import { Briefcase, Upload } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 import "./EmployeeSubmit.css";
 
@@ -24,6 +25,10 @@ const EmployeeSubmit = () => {
     positionId: "",
   });
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // for referring from the positions page
+  const [searchParams] = useSearchParams();
+  const preselectedPositionId = searchParams.get("positionId");
 
   // for submit button
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -68,13 +73,21 @@ const EmployeeSubmit = () => {
         setPositionsError(result.error);
       } else {
         setPositions(result.positions);
+
+        //  PRESELECT POSITION FROM URL
+        if (preselectedPositionId) {
+          setForm((prev) => ({
+            ...prev,
+            positionId: preselectedPositionId,
+          }));
+        }
       }
 
       setLoadingPositions(false);
     };
 
     loadPositions();
-  }, []);
+  }, [preselectedPositionId]);
 
   // CV upload handlers
   const handleFileSelect = (file) => {
