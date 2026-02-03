@@ -3,6 +3,7 @@ import Cropper from "react-easy-crop";
 import "./Account.css";
 import { getUserInfo, updateUserInfo, updateProfilePicture } from "../../api/user.api.js";
 import Loading from "../../components/loading/Loading.jsx";
+import { useUserStore } from "../../store/userStore.js";
 
 const Account = () => {
   const [profileData, setProfileData] = useState(null);
@@ -24,13 +25,17 @@ const Account = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const fileInputRef = useRef(null);
+  const setFirstName = useUserStore((state) => state.setFirstName);
 
   const fetchProfileData = async () => {
     try {
       setIsLoading(true);
       const data = await getUserInfo();
       setProfileData(data);
-      console.log(data);
+      // Update Zustand store with firstName
+      if (data?.FirstName) {
+        setFirstName(data.FirstName);
+      }
     } catch (error) {
       console.error("Failed to fetch profile data:", error);
     } finally {
@@ -110,6 +115,10 @@ const Account = () => {
       setUpdateSuccess("");
       const updatedData = await updateUserInfo(formData);
       setProfileData(updatedData);
+      // Update Zustand store with new firstName if it was changed
+      if (updatedData?.FirstName) {
+        setFirstName(updatedData.FirstName);
+      }
       setIsEditMode(false);
       setShowSaveConfirm(false);
       setUpdateSuccess("Profile updated successfully!");

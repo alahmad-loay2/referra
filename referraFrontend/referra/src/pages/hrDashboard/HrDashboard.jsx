@@ -1,5 +1,5 @@
-import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "./HrDashboard.css";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import { LayoutDashboard, Users, Briefcase, UserCog } from "lucide-react";
@@ -7,6 +7,25 @@ import Header from "../../components/header/Header.jsx";
 
 const HrDashboard = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const originalFetch = window.fetch;
+    
+    window.fetch = async (...args) => {
+      const response = await originalFetch(...args);
+      
+      if ((response.status === 401 || response.status === 403) && window.location.pathname !== '/login') {
+        navigate('/login', { replace: true });
+      }
+      
+      return response;
+    };
+
+    return () => {
+      window.fetch = originalFetch;
+    };
+  }, [navigate]);
 
   const pages = [
     {

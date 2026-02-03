@@ -47,7 +47,6 @@ const HrReferralDetails = () => {
           Position: application.Position,
           ReferredBy: application.Employee,
         });
-        //console.log(data);
       } catch (error) {
         console.error("Error loading referral details:", error);
       } finally {

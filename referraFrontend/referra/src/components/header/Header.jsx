@@ -1,37 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./Header.css";
 import Button from "../button/Button";
 import { getUserInfo } from "../../api/user.api.js";
+import { useUserStore } from "../../store/userStore.js";
 
 const Header = (props) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const firstName = useUserStore((state) => state.firstName);
+  const setFirstName = useUserStore((state) => state.setFirstName);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const userData = await getUserInfo();
-        setUser(userData);
+        if (userData?.FirstName) {
+          setFirstName(userData.FirstName);
+        }
       } catch (error) {
         console.error("Failed to fetch user info:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchUser();
-  }, []);
-
-  const getDisplayName = () => {
-    if (!user) return "User";
-    return user.FirstName || "User";
-  };
+    // Only fetch if firstName is not already set
+    if (!firstName) {
+      fetchUser();
+    }
+  }, [firstName, setFirstName]);
 
   return (
     <div className="headerContainer">
       <div>
         <h3>
-          Hello {loading ? "..." : getDisplayName()}
+          Hello {firstName || "..."}
         </h3>
         <p>{props.text}</p>
       </div>
