@@ -12,6 +12,7 @@ export const createPosition = async (payload, hr) => {
     positionLocation,
     departmentId,
     positionState,
+    employmentType,
   } = payload;
 
   if (
@@ -22,9 +23,25 @@ export const createPosition = async (payload, hr) => {
     !timeZone ||
     !deadline ||
     !positionLocation ||
-    !departmentId
+    !departmentId ||
+    !employmentType
   ) {
     const error = new Error("Missing required fields");
+    error.statusCode = 400;
+    throw error;
+  }
+  const normalizedEmploymentType = employmentType.toUpperCase();
+
+  const allowedEmploymentTypes = [
+    "FULL_TIME",
+    "PART_TIME",
+    "CONTRACT",
+    "INTERNSHIP",
+    "TEMPORARY",
+  ];
+
+  if (!allowedEmploymentTypes.includes(normalizedEmploymentType)) {
+    const error = new Error("Invalid employment type");
     error.statusCode = 400;
     throw error;
   }
@@ -57,6 +74,7 @@ export const createPosition = async (payload, hr) => {
       Deadline: new Date(deadline),
       PositionLocation: positionLocation,
       PositionState: state,
+      EmploymentType: normalizedEmploymentType,
       DepartmentId: departmentId,
     },
   });
@@ -160,6 +178,7 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
     deadline,
     positionLocation,
     departmentId,
+    employmentType,
   } = payload;
 
   // Optional department change (must still belong to HR)
@@ -167,6 +186,23 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
     const error = new Error("Cannot assign position to this department");
     error.statusCode = 403;
     throw error;
+  }
+  const allowedEmploymentTypes = [
+    "FULL_TIME",
+    "PART_TIME",
+    "CONTRACT",
+    "INTERNSHIP",
+    "TEMPORARY",
+  ];
+
+  if (employmentType) {
+    const normalizedEmploymentType = employmentType.toUpperCase();
+
+    if (!allowedEmploymentTypes.includes(normalizedEmploymentType)) {
+      const error = new Error("Invalid employment type");
+      error.statusCode = 400;
+      throw error;
+    }
   }
 
   return prisma.position.update({
@@ -184,6 +220,9 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
         PositionLocation: positionLocation,
       }),
       ...(departmentId && { DepartmentId: departmentId }),
+      ...(employmentType && {
+        EmploymentType: employmentType.toUpperCase(),
+      }),
     },
   });
 };
