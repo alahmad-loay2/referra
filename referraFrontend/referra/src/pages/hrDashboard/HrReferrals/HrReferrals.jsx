@@ -122,26 +122,32 @@ const HrReferrals = () => {
   };
 
   const getStatusBadge = (referral) => {
-    // First check if candidate is accepted
-    if (referral?.Candidate?.Acceptance === true) {
-      // If accepted, check if accepted in other position
-      if (referral?.Referral?.AcceptedInOtherPosition === false) {
-        return { text: "Accepted", className: "status-badge-accepted" };
-      } else {
-        return { text: "Accepted in Other Position", className: "status-badge-accepted-other" };
-      }
+    const status = referral?.Referral?.Status;
+    const prospect = referral?.Referral?.Prospect;
+    const acceptedInOtherPosition = referral?.Referral?.AcceptedInOtherPosition;
+    const candidateAcceptance = referral?.Candidate?.Acceptance;
+
+    // If accepted in other position, show that badge
+    if (acceptedInOtherPosition) {
+      return { text: "Accepted in Other Position", className: "status-badge-accepted-other" };
     }
-    
-    // If not accepted, check if in Acceptance stage
-    if (referral?.Referral?.Status === "Acceptance") {
-      if (referral?.Referral?.AcceptedInOtherPosition === true) {
-        return { text: "Accepted in Other Position", className: "status-badge-accepted-other" };
-      } else {
-        return { text: "Prospect", className: "status-badge-prospect" };
-      }
+
+    // If status is Hired, show Accepted
+    if (status === "Hired") {
+      return { text: "Accepted", className: "status-badge-accepted" };
     }
-    
-    // Not in Acceptance stage
+
+    // If Prospect is true, show Prospect badge
+    if (prospect) {
+      return { text: "Prospect", className: "status-badge-prospect" };
+    }
+
+    // If candidate is accepted but not in Hired status (shouldn't happen but handle it)
+    if (candidateAcceptance && status !== "Hired") {
+      return { text: "Accepted", className: "status-badge-accepted" };
+    }
+
+    // Default: In Progress
     return { text: "In Progress", className: "status-badge-in-progress" };
   };
 
@@ -181,6 +187,7 @@ const HrReferrals = () => {
             <option value="InterviewOne">Interview One</option>
             <option value="InterviewTwo">Interview Two</option>
             <option value="Acceptance">Acceptance</option>
+            <option value="Hired">Hired</option>
           </select>
           <input
             type="date"

@@ -24,6 +24,7 @@ const STATUS_ORDER = [
   "InterviewOne",
   "InterviewTwo",
   "Acceptance",
+  "Hired",
 ];
 
 const HrReferralDetails = () => {

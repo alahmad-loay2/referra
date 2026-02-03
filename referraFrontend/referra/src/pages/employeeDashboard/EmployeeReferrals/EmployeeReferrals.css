@@ -147,10 +147,16 @@
   color: var(--white);
 }
 /* Timeline */
+.timeline-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
 .timeline {
   display: flex;
   align-items: center;
-  margin-top: 8px;
 }
 
 .step {
@@ -213,6 +219,16 @@
   background: #7aa7ff;
 }
 
+/* Prospect state - red with X */
+.step.prospect .icon {
+  background: #e57373;
+  color: white;
+}
+
+.step.prospect .label {
+  color: #e57373;
+}
+
 /* Right */
 .referral-right {
   text-align: right;
@@ -250,6 +266,37 @@
   align-items: center;
   gap: 6px;
   white-space: nowrap;
+}
+
+/* Status badges */
+.status-badge-secondary {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.status-badge-accepted {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge-accepted-other {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge-prospect {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-badge-in-progress {
+  background-color: #e2e3e5;
+  color: #383d41;
 }
 
 /* Right side button positioning */

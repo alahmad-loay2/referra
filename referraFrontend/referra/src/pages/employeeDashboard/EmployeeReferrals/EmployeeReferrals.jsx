@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Mail, Calendar, Briefcase, Check } from "lucide-react";
+import { Search, Mail, Calendar, Briefcase, Check, X } from "lucide-react";
 import { fetchEmployeeApplications } from "../../../api/employeeReferrals.api";
 import Button from "../../../components/button/Button";
 
@@ -10,6 +10,7 @@ const STATUS_ORDER = [
   "InterviewOne",
   "InterviewTwo",
   "Acceptance",
+  "Hired",
 ];
 
 const PAGE_SIZE = 4;
@@ -50,6 +51,17 @@ const EmployeeReferrals = () => {
       pages.push(i);
     }
     return pages;
+  };
+
+  const getStatusBadge = (referral) => {
+    const prospect = referral?.Referral?.Prospect;
+    
+    // Only show Prospect badge if prospect is true
+    if (prospect) {
+      return { text: "Prospect", className: "status-badge-prospect" };
+    }
+    
+    return null;
   };
 
   React.useEffect(() => {
@@ -98,7 +110,8 @@ const EmployeeReferrals = () => {
               <option value="Confirmed">Confirmed</option>
               <option value="InterviewOne">Interview 1</option>
               <option value="InterviewTwo">Interview 2</option>
-              <option value="Acceptance">Accepted</option>
+              <option value="Acceptance">Acceptance</option>
+              <option value="Hired">Hired</option>
             </select>
 
             <input
@@ -201,35 +214,47 @@ const EmployeeReferrals = () => {
                       </div>
 
                       {/* TIMELINE */}
-                      <div className="timeline">
-                        {STATUS_ORDER.map((step, index) => {
-                          const isDone = index < currentIndex;
-                          const isActive = index === currentIndex;
+                      <div className="timeline-wrapper">
+                        <div className="timeline">
+                          {STATUS_ORDER.map((step, index) => {
+                            const isDone = index < currentIndex;
+                            const isActive = index === currentIndex;
+                            const isProspect = Referral.Prospect && isActive;
 
-                          return (
-                            <React.Fragment key={step}>
-                              <div
-                                className={`step ${
-                                  isDone ? "done" : ""
-                                } ${isActive ? "active" : ""}`}
-                              >
-                                <span className="icon">
-                                  {isDone && <Check size={14} />}
-                                  {isActive && <Briefcase size={14} />}
-                                </span>
-                                <span className="label">{step}</span>
-                              </div>
-
-                              {index < STATUS_ORDER.length - 1 && (
+                            return (
+                              <React.Fragment key={step}>
                                 <div
-                                  className={`line ${
-                                    isDone ? "done" : isActive ? "active" : ""
-                                  }`}
-                                />
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
+                                  className={`step ${
+                                    isDone ? "done" : ""
+                                  } ${isActive ? "active" : ""} ${isProspect ? "prospect" : ""}`}
+                                >
+                                  <span className="icon">
+                                    {isDone && <Check size={14} />}
+                                    {isActive && !isProspect && <Briefcase size={14} />}
+                                    {isProspect && <X size={14} />}
+                                  </span>
+                                  <span className="label">{step}</span>
+                                </div>
+
+                                {index < STATUS_ORDER.length - 1 && (
+                                  <div
+                                    className={`line ${
+                                      isDone ? "done" : isActive ? "active" : ""
+                                    }`}
+                                  />
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
+                        {(() => {
+                          const badge = getStatusBadge(ref);
+                          return badge ? (
+                            <span className={`status-badge-secondary ${badge.className}`}>
+                              {badge.text}
+                            </span>
+                          ) : null;
+                        })()}
                       </div>
                     </div>
                   </div>

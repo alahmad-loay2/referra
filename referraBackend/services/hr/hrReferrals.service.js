@@ -194,7 +194,9 @@ export const getReferralDetails = async ({ referralId, hrId }) => {
 const workflow = ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
 
 // advance the stage of a referral
-// if hes in acceptance stage, the candidate is a prospect with no action needed from HR
+// HR can only advance from Confirmed to Acceptance (stops at Acceptance, cannot advance to Hired)
+// If Prospect is true, cannot advance to next stage
+// If AcceptedInOtherPosition is true, cannot advance
 
 export const advanceReferralStage = async (referralId, hrUser) => {
   if (!referralId) throw new Error("Referral ID is required");
@@ -232,6 +234,16 @@ export const advanceReferralStage = async (referralId, hrUser) => {
   if (!belongsToHrDept)
     throw new Error("HR not allowed to update this referral");
 
+  // Check if Prospect is true - cannot advance if it is
+  if (referral.Prospect) {
+    throw new Error("Cannot advance referral stage when Prospect is true");
+  }
+
+  // Check if AcceptedInOtherPosition is true - cannot advance if it is
+  if (referral.AcceptedInOtherPosition) {
+    throw new Error("Cannot advance referral stage when AcceptedInOtherPosition is true");
+  }
+
   const currentIndex = workflow.indexOf(referral.Status);
 
   if (currentIndex === -1 || currentIndex === workflow.length - 1)
@@ -239,6 +251,7 @@ export const advanceReferralStage = async (referralId, hrUser) => {
 
   const nextState = workflow[currentIndex + 1];
 
+  // Just update the status (can only go up to Acceptance)
   await prisma.referral.update({
     where: { ReferralId: referralId },
     data: { Status: nextState },
@@ -255,11 +268,12 @@ export const advanceReferralStage = async (referralId, hrUser) => {
   return updatedApplication;
 };
 
-// finalize a referral (accept)
-// the referral is in prospect state now with no action needed from HR. Only accept.
-// prospect takes referral to acceptance stage if he is not in it already. HR can still accept after.
-// compensation is the compensation amount for the referral
-// if accept, the candidate is accepted and the employee is compensated and all referrals become accepted in other position
+// finalize a referral (accept or prospect)
+// Prospect: sets Prospect to true, can be done at any time (except if Hired or AcceptedInOtherPosition), doesn't change status
+// Accept: moves from Acceptance to Hired, sets candidate acceptance to true, marks other referrals for same position, compensates employee
+// compensation is required for Accept (even if 0)
+// Cannot accept if Prospect is true
+// Cannot accept if AcceptedInOtherPosition is true
 export const finalizeReferral = async (
   referralId,
   action,
@@ -270,8 +284,8 @@ export const finalizeReferral = async (
     throw new Error("Referral ID and valid action are required");
   }
 
-  if (action === "Accept" && (!compensation || compensation <= 0)) {
-    const err = new Error("Compensation amount is required for acceptance");
+  if (action === "Accept" && (compensation === undefined || compensation === null || compensation < 0)) {
+    const err = new Error("Compensation amount is required for acceptance (can be 0)");
     err.statusCode = 400;
     throw err;
   }
@@ -313,29 +327,48 @@ export const finalizeReferral = async (
 
   const candidateId = referral.Application.Candidate.CandidateId;
   const employeeId = referral.Application.Employee.EmployeeId;
+  const positionId = referral.Application.PositionId;
 
   if (action === "Accept") {
     if (referral.Status !== "Acceptance") {
-      throw new Error("Can only accept candidate in last stage");
+      throw new Error("Can only accept candidate in Acceptance stage");
     }
 
-    await prisma.$transaction([
+    // Cannot accept if Prospect is true
+    if (referral.Prospect) {
+      throw new Error("Cannot accept candidate who is a prospect");
+    }
+
+    // Cannot accept if AcceptedInOtherPosition is true
+    if (referral.AcceptedInOtherPosition) {
+      throw new Error("Cannot accept candidate who is accepted in other position");
+    }
+
+    // Find all other referral IDs for this candidate
+    const otherApplications = await prisma.application.findMany({
+      where: {
+        CandidateId: candidateId,
+        ReferralId: { not: referralId },
+      },
+      select: {
+        ReferralId: true,
+      },
+    });
+
+    const otherReferralIds = otherApplications.map((app) => app.ReferralId);
+
+    const transactionOperations = [
+      // Update the referral to Hired
+      prisma.referral.update({
+        where: { ReferralId: referralId },
+        data: { Status: "Hired" },
+      }),
+      // Set candidate acceptance to true
       prisma.candidate.update({
         where: { CandidateId: candidateId },
         data: { Acceptance: true },
       }),
-
-      prisma.referral.updateMany({
-        where: {
-          ReferralId: { not: referralId },
-          Application: { CandidateId: candidateId },
-        },
-        data: {
-          Status: "Acceptance",
-          AcceptedInOtherPosition: true,
-        },
-      }),
-
+      // Compensate the employee
       prisma.compensation.create({
         data: {
           HrId: hrUser.HrId,
@@ -343,7 +376,6 @@ export const finalizeReferral = async (
           Amount: compensation,
         },
       }),
-
       prisma.employee.update({
         where: { EmployeeId: employeeId },
         data: {
@@ -352,13 +384,40 @@ export const finalizeReferral = async (
           },
         },
       }),
-    ]);
+    ];
+
+    // Mark all other referrals for this candidate as AcceptedInOtherPosition (but keep their status)
+    if (otherReferralIds.length > 0) {
+      transactionOperations.push(
+        prisma.referral.updateMany({
+          where: {
+            ReferralId: { in: otherReferralIds },
+          },
+          data: {
+            AcceptedInOtherPosition: true,
+          },
+        }),
+      );
+    }
+
+    await prisma.$transaction(transactionOperations);
   }
 
   if (action === "Prospect") {
+    // Cannot prospect if already Hired
+    if (referral.Status === "Hired") {
+      throw new Error("Cannot prospect candidate who is already hired");
+    }
+
+    // Cannot prospect if AcceptedInOtherPosition is true
+    if (referral.AcceptedInOtherPosition) {
+      throw new Error("Cannot prospect candidate who is accepted in other position");
+    }
+
+    // Just set Prospect to true, don't change status
     await prisma.referral.update({
       where: { ReferralId: referralId },
-      data: { Status: "Acceptance" },
+      data: { Prospect: true },
     });
   }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Mail, Calendar, Briefcase, Check, ArrowLeft, Edit, Trash2, User, Award, Download, FileText, Clock, MapPin, Circle, Upload, X } from "lucide-react";
+import { Mail, Calendar, Briefcase, Check, ArrowLeft, Edit, Trash2, User, Award, Download, FileText, Clock, MapPin, Circle, Upload, X, Building2 } from "lucide-react";
 import { fetchEmployeeReferralDetails, editCandidate, deleteCandidate } from "../../../api/employeeReferrals.api";
 import "./EmployeeReferralHD.css";
 
@@ -10,6 +10,7 @@ const STATUS_ORDER = [
   "InterviewOne",
   "InterviewTwo",
   "Acceptance",
+  "Hired",
 ];
 
 const EmployeeReferralHD = () => {
@@ -240,35 +241,44 @@ const EmployeeReferralHD = () => {
 
         <div className="referral-hd-progress-bar">
           <h3>Application Progress</h3>
-          <div className="timeline">
-            {STATUS_ORDER.map((step, index) => {
-              const isDone = index < currentIndex;
-              const isActive = index === currentIndex;
+          <div className="timeline-wrapper">
+            <div className="timeline">
+              {STATUS_ORDER.map((step, index) => {
+                const isDone = index < currentIndex;
+                const isActive = index === currentIndex;
+                const isProspect = Referral.Prospect && isActive;
 
-              return (
-                <React.Fragment key={step}>
-                  <div
-                    className={`step ${
-                      isDone ? "done" : ""
-                    } ${isActive ? "active" : ""}`}
-                  >
-                    <span className="icon">
-                      {isDone && <Check size={14} />}
-                      {isActive && <Briefcase size={14} />}
-                    </span>
-                    <span className="label">{step}</span>
-                  </div>
-
-                  {index < STATUS_ORDER.length - 1 && (
+                return (
+                  <React.Fragment key={step}>
                     <div
-                      className={`line ${
-                        isDone ? "done" : isActive ? "active" : ""
-                      }`}
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })}
+                      className={`step ${
+                        isDone ? "done" : ""
+                      } ${isActive ? "active" : ""} ${isProspect ? "prospect" : ""}`}
+                    >
+                      <span className="icon">
+                        {isDone && <Check size={14} />}
+                        {isActive && !isProspect && <Briefcase size={14} />}
+                        {isProspect && <X size={14} />}
+                      </span>
+                      <span className="label">{step}</span>
+                    </div>
+
+                    {index < STATUS_ORDER.length - 1 && (
+                      <div
+                        className={`line ${
+                          isDone ? "done" : isActive ? "active" : ""
+                        }`}
+                      />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+            {Referral.Prospect && (
+              <span className="status-badge-secondary status-badge-prospect">
+                Prospect
+              </span>
+            )}
           </div>
         </div>
 
@@ -436,12 +446,13 @@ const EmployeeReferralHD = () => {
               <Briefcase size={18} />
               <h3>Position Details</h3>
             </div>
-            <div className="referral-hd-content-right-title">
-              <span className="referral-hd-content-right-title-label">Position Title</span>
-              <h4>{referralData.Position.PositionTitle}</h4>
-            </div>
+            <p>{referralData.Position.PositionTitle}</p>
             <hr />
             <div className="referral-hd-content-right-details">
+            <div className="referral-hd-content-right-details-item">
+                <Building2 size={18} />
+                <span><strong>Company Name:</strong> {referralData.Position.CompanyName}</span>
+              </div>
               <div className="referral-hd-content-right-details-item">
                 <Award size={18} />
                 <span><strong>Years Required:</strong> {referralData.Position.YearsRequired}</span>

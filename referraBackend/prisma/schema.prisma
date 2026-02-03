@@ -95,12 +95,14 @@ enum Status {
   InterviewOne
   InterviewTwo
   Acceptance
+  Hired
 }
 
 model Referral {
 ReferralId String @id @default(uuid())
 Status Status @default(Pending)
 AcceptedInOtherPosition Boolean @default(false)
+Prospect Boolean @default(false)
 CreatedAt DateTime @default(now())
 UpdatedAt DateTime @updatedAt
 

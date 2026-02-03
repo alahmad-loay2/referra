@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE "Users" ADD COLUMN     "ProfileUrl" TEXT;
+-- ALTER TABLE "Users" ADD COLUMN     "ProfileUrl" TEXT;

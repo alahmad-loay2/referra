@@ -120,6 +120,12 @@
     margin-bottom: 1rem;
 }
 
+.timeline-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .timeline {
     display: flex;
     align-items: center;
@@ -180,7 +186,32 @@
 }
 
 .line.active {
-    background: #7aa7ff;
+  background: #7aa7ff;
+}
+
+/* Prospect state - red with X */
+.step.prospect .icon {
+  background: #e57373;
+  color: white;
+}
+
+.step.prospect .label {
+  color: #e57373;
+}
+
+/* Status badge */
+.status-badge-secondary {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  width: fit-content;
+}
+
+.status-badge-prospect {
+  background-color: #d1ecf1;
+  color: #0c5460;
 }
 
 .referral-hd-content {

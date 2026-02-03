@@ -79,9 +79,10 @@
 
 .allCandidates {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 20px;
   margin-top: 20px;
+  justify-content: start;
 }
 
 .candidate {
@@ -90,7 +91,8 @@
     border-radius: 10px;
     display: flex;
     justify-content: space-between;
-    width: 100%;    
+    width: 100%;
+    max-width: 100%;
     gap: 20px;
 }
 
@@ -155,6 +157,11 @@
 .status-acceptance {
   background-color: #e8f0ff;
   color: #2f5fd0;
+}
+
+.status-hired {
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .statusBadgeSecondary {
