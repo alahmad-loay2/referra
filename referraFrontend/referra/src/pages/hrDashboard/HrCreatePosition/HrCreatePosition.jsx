@@ -10,6 +10,8 @@ const HrCreatePosition = () => {
 
   const [formData, setFormData] = useState({
     positionTitle: "",
+    companyName: "",
+    employmentType: "",
     yearsRequired: "",
     description: "",
     timeZone: "",
@@ -52,6 +54,8 @@ const HrCreatePosition = () => {
 
           setFormData({
             positionTitle: position.PositionTitle || "",
+            companyName: position.CompanyName || "",
+            employmentType: position.EmploymentType || "",
             yearsRequired: position.YearsRequired || "",
             description: position.Description || "",
             timeZone: position.Timezone || "",
@@ -113,6 +117,8 @@ const HrCreatePosition = () => {
   const hasFormData = () => {
     return (
       formData.positionTitle ||
+      formData.companyName ||
+      formData.employmentType ||
       formData.yearsRequired ||
       formData.description ||
       formData.timeZone ||
@@ -145,6 +151,36 @@ const HrCreatePosition = () => {
                 value={formData.positionTitle}
                 onChange={handleChange}
               />
+            </div>
+            <div className="labelInput">
+              <label>Company Name*</label>
+              <input
+                type="text"
+                name="companyName"
+                placeholder="e.g. Tech Corp"
+                required
+                value={formData.companyName}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="formGroup">
+            <div className="labelInput">
+              <label>Employment Type*</label>
+              <select
+                name="employmentType"
+                required
+                value={formData.employmentType}
+                onChange={handleChange}
+              >
+                <option value="">Select Employment Type</option>
+                <option value="FULL_TIME">Full Time</option>
+                <option value="PART_TIME">Part Time</option>
+                <option value="CONTRACT">Contract</option>
+                <option value="INTERNSHIP">Internship</option>
+                <option value="TEMPORARY">Temporary</option>
+              </select>
             </div>
             <div className="labelInput">
               <label>Years Of Experience Needed*</label>

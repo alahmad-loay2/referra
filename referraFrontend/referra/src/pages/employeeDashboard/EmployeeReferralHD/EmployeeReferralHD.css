@@ -461,6 +461,31 @@
     font-size: var(--fs-large);
 }
 
+.referral-hd-position-title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 0;
+}
+
+.referral-hd-position-title-section p {
+    font-size: var(--fs-large);
+    font-weight: 600;
+    margin: 0;
+    color: var(--gray-dark);
+}
+
+.referral-hd-employment-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: var(--fs-small);
+    font-weight: 500;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    width: fit-content;
+}
+
 .referral-hd-content-right-title {
     margin-bottom: 20px;
     padding: 16px 20px;

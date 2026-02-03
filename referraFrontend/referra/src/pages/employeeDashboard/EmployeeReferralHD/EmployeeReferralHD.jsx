@@ -188,6 +188,19 @@ const EmployeeReferralHD = () => {
   const currentIndex = STATUS_ORDER.indexOf(status);
   const isPending = status === "Pending";
 
+  // Format employment type for display
+  const formatEmploymentType = (type) => {
+    if (!type) return "";
+    const typeMap = {
+      FULL_TIME: "Full Time",
+      PART_TIME: "Part Time",
+      CONTRACT: "Contract",
+      INTERNSHIP: "Internship",
+      TEMPORARY: "Temporary",
+    };
+    return typeMap[type] || type;
+  };
+
   return (
       <div className="referral-hd-container">
         <div className="referral-hd-header">
@@ -263,7 +276,7 @@ const EmployeeReferralHD = () => {
                       <span className="label">{step}</span>
                     </div>
 
-                    {index < STATUS_ORDER.length - 1 && (
+                    {index < STATUS_ORDER.length - 1 && !isProspect && (
                       <div
                         className={`line ${
                           isDone ? "done" : isActive ? "active" : ""
@@ -446,7 +459,14 @@ const EmployeeReferralHD = () => {
               <Briefcase size={18} />
               <h3>Position Details</h3>
             </div>
-            <p>{referralData.Position.PositionTitle}</p>
+            <div className="referral-hd-position-title-section">
+              <p>{referralData.Position.PositionTitle}</p>
+              {referralData.Position.EmploymentType && (
+                <span className="referral-hd-employment-badge">
+                  {formatEmploymentType(referralData.Position.EmploymentType)}
+                </span>
+              )}
+            </div>
             <hr />
             <div className="referral-hd-content-right-details">
             <div className="referral-hd-content-right-details-item">
