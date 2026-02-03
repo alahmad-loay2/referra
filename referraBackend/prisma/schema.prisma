@@ -113,11 +113,19 @@ enum PositionState {
   OPEN
   CLOSED
 }
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  TEMPORARY
+}
 model Position {
   PositionId String @id @default(uuid())
   PositionTitle String
   CompanyName String 
   PositionState PositionState @default(OPEN)
+  EmploymentType EmploymentType
   YearsRequired Int
   Description String
   Timezone String

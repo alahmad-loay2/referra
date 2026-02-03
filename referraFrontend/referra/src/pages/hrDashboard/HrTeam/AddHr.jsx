@@ -1,130 +1,176 @@
-import React, { useState, useEffect } from "react";
-import { createHr } from "../../../api/auth.api.js";
-import { getHrDepartments } from "../../../api/hrPositions.api.js";
+import React, { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import { createHr } from "../../../api/auth.api";
+import { getHrDepartments } from "../../../api/hrPositions.api";
+import "./AddHr.css";
 
-const HrTeam = () => {
+const AddHr = ({ onClose, onSuccess }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [gender, setGender] = useState("");
-  const [email, setEmail] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState([]);
-  const [createMessage, setCreateMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const depts = await getHrDepartments();
-        setDepartments(depts);
-      } catch (error) {
-        console.error("Failed to fetch departments:", error);
-        setCreateMessage("Failed to load departments.");
+        const data = await getHrDepartments();
+        setDepartments(data);
+      } catch {
+        setError("Failed to load departments");
       }
     };
     fetchDepartments();
   }, []);
 
-  const handleCreateHr = async () => {
-    if (!departmentId) {
-      setCreateMessage("Please select a department.");
+  const handleSubmit = async () => {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !age ||
+      !phoneNumber ||
+      !gender ||
+      !departmentId
+    ) {
+      setError("All fields are required");
       return;
     }
 
-    setLoading(true);
-    setCreateMessage("");
     try {
+      setLoading(true);
       await createHr({
         firstName,
         lastName,
+        email,
         age,
         phoneNumber,
         gender,
-        email,
         departmentId,
       });
-      setFirstName("");
-      setLastName("");
-      setAge("");
-      setPhoneNumber("");
-      setGender("");
-      setEmail("");
-      setDepartmentId("");
-      setCreateMessage("HR created successfully.");
-    } catch (e) {
-      setCreateMessage(e.message || "Failed to create HR.");
+      onSuccess();
+    } catch (err) {
+      setError(err.message || "Failed to create HR");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <h1>HR Team</h1>
-      <button onClick={handleCreateHr} disabled={loading}>
-        {loading ? "Creating..." : "Create New HR"}
-      </button>
-      <div>
-        <input
-          type="text"
-          placeholder="First Name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Last Name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Age"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Phone Number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Gender"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <select
-          value={departmentId}
-          onChange={(e) => setDepartmentId(e.target.value)}
-          required
-        >
-          <option value="">Select Department</option>
-          {departments.map((dept) => (
-            <option key={dept.DepartmentId} value={dept.DepartmentId}>
-              {dept.DepartmentName}
-            </option>
-          ))}
-        </select>
+    <div className="modal-overlay">
+      <div className="modal-box">
+        <button className="modal-close" onClick={onClose}>
+          <X size={18} />
+        </button>
+
+        <h2>Add New HR Team Member</h2>
+        <p className="modal-subtitle">
+          They will receive an email to set their password.
+        </p>
+
+        <form>
+          {/* FIRST + LAST NAME */}
+          <div className="modal-grid">
+            <div className="form-group">
+              <label>First Name *</label>
+              <input
+                name="hr-first-name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Last Name *</label>
+              <input
+                name="hr-last-name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* EMAIL */}
+          <div className="form-group">
+            <label>Email *</label>
+            <input
+              name="hr-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          {/* AGE */}
+          <div className="form-group">
+            <label>Age *</label>
+            <input
+              name="hr-age"
+              type="number"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+            />
+          </div>
+
+          {/* PHONE */}
+          <div className="form-group">
+            <label>Phone Number *</label>
+            <input
+              name="hr-phone"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+          </div>
+
+          {/* GENDER */}
+          <div className="form-group">
+            <label>Gender *</label>
+            <input
+              name="hr-gender"
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+            />
+          </div>
+
+          {/* DEPARTMENT */}
+          <div className="form-group">
+            <label>Assigned Department *</label>
+            <select
+              value={departmentId}
+              onChange={(e) => setDepartmentId(e.target.value)}
+            >
+              <option value="">Select Department</option>
+              {departments.map((d) => (
+                <option key={d.DepartmentId} value={d.DepartmentId}>
+                  {d.DepartmentName}
+                </option>
+              ))}
+            </select>
+          </div>
+        </form>
+
+        {error && <p className="modal-error">{error}</p>}
+
+        <div className="modal-actions">
+          <button className="btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            className="btn-primary"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "Adding..." : "Add Member"}
+          </button>
+        </div>
       </div>
-      {createMessage && <p>{createMessage}</p>}
     </div>
   );
 };
 
-export default HrTeam;
+export default AddHr;
