@@ -15,6 +15,7 @@ import {
   getReferralDetails,
 } from "../services/hr/hrReferrals.service.js";
 import { getHrTeam } from "../services/hr/hrTeam.service.js";
+import { getHrDashboard } from "../services/hr/hrDashboard.service.js";
 
 /**
  * HR – Create Position
@@ -289,5 +290,23 @@ export const FinalizeReferral = async (req, res, next) => {
     });
   } catch (err) {
     next(err);
+  }
+};
+
+export const getHrDashboardController = async (req, res, next) => {
+  try {
+    const hr = req.user?.Hr;
+
+    if (!hr) {
+      const error = new Error("HR profile not found");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const dashboard = await getHrDashboard(hr);
+
+    res.status(200).json(dashboard);
+  } catch (error) {
+    next(error);
   }
 };

@@ -16,6 +16,28 @@ const API_BASE_URL =
   }
 };
 
+export const getHrDashboard = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/hr/dashboard`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to get HR dashboard");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("getHrDashboard error:", error);
+    throw error;
+  }
+};
+
 export const getHrPositions = async ({
   page = 1,
   limit = 10,

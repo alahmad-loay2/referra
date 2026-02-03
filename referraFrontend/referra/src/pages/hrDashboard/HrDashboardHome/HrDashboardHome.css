@@ -1,0 +1,59 @@
+.hr-dashboard-home {
+    padding: 30px;
+    min-width: 1000px;
+}
+
+.hr-dashboard-home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 20px;
+}
+
+.hr-dashboard-home-header-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 15px;
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    flex: 1;
+}
+
+.hr-dashboard-home-icon-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hr-dashboard-home-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    flex-shrink: 0;
+}
+
+.hr-dashboard-home-header-item p {
+    font-size: var(--fs-small);
+    color: var(--gray-dark);
+}
+
+.hr-dashboard-home-header-item > span {
+    font-size: var(--fs-large);
+    color: var(--secondary-color);
+    align-self: flex-start;
+}
+
+.hr-dashboard-home-header-item .hr-dashboard-home-header-item-extra {
+    font-size: var(--fs-small);
+    color: var(--gray-dark);
+    margin-left: 5px;
+}

@@ -1,10 +1,11 @@
 import { prisma } from "../../lib/prisma.js";
 
 // how it works:
-// candidates can be in multiple referrals.
-// referrals have stages and have accepted in other position flag. if accepted in other position,
-// the candidate is accepted, and accepted in other position flag is true, and all referrals become acceptance stage.
-// if candidate is accepted but the referral have accepted in other position flag as false, then candidate is accepted in this referral.
+// candidates can have multiple referrals 
+// if referral is marked as prospect, its saved in referral that hes prospect and we can no longer advance this referral.
+// if referral is in acceptance stage, the hr has to pick between prospect or accept.
+// if referral is accepted, all other referrals are marked with acceptedinother position.
+// if referral is accepted, the candidate is also marked as accepted. 
 
 // get all confirmed referrals for an hr with filters on department and status and pagination and search
 // positionId is the id of the position to filter by
