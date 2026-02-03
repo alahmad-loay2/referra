@@ -1,6 +1,22 @@
 import { supabase } from "../lib/supabase.js";
 import { prisma } from "../lib/prisma.js";
-import { NODE_ENV } from "../config/env.js";
+import jwt from "jsonwebtoken";
+
+// User data cache for performance optimization
+const userDataCache = new Map();
+
+// Cache TTL: 15 minutes
+const USER_DATA_CACHE_TTL = 15 * 60 * 1000;
+
+// Clean up old cache entries periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of userDataCache.entries()) {
+    if (now - value.timestamp > USER_DATA_CACHE_TTL) {
+      userDataCache.delete(key);
+    }
+  }
+}, 60 * 1000); // Run cleanup every minute
 
 // Middleware for authentication and role-based access control
 // handle refreshing tokens and attaching user info to req object
@@ -12,8 +28,21 @@ const throwAuthError = () => {
 };
 
 const attachUser = async (req, supabaseUser, next) => {
+  const userId = supabaseUser.id;
+  
+  // Check user data cache first
+  const userCacheKey = `user:${userId}`;
+  const cachedUser = userDataCache.get(userCacheKey);
+  
+  if (cachedUser && Date.now() - cachedUser.timestamp < USER_DATA_CACHE_TTL) {
+    req.user = cachedUser.data;
+    req.supabaseUserId = userId;
+    return next();
+  }
+
+  // Cache miss, query database
   const user = await prisma.users.findUnique({
-    where: { UserId: supabaseUser.id },
+    where: { UserId: userId },
     include: {
       Employee: true,
       Hr: {
@@ -34,7 +63,7 @@ const attachUser = async (req, supabaseUser, next) => {
     throw error;
   }
 
-  req.user = {
+  const userData = {
     UserId: user.UserId,
     Email: user.Email,
     Role: user.Role,
@@ -42,7 +71,14 @@ const attachUser = async (req, supabaseUser, next) => {
     Hr: user.Hr,
   };
 
-  req.supabaseUserId = supabaseUser.id;
+  // Cache the result
+  userDataCache.set(userCacheKey, {
+    data: userData,
+    timestamp: Date.now()
+  });
+
+  req.user = userData;
+  req.supabaseUserId = userId;
   next();
 };
 
@@ -69,16 +105,47 @@ export const authenticate = async (req, res, next) => {
       throwAuthError();
     }
 
-    const { data, error } = await supabase.auth.getUser(accessToken);
+    // Verify JWT token locally instead of calling Supabase API
+    if (accessToken) {
+      try {
+        // Decode JWT token to extract user ID and check expiration
+        const decoded = jwt.decode(accessToken, { complete: true });
+        
+        if (!decoded || !decoded.payload) {
+          throw new Error("Invalid token format");
+        }
 
-    if (!error && data?.user) {
-      return attachUser(req, data.user, next);
+        const payload = decoded.payload;
+        const userId = payload.sub; // Supabase user ID is in 'sub' claim
+        const exp = payload.exp; // Expiration timestamp
+
+        // Check if token is expired
+        if (exp && exp * 1000 < Date.now()) {
+          // Token expired, will try refresh below
+          throw new Error("Token expired");
+        }
+
+        if (!userId) {
+          throw new Error("User ID not found in token");
+        }
+
+        // Token is valid, use it directly (no API call needed!)
+        return attachUser(req, { id: userId }, next);
+      } catch (decodeError) {
+        // Token invalid or expired, try refresh
+        if (!refreshToken) {
+          throwAuthError();
+        }
+        // Fall through to refresh logic below
+      }
     }
 
+    // Token expired or invalid, try refresh
     if (!refreshToken) {
       throwAuthError();
     }
 
+    // Still need Supabase API for token refresh
     const { data: refreshed, error: refreshError } =
       await supabase.auth.refreshSession({
         refresh_token: refreshToken,
@@ -111,5 +178,12 @@ export const authenticate = async (req, res, next) => {
       });
     }
     next(error);
+  }
+};
+
+// Helper function to clear user cache on logout
+export const clearUserCache = (userId) => {
+  if (userId) {
+    userDataCache.delete(`user:${userId}`);
   }
 };

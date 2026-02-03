@@ -8,7 +8,6 @@ import {
   AdvanceReferralStage,
   getConfirmedReferralDetails,
   // DeletePosition,
-  getDashboardStatsController,
   getHrPositionsController,
   getHrPositionDetailsController,
   getHrDepartmentsController,
@@ -46,14 +45,6 @@ router.put(
   requireHr,
   UpdatePosition,
 );
-// HR dashboard stats
-router.get(
-  "/dashboard-stats",
-  authenticate,
-  requireHr,
-  getDashboardStatsController,
-);
-
 router.get("/positions-hr", authenticate, requireHr, getHrPositionsController);
 
 router.get(

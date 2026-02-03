@@ -3,7 +3,6 @@ import {
   updatePositionState,
   updatePositionDetails,
   //deletePosition,
-  getHrDashboardStats,
   getHrPositions,
   getHrPositionDetails,
   getDepartmentsByHr,
@@ -96,24 +95,6 @@ export const UpdatePosition = async (req, res, next) => {
       message: "Position updated successfully",
       position,
     });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getDashboardStatsController = async (req, res, next) => {
-  try {
-    const hr = req.user?.Hr;
-
-    if (!hr) {
-      const error = new Error("HR profile not found");
-      error.statusCode = 403;
-      throw error;
-    }
-
-    const stats = await getHrDashboardStats(hr);
-
-    res.status(200).json(stats);
   } catch (error) {
     next(error);
   }

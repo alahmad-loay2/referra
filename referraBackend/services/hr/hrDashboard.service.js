@@ -27,92 +27,82 @@ export const getHrDashboard = async (hr) => {
     },
   };
 
-  // Get total referrals (non-pending) for HR's departments
-  const totalReferrals = await prisma.application.count({
-    where: {
-      ...departmentFilter,
-      Referral: {
-        Status: {
-          not: "Pending",
-        },
-      },
-    },
-  });
-
-  // Get open positions for HR's departments
-  const openPositions = await prisma.position.count({
-    where: {
-      DepartmentId: {
-        in: departmentIds,
-      },
-      PositionState: "OPEN",
-    },
-  });
-
-  // Get pending reviews: referrals between Confirmed and Acceptance stage that aren't prospect
-  // Statuses: Confirmed, InterviewOne, InterviewTwo, Acceptance (but not Prospect)
-  const pendingReviews = await prisma.application.count({
-    where: {
-      ...departmentFilter,
-      Referral: {
-        Status: {
-          in: ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"],
-        },
-        Prospect: false,
-      },
-    },
-  });
-
-  // Get successful hires: referrals with Status = "Hired" for HR's departments
-  const successfulHires = await prisma.application.count({
-    where: {
-      ...departmentFilter,
-      Referral: {
-        Status: "Hired",
-      },
-    },
-  });
-
-  // Get recent referrals (3 most recent, non-pending)
-  const recentReferrals = await prisma.application.findMany({
-    where: {
-      ...departmentFilter,
-      Referral: {
-        Status: {
-          not: "Pending",
-        },
-      },
-    },
-    include: {
-      Referral: true,
-      Candidate: {
-        select: {
-          CandidateId: true,
-          FirstName: true,
-          LastName: true,
-          Email: true,
-        },
-      },
-      Position: {
-        select: {
-          PositionId: true,
-          PositionTitle: true,
-          Department: {
-            select: {
-              DepartmentId: true,
-              DepartmentName: true,
-            },
+  // Run all queries in parallel for maximum performance
+  const [
+    totalReferrals,
+    openPositions,
+    pendingReviews,
+    successfulHires,
+    recentReferrals,
+  ] = await Promise.all([
+    // Get total referrals (non-pending) for HR's departments
+    prisma.application.count({
+      where: {
+        ...departmentFilter,
+        Referral: {
+          Status: {
+            not: "Pending",
           },
         },
       },
-    },
-    orderBy: {
-      Referral: {
-        CreatedAt: "desc",
+    }),
+    // Get open positions for HR's departments
+    prisma.position.count({
+      where: {
+        DepartmentId: {
+          in: departmentIds,
+        },
+        PositionState: "OPEN",
       },
-    },
-    take: 3,
-  });
+    }),
+    // Get pending reviews: referrals between Confirmed and Acceptance stage that aren't prospect
+    prisma.application.count({
+      where: {
+        ...departmentFilter,
+        Referral: {
+          Status: {
+            in: ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"],
+          },
+          Prospect: false,
+        },
+      },
+    }),
+    // Get successful hires: referrals with Status = "Hired" for HR's departments
+    prisma.application.count({
+      where: {
+        ...departmentFilter,
+        Referral: {
+          Status: "Hired",
+        },
+      },
+    }),
+    // Get recent referrals (3 most recent, non-pending)
+    prisma.application.findMany({
+      where: {
+        ...departmentFilter,
+        Referral: {
+          Status: {
+            not: "Pending",
+          },
+        },
+      },
+      include: {
+        Referral: true,
+        Candidate: true,
+        Position: {
+          include: {
+            Department: true,
+          },
+        },
+      },
+      orderBy: {
+        Referral: {
+          CreatedAt: "desc",
+        },
+      },
+      take: 3,
+    }),
+  ]);
 
   return {
     totalReferrals,

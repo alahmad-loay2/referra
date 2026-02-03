@@ -226,49 +226,6 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
     },
   });
 };
-// get total positions , open positions, total applicants for hr dashboard stats
-export const getHrDashboardStats = async (hr) => {
-  if (!hr?.Departments || hr.Departments.length === 0) {
-    const error = new Error("HR has no assigned departments");
-    error.statusCode = 403;
-    throw error;
-  }
-
-  const departmentIds = hr.Departments.map((d) => d.DepartmentId);
-
-  const [totalPositions, openPositions, totalApplicants] =
-    await prisma.$transaction([
-      prisma.position.count({
-        where: {
-          DepartmentId: { in: departmentIds },
-        },
-      }),
-      prisma.position.count({
-        where: {
-          DepartmentId: { in: departmentIds },
-          PositionState: "OPEN",
-        },
-      }),
-      prisma.application.count({
-        where: {
-          Position: {
-            DepartmentId: { in: departmentIds },
-          },
-          Referral: {
-            Status: {
-              not: "Pending",
-            },
-          },
-        },
-      }),
-    ]);
-
-  return {
-    totalPositions,
-    openPositions,
-    totalApplicants,
-  };
-};
 // get positions created by hr with filters on department and status and pagination and search
 export const getHrPositions = async (hr, query) => {
   const page = Math.max(Number(query.page) || 1, 1);
@@ -323,19 +280,48 @@ export const getHrPositions = async (hr, query) => {
   //  Sorting
   let orderBy = { CreatedAt: "desc" }; // default
 
-  const total = await prisma.position.count({
-    where: whereClause,
-  });
-
-  const positions = await prisma.position.findMany({
-    where: whereClause,
-    include: {
-      Department: true,
-    },
-    orderBy,
-    skip,
-    take: limit,
-  });
+  // Run all queries in parallel for maximum performance
+  const [total, positions, totalPositions, openPositions, totalApplicants] = await Promise.all([
+    prisma.position.count({
+      where: whereClause,
+    }),
+    prisma.position.findMany({
+      where: whereClause,
+      include: {
+        Department: true,
+      },
+      orderBy,
+      skip,
+      take: limit,
+    }),
+    // Stats: total positions
+    prisma.position.count({
+      where: {
+        DepartmentId: { in: allowedDepartmentIds },
+      },
+    }),
+    // Stats: open positions
+    prisma.position.count({
+      where: {
+        DepartmentId: { in: allowedDepartmentIds },
+        PositionState: "OPEN",
+      },
+    }),
+    // Stats: total applicants
+    prisma.application.count({
+      where: {
+        Position: {
+          DepartmentId: { in: allowedDepartmentIds },
+        },
+        Referral: {
+          Status: {
+            not: "Pending",
+          },
+        },
+      },
+    }),
+  ]);
+  
   // Count NON-pending applicants per position
   const positionIds = positions.map((p) => p.PositionId);
 
@@ -367,6 +353,11 @@ export const getHrPositions = async (hr, query) => {
     page,
     limit,
     totalPages: Math.ceil(total / limit),
+    stats: {
+      totalPositions,
+      openPositions,
+      totalApplicants,
+    },
   };
 };
 
@@ -386,33 +377,36 @@ export const getHrPositionDetails = async (hr, positionId) => {
 
   const allowedDepartmentIds = hr.Departments.map((d) => d.DepartmentId);
 
-  const position = await prisma.position.findFirst({
-    where: {
-      PositionId: positionId,
-      DepartmentId: {
-        in: allowedDepartmentIds, //  HR ownership check
+  // Run position fetch and applicants count in parallel
+  const [position, applicantsCount] = await Promise.all([
+    prisma.position.findFirst({
+      where: {
+        PositionId: positionId,
+        DepartmentId: {
+          in: allowedDepartmentIds, //  HR ownership check
+        },
       },
-    },
-    include: {
-      Department: true,
-    },
-  });
+      include: {
+        Department: true,
+      },
+    }),
+    prisma.application.count({
+      where: {
+        PositionId: positionId,
+        Referral: {
+          Status: {
+            not: "Pending",
+          },
+        },
+      },
+    }),
+  ]);
 
   if (!position) {
     const error = new Error("Position not found or access denied");
     error.statusCode = 404;
     throw error;
   }
-  const applicantsCount = await prisma.application.count({
-    where: {
-      PositionId: positionId,
-      Referral: {
-        Status: {
-          not: "Pending",
-        },
-      },
-    },
-  });
 
   return {
     ...position,
@@ -430,13 +424,8 @@ export const getDepartmentsByHr = async (hrId) => {
     where: {
       HrId: hrId,
     },
-    select: {
-      Department: {
-        select: {
-          DepartmentId: true,
-          DepartmentName: true,
-        },
-      },
+    include: {
+      Department: true,
     },
   });
 

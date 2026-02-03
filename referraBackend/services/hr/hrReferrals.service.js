@@ -115,25 +115,27 @@ export const getAllConfirmedReferrals = async ({
 
   const where = { AND: andFilters };
 
-  const total = await prisma.application.count({ where });
-
-  const referrals = await prisma.application.findMany({
-    where,
-    include: {
-      Referral: true,
-      Candidate: true,
-      Position: {
-        include: {
-          Department: true,
+  // Run count and findMany in parallel for faster response
+  const [total, referrals] = await Promise.all([
+    prisma.application.count({ where }),
+    prisma.application.findMany({
+      where,
+      include: {
+        Referral: true,
+        Candidate: true,
+        Position: {
+          include: {
+            Department: true,
+          },
         },
       },
-    },
-    orderBy: {
-      Referral: { CreatedAt: "desc" },
-    },
-    skip,
-    take: pageSize,
-  });
+      orderBy: {
+        Referral: { CreatedAt: "desc" },
+      },
+      skip,
+      take: pageSize,
+    }),
+  ]);
 
   return {
     page,
@@ -252,21 +254,21 @@ export const advanceReferralStage = async (referralId, hrUser) => {
 
   const nextState = workflow[currentIndex + 1];
 
-  // Just update the status (can only go up to Acceptance)
-  await prisma.referral.update({
+  // Update and return in one query - more efficient
+  const updatedReferral = await prisma.referral.update({
     where: { ReferralId: referralId },
     data: { Status: nextState },
-  });
-
-  const updatedApplication = await prisma.application.findUnique({
-    where: { ReferralId: referralId },
     include: {
-      Candidate: true,
-      Referral: true,
+      Application: {
+        include: {
+          Candidate: true,
+          Referral: true,
+        },
+      },
     },
   });
 
-  return updatedApplication;
+  return updatedReferral.Application;
 };
 
 // finalize a referral (accept or prospect)
@@ -422,6 +424,7 @@ export const finalizeReferral = async (
     });
   }
 
+  // Return updated application data
   const updatedApplication = await prisma.application.findUnique({
     where: { ReferralId: referralId },
     include: {

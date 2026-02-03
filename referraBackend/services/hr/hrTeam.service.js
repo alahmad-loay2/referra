@@ -31,26 +31,27 @@ export const getHrTeam = async (query) => {
     };
   }
 
-  const totalHrMembers = await prisma.hr.count({
-    where: whereClause,
-  });
-
-  const totalDepartments = await prisma.department.count();
-
-  const hrMembers = await prisma.hr.findMany({
-    where: whereClause,
-    include: {
-      User: true,
-      Departments: {
-        include: { Department: true },
+  // Run all three queries in parallel for maximum performance
+  const [totalHrMembers, totalDepartments, hrMembers] = await Promise.all([
+    prisma.hr.count({
+      where: whereClause,
+    }),
+    prisma.department.count(),
+    prisma.hr.findMany({
+      where: whereClause,
+      include: {
+        User: true,
+        Departments: {
+          include: { Department: true },
+        },
       },
-    },
-    orderBy: {
-      User: { CreatedAt: "desc" },
-    },
-    skip,
-    take: limit,
-  });
+      orderBy: {
+        User: { CreatedAt: "desc" },
+      },
+      skip,
+      take: limit,
+    }),
+  ]);
 
   const formattedHrMembers = hrMembers.map((hr) => ({
     ...hr,
@@ -66,6 +67,10 @@ export const getHrTeam = async (query) => {
       totalPages: Math.ceil(totalHrMembers / limit),
       hasNextPage: page * limit < totalHrMembers,
       hasPrevPage: page > 1,
+    },
+    stats: {
+      totalMembers: totalHrMembers,
+      totalDepartments: totalDepartments,
     },
   };
 };

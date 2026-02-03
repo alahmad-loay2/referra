@@ -42,30 +42,6 @@ const HrTeam = () => {
   const [showAddHr, setShowAddHr] = useState(false);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await getHrTeam(); // no filters
-
-        const deptSet = new Set();
-        data.hrMembers.forEach((hr) =>
-          hr.departments.forEach((d) => deptSet.add(d.DepartmentId)),
-        );
-
-        setStats({
-          totalMembers: data.pagination.total,
-          departmentsCount: deptSet.size,
-        });
-      } catch (err) {
-        console.error("Failed to fetch HR stats", err);
-      } finally {
-        setStatsLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, []);
-
-  useEffect(() => {
     const fetchDepartments = async () => {
       try {
         const data = await getHrDepartments();
@@ -81,21 +57,31 @@ const HrTeam = () => {
   useEffect(() => {
     const fetchTeam = async () => {
       setTableLoading(true);
+      setStatsLoading(true);
       try {
         const data = await getHrTeam({
           search: filters.search,
           departmentId: filters.departmentId,
           page,
-          pageSize: limit,
+          limit,
         });
 
         setHrMembers(data.hrMembers);
         setTotalPages(data.pagination.totalPages);
+        
+        // Set stats from the merged response
+        if (data.stats) {
+          setStats({
+            totalMembers: data.stats.totalMembers,
+            departmentsCount: data.stats.totalDepartments,
+          });
+        }
       } catch (err) {
         console.error("Failed to fetch HR team", err);
         setHrMembers([]);
       } finally {
         setTableLoading(false);
+        setStatsLoading(false);
       }
     };
 

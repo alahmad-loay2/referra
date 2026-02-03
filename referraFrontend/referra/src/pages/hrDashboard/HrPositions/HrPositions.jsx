@@ -3,7 +3,6 @@ import "./HrPositions.css";
 import { Briefcase, Users, Layers, Search, MoreVertical } from "lucide-react";
 import Button from "../../../components/button/Button";
 import {
-  getDashboardStats,
   getHrPositions,
   updatePositionState,
   getHrDepartments,
@@ -62,19 +61,6 @@ const HrPositions = () => {
   };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await getDashboardStats();
-        setStats(data);
-        setStatsLoading(false);
-      } catch (err) {
-        console.error("Failed to fetch dashboard stats");
-      }
-    };
-    fetchStats();
-  }, []);
-
-  useEffect(() => {
     const fetchDepartments = async () => {
       try {
         const depts = await getHrDepartments();
@@ -90,6 +76,7 @@ const HrPositions = () => {
   useEffect(() => {
     const fetchHrPositions = async () => {
       setPositionsLoading(true);
+      setStatsLoading(true);
       try {
         setError(false);
         const data = await getHrPositions({
@@ -109,6 +96,11 @@ const HrPositions = () => {
 
         setHrPositions(data.positions);
         setTotalPages(data.totalPages);
+        
+        // Set stats from the merged response
+        if (data.stats) {
+          setStats(data.stats);
+        }
       } catch (err) {
         console.error("Failed to fetch hr positions");
         setHrPositions([]);
@@ -116,6 +108,7 @@ const HrPositions = () => {
         setError(true);
       } finally {
         setPositionsLoading(false);
+        setStatsLoading(false);
       }
     };
 

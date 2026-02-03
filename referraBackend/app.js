@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.routes.js";
 import employeeRoutes from "./routes/employee.routes.js";
 import hrRoutes from "./routes/hr.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import directRoutes from "./routes/direct.routes.js";
 import errorMiddleware from "./middleware/error.middleware.js";
 
 const app = express();
@@ -51,6 +52,9 @@ app.use(
 app.use("/api/health", (req, res) => {
   res.status(200).send("OK");
 });
+
+// Direct routes - no middlewares, fastest access
+app.use("/api/direct", directRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/employee", employeeRoutes);

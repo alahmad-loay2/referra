@@ -1,21 +1,6 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
 
-  export const getDashboardStats = async() => {
-     try {
-    const res = await fetch(`${API_BASE_URL}/hr/dashboard-stats`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return await res.json();
-  } catch (error) {
-    return error;
-  }
-};
-
 export const getHrDashboard = async () => {
   try {
     const res = await fetch(`${API_BASE_URL}/hr/dashboard`, {

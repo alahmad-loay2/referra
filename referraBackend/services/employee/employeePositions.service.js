@@ -19,15 +19,17 @@ export const getVisiblePositions = async (user, query) => {
     },
   };
 
-  const total = await prisma.position.count({ where: whereClause });
-
-  const positions = await prisma.position.findMany({
-    where: whereClause,
-    include: { Department: true },
-    orderBy: { CreatedAt: "desc" },
-    skip,
-    take: limit,
-  });
+  // Run count and findMany in parallel for faster response
+  const [total, positions] = await Promise.all([
+    prisma.position.count({ where: whereClause }),
+    prisma.position.findMany({
+      where: whereClause,
+      include: { Department: true },
+      orderBy: { CreatedAt: "desc" },
+      skip,
+      take: limit,
+    }),
+  ]);
 
   return {
     positions,

@@ -7,6 +7,7 @@ import {
   bootstrapFirstHr,
   createHrUser,
 } from "../services/auth/auth.service.js";
+import { clearUserCache } from "../middleware/auth.middleware.js";
 
 
 // all controller for authentication and sending cookies to client
@@ -90,6 +91,13 @@ export const verifyEmail = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
+    const userId = req.user?.UserId || req.supabaseUserId;
+
+    // Clear user cache on logout
+    if (userId) {
+      clearUserCache(userId);
+    }
+
     res.cookie("accessToken", "", {
       httpOnly: true,
       secure: true,

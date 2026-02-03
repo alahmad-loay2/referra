@@ -47,15 +47,28 @@ export const createReferral = async (payload) => {
     throw error;
   }
 
-  const position = await prisma.position.findUnique({
-    where: { PositionId: positionId },
-  });
+  // Run position and employee lookups in parallel
+  const [position, employee] = await Promise.all([
+    prisma.position.findUnique({
+      where: { PositionId: positionId },
+    }),
+    prisma.employee.findUnique({
+      where: { EmployeeId: employeeId },
+    }),
+  ]);
 
   if (!position) {
     const error = new Error("Position not found");
     error.statusCode = 404;
     throw error;
   }
+
+  if (!employee) {
+    const error = new Error("Employee not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
   const now = new Date();
 
   // 🔒 HARD BLOCK expired or closed positions
@@ -70,16 +83,6 @@ export const createReferral = async (payload) => {
 
     const error = new Error("This position is closed or has expired");
     error.statusCode = 400;
-    throw error;
-  }
-
-  const employee = await prisma.employee.findUnique({
-    where: { EmployeeId: employeeId },
-  });
-
-  if (!employee) {
-    const error = new Error("Employee not found");
-    error.statusCode = 404;
     throw error;
   }
 
@@ -477,21 +480,27 @@ export const getEmployeeReferrals = async ({
 
   const where = { AND: andFilters };
 
-  const totalReferrals = await prisma.application.count({ where });
-
-  const applications = await prisma.application.findMany({
-    where,
-    include: {
-      Referral: true,
-      Candidate: true,
-      Position: true,
-    },
-    skip,
-    take: pageSize,
-    orderBy: {
-      Referral: { CreatedAt: "desc" },
-    },
-  });
+  // Run count and findMany in parallel for faster response
+  const [totalReferrals, applications] = await Promise.all([
+    prisma.application.count({ where }),
+    prisma.application.findMany({
+      where,
+      include: {
+        Referral: true,
+        Candidate: true,
+        Position: {
+          include: {
+            Department: true,
+          },
+        },
+      },
+      skip,
+      take: pageSize,
+      orderBy: {
+        Referral: { CreatedAt: "desc" },
+      },
+    })
+  ]);
 
   return {
     page,
