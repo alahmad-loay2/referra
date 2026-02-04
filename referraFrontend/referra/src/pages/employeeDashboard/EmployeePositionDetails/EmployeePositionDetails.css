@@ -1,12 +1,12 @@
 .position-details-container {
-  padding: 2rem;
+  padding: var(--page-padding-top-no-header) var(--page-padding-x);
   min-width: 1000px;
 }
 
 .position-details-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gap-sm);
   margin-bottom: 24px;
 }
 
@@ -16,7 +16,7 @@
 .title-group {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--gap-xs);
 }
 
 .company-name {
@@ -33,14 +33,14 @@
 
 .position-details-card {
   background: var(--white);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   padding: 24px;
 }
 
 .position-title-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gap-md);
   margin-bottom: 24px;
 }
 
@@ -62,18 +62,18 @@
 .position-info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: var(--gap-lg);
   margin-bottom: 24px;
 }
 
 .info-box {
   border: 1px solid var(--gray-light);
 
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--gap-xs);
 }
 
 .info-box .label {
@@ -89,7 +89,7 @@
 .position-description {
   border: 1px solid var(--gray-light);
 
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 16px;
 }
 
@@ -114,6 +114,6 @@
 .refer-btn {
   background: var(--primary-color);
   color: var(--white);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 12px 20px;
 }

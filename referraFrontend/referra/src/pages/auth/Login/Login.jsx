@@ -40,7 +40,7 @@ const LoginPage = () => {
       <div className="login-left">
         <img src="/logo.svg" alt="Aspire Software" className="logo_login" />
 
-        <h2>Welcome Back</h2>
+        <h1>Welcome Back</h1>
         <p className="login-subtitle">
           Sign in to access your referral dashboard
         </p>
@@ -111,7 +111,7 @@ const LoginPage = () => {
           <div className="login-right-icon">
             <UsersIcon />
           </div>
-          <h1>Empower your team</h1>
+          <h2>Empower your team</h2>
           <p>
             Track referrals, earn bonuses, and help build an amazing team—all
             from one dashboard

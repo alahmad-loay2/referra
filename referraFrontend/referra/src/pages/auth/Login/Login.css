@@ -26,7 +26,7 @@
 }
 
 /* TITLE */
-.login-left h2 {
+.login-left h1 {
   font-size: var(--fs-xxlarge);
   font-weight: 600;
   margin-bottom: 6px;
@@ -46,7 +46,7 @@
 .login-left form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--gap-lg);
   margin-top: -12px;
 }
 
@@ -54,7 +54,7 @@
 .field-login {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--gap-xs);
 }
 
 .field-login label {
@@ -67,12 +67,12 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gap-sm);
 
   height: 55px;
   padding: 0 12px;
   border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background-color: var(--white);
 }
 
@@ -141,7 +141,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
   margin-top: 8px;
   height: 44px;
 
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: none;
 
   background-color: var(--primary-color);
@@ -215,7 +215,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
 }
 
 /* TITLE */
-.login-right h1 {
+.login-right h2 {
   font-size: var(--fs-xlarge);
   font-weight: 700;
   margin-bottom: 10px;
@@ -233,7 +233,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
 .login-stats {
   margin-top: 40px;
   display: flex;
-  gap: 40px;
+  gap: var(--gap-xxl);
   justify-content: center;
 }
 

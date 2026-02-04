@@ -9,13 +9,32 @@
   --gray-light: #e8e8e8;
   --white: #ffffff;
 
-  /* --secondary-color-dark: #1f2742; darker navy */
-
+  /* Typography scale */
   --fs-small: 0.875rem;
   --fs-medium: 1rem;
   --fs-large: 1.3rem;
   --fs-xlarge: 1.8rem;
   --fs-xxlarge: clamp(2.8rem, 4.5vw, 4.2rem);
+
+  /* Layout spacing */
+  --page-padding-x: 30px;
+  --page-padding-y: 30px;
+  /* For full-page views without the dashboard/header bar */
+  --page-padding-top-no-header: 20px;
+
+  /* Border radii (use across cards/buttons) */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Gaps for flex / grid layouts */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 20px;
+  --gap-xl: 30px;
+  --gap-xxl: 40px;
 }
 
 * {

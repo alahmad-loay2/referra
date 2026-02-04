@@ -67,7 +67,7 @@ const HrTeam = () => {
         });
 
         setHrMembers(data.hrMembers);
-        setTotalPages(data.pagination.totalPages);
+        setTotalPages(data.totalPages || 1);
         
         // Set stats from the merged response
         if (data.stats) {
@@ -134,7 +134,7 @@ const HrTeam = () => {
           </div>
           <div className="HRCardsText">
             <p>Departments Covered</p>
-            <strong>{statsLoading ? "…" : stats.departmentsCount}</strong>
+            <strong>{statsLoading ? <Loading /> : stats.departmentsCount}</strong>
           </div>
         </div>
 
@@ -144,7 +144,7 @@ const HrTeam = () => {
           </div>
           <div className="HRCardsText">
             <p>Total Members</p>
-            <strong>{statsLoading ? "…" : stats.totalMembers}</strong>
+            <strong>{statsLoading ? <Loading /> : stats.totalMembers}</strong>
           </div>
         </div>
       </div>

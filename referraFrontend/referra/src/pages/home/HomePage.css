@@ -40,7 +40,7 @@
   max-width: 700px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--gap-lg);
 }
 
 .left-section h1 {
@@ -62,7 +62,7 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gap-sm);
   padding: 8px 14px;
   border-radius: 999px;
   background-color: rgba(14, 167, 182, 0.12);
@@ -92,11 +92,11 @@
 .button-group {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--gap-sm);
 }
 .button-style {
   padding: 12px 26px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: none;
   background-color: var(--secondary-color); /* navy */
   color: var(--white);
@@ -111,7 +111,7 @@
 }
 .button-style-2 {
   padding: 12px 26px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: none;
   background-color: transparent;
   color: var(--secondary-color);
@@ -141,13 +141,13 @@
 .hero-btn {
   padding: 14px 32px; /* slightly smaller */
   font-size: var(--fs-medium);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 10px 24px rgba(43, 53, 87, 0.32);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; /* space for arrow */
+  gap: var(--gap-sm); /* space for arrow */
 }
 
 .hero-btn:hover {
@@ -166,7 +166,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 24px;
+  gap: var(--gap-xl);
   max-width: 900px;
 
   justify-content: center;
@@ -178,12 +178,12 @@
 .card {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gap-lg);
   width: 100%;
   max-width: 900px;
   background-color: var(--white);
   padding: 36px 40px;
-  border-radius: 20px;
+  border-radius: var(--radius-xl);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 .card-wrapper {
@@ -240,18 +240,18 @@
 }
 .stats {
   display: flex;
-  gap: 32px;
+  gap: var(--gap-xl);
   margin-top: 24px;
 }
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gap-md);
 }
 .stat-icon {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   opacity: 0.9;
   display: flex;
   align-items: center;
@@ -282,7 +282,7 @@
 
   .navbar .button-group {
     flex-direction: row; /* ⬅️ FORCE row */
-    gap: 8px;
+    gap: var(--gap-sm);
     flex-wrap: nowrap; /* ⬅️ NO wrapping */
     margin-left: auto; /* ⬅️ PUSH to right */
   }
@@ -301,7 +301,7 @@
     justify-content: flex-start;
 
     padding: 32px 16px;
-    gap: 32px;
+    gap: var(--gap-xl);
   }
 
   .left-section {
@@ -313,7 +313,7 @@
   .button-group {
     flex-direction: column;
     width: 100%;
-    gap: 12px;
+    gap: var(--gap-md);
   }
 
   /* HERO BUTTONS (mobile) */
@@ -322,7 +322,7 @@
     width: 100%;
     padding: 12px 16px; /* ⬅️ flatter */
     font-size: var(--fs-medium);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
 
   .right-section {
@@ -346,7 +346,7 @@
   .stats {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: var(--gap-xl);
   }
 }
 
@@ -360,7 +360,7 @@
 
   .content {
     padding: 80px 40px;
-    gap: 48px;
+    gap: var(--gap-xl);
   }
 
   .left-section {

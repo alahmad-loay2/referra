@@ -59,15 +59,11 @@ export const getHrTeam = async (query) => {
   }));
 
   return {
+    page,
+    pageSize: limit,
+    total: totalHrMembers,
+    totalPages: Math.ceil(totalHrMembers / limit),
     hrMembers: formattedHrMembers,
-    pagination: {
-      page,
-      limit,
-      total: totalHrMembers,
-      totalPages: Math.ceil(totalHrMembers / limit),
-      hasNextPage: page * limit < totalHrMembers,
-      hasPrevPage: page > 1,
-    },
     stats: {
       totalMembers: totalHrMembers,
       totalDepartments: totalDepartments,

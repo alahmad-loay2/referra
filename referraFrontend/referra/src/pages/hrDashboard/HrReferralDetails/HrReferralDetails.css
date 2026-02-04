@@ -3,7 +3,7 @@
   min-width: 1000px;
   display: flex;
   flex-direction: column;
-  padding: 40px 50px;
+  padding: var(--page-padding-top-no-header) var(--page-padding-x);
 }
 
 /* ===== HEADER ===== */
@@ -17,13 +17,13 @@
 .referral-hd-header-left {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--gap-sm);
 }
 
 .referral-hd-header-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gap-md);
 }
 
 .referral-hd-header-title h3 {
@@ -37,7 +37,7 @@
 
 .referral-hd-header-right {
   display: flex;
-  gap: 10px;
+  gap: var(--gap-md);
 }
 
 /* Action buttons */
@@ -46,7 +46,7 @@
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: var(--fs-small);
   cursor: pointer;
 }
@@ -56,7 +56,7 @@
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: var(--fs-small);
   cursor: pointer;
 }
@@ -93,7 +93,7 @@
 /* ===== PROGRESS ===== */
 .referral-hd-progress-bar {
   background: var(--white);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 30px 50px;
   margin-bottom: 20px;
 }
@@ -147,7 +147,7 @@
 /* ===== MAIN CARDS ===== */
 .referral-hd-content {
   display: flex;
-  gap: 20px;
+  gap: var(--gap-lg);
   margin-bottom: 20px;
 }
 
@@ -155,33 +155,33 @@
 .referral-hd-content-right {
   flex: 1;
   background: var(--white);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 30px;
 }
 
 /* ===== REFERRED BY ===== */
 .referred-by-container {
   background: var(--white);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 24px 30px;
 }
 
 .referred-by-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gap-sm);
   margin-bottom: 16px;
 }
 
 .referred-by-row {
   display: flex;
-  gap: 40px;
+  gap: var(--gap-xxl);
 }
 
 .referred-by-user {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gap-md);
   min-width: 220px;
 }
 
@@ -226,6 +226,6 @@
 .referred-by-values .value {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--gap-sm);
   font-size: var(--fs-small);
 }

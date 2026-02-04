@@ -3,8 +3,8 @@
     overflow: auto;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    padding: 30px;
+    min-height: calc(100vh - 120px); /* header height */
+    padding: var(--page-padding-x) var(--page-padding-y);
 }
 
 .referralHr h3 {
@@ -16,15 +16,15 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 30px;
+    gap: var(--gap-xl);
     padding: 20px;
     margin: 20px 0;
-    border-radius: 20px;
+    border-radius: var(--radius-xl);
 }
 
 .selectContainer {
   display: flex;
-  gap: 15px;
+  gap: var(--gap-lg);
 }
 
 .searchInputWrapper {
@@ -35,10 +35,11 @@
 .referralSearchContainer input {
     padding: 10px;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     width: 100%;
     min-width: 200px;
     font-size: var(--fs-small);
+    height: 40px;
 }
 
 .searchIcon {
@@ -53,9 +54,14 @@
 .referralSearchContainer select {
     padding: 10px;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     min-width: 150px;
     font-size: var(--fs-small);
+    height: 40px;
+}
+
+.referralSearchContainer input[type="date"] {
+    height: 40px;
 }
 
 .referralSearchContainer input:focus,
@@ -68,9 +74,10 @@
   color: white;
   border: none;
   padding: 10px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: var(--fs-small);
+  height: 40px;
 }
 
 .apply-btn:hover {
@@ -80,7 +87,7 @@
 .allCandidates {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 20px;
+  gap: var(--gap-lg);
   margin-top: 20px;
   justify-content: start;
 }
@@ -88,25 +95,25 @@
 .candidate {
     background-color: white;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     display: flex;
     justify-content: space-between;
     width: 100%;
     max-width: 100%;
-    gap: 20px;
+    gap: var(--gap-lg);
 }
 
 .candidate .cardLeft {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--gap-sm);
     width: 60%;
 }
 
 .candidate .cardRight{
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--gap-sm);
 }
 
 .candidate p {
@@ -124,7 +131,7 @@
 .iconText {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--gap-sm);
 }
 
 .iconTextLabel {
@@ -197,7 +204,7 @@
 .iconText {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--gap-sm);
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -208,7 +215,7 @@
   background: var(--secondary-color);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   font-size: var(--fs-small);
   text-align: center;
@@ -229,14 +236,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: var(--gap-sm);
   font-size: var(--fs-small);
   color: var(--gray-dark);
 }
 .pagination button {
   min-width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: none;
   background: transparent;
   color: var(--secondary-color);
@@ -271,25 +278,25 @@
 .candidate-skeleton {
   background-color: white;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   display: flex;
   justify-content: space-between;
   width: 100%;
-  gap: 20px;
+  gap: var(--gap-lg);
   animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
 .skeleton-card-left {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--gap-sm);
   width: 60%;
 }
 
 .skeleton-card-right {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--gap-sm);
 }
 
 .skeleton-name {
@@ -302,7 +309,7 @@
     var(--gray-light) 75%
   );
   background-size: 200% 100%;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   animation: skeleton-shimmer 1.5s infinite;
 }
 
@@ -316,7 +323,7 @@
     var(--gray-light) 75%
   );
   background-size: 200% 100%;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   animation: skeleton-shimmer 1.5s infinite;
 }
 
@@ -344,7 +351,7 @@
     var(--gray-light) 75%
   );
   background-size: 200% 100%;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   animation: skeleton-shimmer 1.5s infinite;
 }
 
@@ -359,7 +366,7 @@
     var(--gray-light) 75%
   );
   background-size: 200% 100%;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   animation: skeleton-shimmer 1.5s infinite;
 }
 

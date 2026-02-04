@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Mail, Calendar, Briefcase, Check, ArrowLeft, Edit, Trash2, User, Award, Download, FileText, Clock, MapPin, Circle, Upload, X, Building2 } from "lucide-react";
+import { Mail, Calendar, Briefcase, Check, ArrowLeft, Edit, Trash2, User, Award, Download, FileText, Clock, MapPin, Circle, Upload, X, Building2, Users } from "lucide-react";
 import { fetchEmployeeReferralDetails, editCandidate, deleteCandidate } from "../../../api/employeeReferrals.api";
 import "./EmployeeReferralHD.css";
 
@@ -201,293 +201,398 @@ const EmployeeReferralHD = () => {
     return typeMap[type] || type;
   };
 
+  // Extract and clean CV filename from URL
+  const getCVFileName = (url) => {
+    if (!url) return "";
+    try {
+      // Extract filename from URL
+      const urlPath = url.split('/').pop();
+      const fileName = urlPath.split('?')[0]; // Remove query params
+      
+      // Remove extension
+      let nameWithoutExt = fileName.replace(/\.(pdf|PDF)$/, '');
+      
+      // Remove date patterns (common formats: YYYY-MM-DD, YYYYMMDD, etc.)
+      nameWithoutExt = nameWithoutExt.replace(/\d{4}-\d{2}-\d{2}/g, ''); // YYYY-MM-DD
+      nameWithoutExt = nameWithoutExt.replace(/\d{8}/g, ''); // YYYYMMDD
+      nameWithoutExt = nameWithoutExt.replace(/\d{2}-\d{2}-\d{4}/g, ''); // DD-MM-YYYY
+      nameWithoutExt = nameWithoutExt.replace(/\d{2}\/\d{2}\/\d{4}/g, ''); // DD/MM/YYYY
+      
+      // Clean up extra dashes/underscores
+      nameWithoutExt = nameWithoutExt.replace(/[-_]+/g, ' ').trim();
+      
+      // Truncate if too long and add ellipsis
+      const maxLength = 30;
+      if (nameWithoutExt.length > maxLength) {
+        return nameWithoutExt.substring(0, maxLength) + '...';
+      }
+      
+      return nameWithoutExt || "CV";
+    } catch (error) {
+      return "CV";
+    }
+  };
+
   return (
-      <div className="referral-hd-container">
-        <div className="referral-hd-header">
-          <div className="referral-hd-header-left">
-          <div className="referral-hd-header-title">
-          <Link to="/dashboard/employee/my-referrals">
-            <ArrowLeft size={18} />
-          </Link>
-          <h3>Referral Details</h3>
-          </div>
-          <p>Full Application Details for: {referralData.Candidate.FirstName} {referralData.Candidate.LastName}</p>
-          </div>
-          <div className="referral-hd-header-right">
-            {!isEditMode ? (
-              <>
-                <button 
-                  onClick={handleEdit} 
-                  className="referral-hd-edit-btn" 
-                  disabled={!isPending}
-                >
-                  Edit
-                </button>
-                <button 
-                  onClick={handleDelete} 
-                  className="referral-hd-delete-btn" 
-                  disabled={!isPending || deleteLoading}
-                >
-                  {deleteLoading ? "Deleting..." : "Delete"}
-                </button>
-              </>
-            ) : (
-              <>
-                <button 
-                  onClick={handleCancel} 
-                  className="referral-hd-cancel-btn" 
-                  disabled={editLoading}
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleSave} 
-                  className="referral-hd-save-btn" 
-                  disabled={editLoading}
-                >
-                  {editLoading ? "Saving..." : "Save"}
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="referral-hd-progress-bar">
-          <h3>Application Progress</h3>
-          <div className="timeline-wrapper">
-            <div className="timeline">
-              {STATUS_ORDER.map((step, index) => {
-                const isDone = index < currentIndex;
-                const isActive = index === currentIndex;
-                const isProspect = Referral.Prospect && isActive;
-
-                return (
-                  <React.Fragment key={step}>
-                    <div
-                      className={`step ${
-                        isDone ? "done" : ""
-                      } ${isActive ? "active" : ""} ${isProspect ? "prospect" : ""}`}
-                    >
-                      <span className="icon">
-                        {isDone && <Check size={14} />}
-                        {isActive && !isProspect && <Briefcase size={14} />}
-                        {isProspect && <X size={14} />}
-                      </span>
-                      <span className="label">{step}</span>
-                    </div>
-
-                    {index < STATUS_ORDER.length - 1 && !isProspect && (
-                      <div
-                        className={`line ${
-                          isDone ? "done" : isActive ? "active" : ""
-                        }`}
-                      />
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </div>
-            {Referral.Prospect && (
-              <span className="status-badge-secondary status-badge-prospect">
-                Prospect
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="referral-hd-content">
-          <div className="referral-hd-content-left">
-            <div className="referral-hd-content-left-header">
-            <User size={18} />
-            <h3>Candidate Information</h3>
-            </div>
-            <div className="referral-hd-content-left-candidate">
-              <div className="referral-hd-content-left-candidate-avatar">
-                {isEditMode 
-                  ? (editForm.firstName[0] || "") + (editForm.lastName[0] || "")
-                  : referralData.Candidate.FirstName[0] + referralData.Candidate.LastName[0]
-                }
+      <>
+        <div className="referral-hd-container">
+          <div className="referral-hd-header">
+            <div className="referral-hd-header-left">
+              <div className="referral-hd-header-title">
+                <Link to="/dashboard/employee/my-referrals">
+                  <ArrowLeft size={18} />
+                </Link>
+                <h3>Referral Details</h3>
               </div>
-              {isEditMode ? (
-                <div className="referral-hd-candidate-name-edit">
-                  <p>{editForm.firstName || ""} {editForm.lastName || ""}</p>
-                </div>
-              ) : (
-                <p>{referralData.Candidate.FirstName} {referralData.Candidate.LastName}</p>
-              )}
-              <span>{referralData.Position.PositionTitle}</span>
+              <p>
+                View and manage your referral details.
+              </p>
             </div>
-            <hr />
-            <div className="referral-hd-content-left-candidate-info">
-              {isEditMode ? (
+            <div className="referral-hd-header-right">
+              {!isEditMode ? (
                 <>
-                  <div className="referral-hd-edit-field">
-                    <label className="referral-hd-edit-label">
-                      <User size={18} />
-                      <span>First Name <span>*</span></span>
-                    </label>
-                    <input
-                      name="firstName"
-                      value={editForm.firstName}
-                      onChange={handleFormChange}
-                      className="referral-hd-edit-input"
-                      placeholder="First Name"
-                    />
-                  </div>
-                  <div className="referral-hd-edit-field">
-                    <label className="referral-hd-edit-label">
-                      <User size={18} />
-                      <span>Last Name <span>*</span></span>
-                    </label>
-                    <input
-                      name="lastName"
-                      value={editForm.lastName}
-                      onChange={handleFormChange}
-                      className="referral-hd-edit-input"
-                      placeholder="Last Name"
-                    />
-                  </div>
-                  <div className="referral-hd-edit-field">
-                    <label className="referral-hd-edit-label">
-                      <Mail size={18} />
-                      <span>Email <span>*</span></span>
-                    </label>
-                    <input
-                      name="email"
-                      type="email"
-                      value={editForm.email}
-                      onChange={handleFormChange}
-                      className="referral-hd-edit-input"
-                      placeholder="Email"
-                    />
-                  </div>
-                  <div className="referral-hd-edit-field">
-                    <label className="referral-hd-edit-label">
-                      <Award size={18} />
-                      <span>Years of Experience <span>*</span></span>
-                    </label>
-                    <input
-                      name="experience"
-                      type="number"
-                      value={editForm.experience}
-                      onChange={handleFormChange}
-                      className="referral-hd-edit-input"
-                      placeholder="Years of Experience"
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="referral-hd-content-left-candidate-info-item">
-                    <Mail size={18} />
-                    <span><strong>Email:</strong> {referralData.Candidate.Email}</span>
-                  </div>
-                  <div className="referral-hd-content-left-candidate-info-item">
-                    <Award size={18} />
-                    <span><strong>Years of Experience:</strong> {referralData.Candidate.YearOfExperience}</span>
-                  </div>
-                  <div className="referral-hd-content-left-candidate-info-item">
-                    <Calendar size={18} />
-                    <span><strong>Date:</strong> {new Date(referralData.Candidate.CreatedAt).toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
-                  </div>
-                </>
-              )}
-            </div>
-            <hr />
-            <div className="referral-hd-content-left-cv">
-              <div className="referral-hd-content-left-cv-header">
-                <div className="referral-hd-content-left-cv-header-left">
-                  <FileText size={18} />
-                  <h4>CV</h4>
-                </div>
-                {!isEditMode && referralData.Candidate.CVUrl && (
-                  <a 
-                    href={referralData.Candidate.CVUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="referral-hd-cv-download-btn"
-                    download
+                  <button 
+                    className="referral-hd-edit-btn" 
+                    onClick={handleEdit}
+                    disabled={!isPending}
                   >
-                    <Download size={16} />
-                    Download CV
-                  </a>
-                )}
-              </div>
-              {isEditMode && (
-                <div
-                  className="referral-hd-cv-upload"
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                  onClick={() => document.getElementById("cvUploadEdit").click()}
-                >
-                  <Upload size={28} className="referral-hd-upload-icon" />
-                  {cvFile ? (
-                    <div className="referral-hd-file-preview">
-                      <span className="referral-hd-file-icon">📄</span>
-                      <span className="referral-hd-file-name">{cvFile.name}</span>
-                      <button
-                        type="button"
-                        className="referral-hd-remove-file"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCvFile(null);
-                        }}
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ) : referralData.Candidate.CVUrl ? (
-                    <p>Click to upload new CV or drag and drop (PDF only). Current CV will be replaced.</p>
-                  ) : (
-                    <p>Click to upload or drag and drop (PDF only)</p>
-                  )}
-                  {cvError && <p className="referral-hd-error-text">{cvError}</p>}
-                  <input
-                    id="cvUploadEdit"
-                    type="file"
-                    accept=".pdf"
-                    style={{ display: "none" }}
-                    onChange={handleFileChange}
-                  />
-                </div>
+                    Edit
+                  </button>
+                  <button 
+                    className="referral-hd-delete-btn" 
+                    onClick={handleDelete}
+                    disabled={!isPending || deleteLoading}
+                  >
+                    {deleteLoading ? "Deleting..." : "Delete"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    className="referral-hd-cancel-btn" 
+                    onClick={handleCancel}
+                    disabled={editLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    className="referral-hd-save-btn" 
+                    onClick={handleSave}
+                    disabled={editLoading}
+                  >
+                    {editLoading ? "Saving..." : "Save"}
+                  </button>
+                </>
               )}
             </div>
-            
           </div>
-          <div className="referral-hd-content-right">
-            <div className="referral-hd-content-right-header">
-              <Briefcase size={18} />
-              <h3>Position Details</h3>
+          <div className="emp-referral-hd-content">
+            <div className="emp-referral-hd-content-left">
+              <div className="emp-referral-application-progress">
+                <h3>
+                  <Clock size={18} />
+                  Application Progress
+                </h3>
+                <div className="timeline-wrapper">
+                  <div className="timeline">
+                    {STATUS_ORDER.map((step, index) => {
+                      const isDone = index < currentIndex;
+                      const isActive = index === currentIndex;
+                      const isProspect = Referral.Prospect && isActive;
+
+                      return (
+                        <React.Fragment key={step}>
+                          <div
+                            className={`step ${
+                              isDone ? "done" : ""
+                            } ${isActive ? "active" : ""} ${isProspect ? "prospect" : ""}`}
+                          >
+                            <span className="icon">
+                              {isDone && <Check size={14} />}
+                              {isActive && !isProspect && (
+                                <Briefcase size={14} />
+                              )}
+                              {isProspect && <X size={14} />}
+                            </span>
+                            <span className="label">{step}</span>
+                          </div>
+
+                          {index < STATUS_ORDER.length - 1 && (
+                            <div
+                              className={`line ${
+                                isDone ? "done" : isActive ? "active" : ""
+                              }`}
+                            />
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                  {Referral.Prospect && (
+                    <span className="status-badge-secondary status-badge-prospect">
+                      Prospect
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="emp-referral-candidate-information">
+                <div className="emp-referral-candidate-information-header">
+                  <User size={18} />
+                  <h3>Candidate Information</h3>
+                </div>
+                
+                <div className="emp-referral-candidate-avatar-name">
+                  <div className="emp-referral-candidate-avatar">
+                    {isEditMode
+                      ? (editForm.firstName[0] || "") + (editForm.lastName[0] || "")
+                      : Candidate.FirstName[0] + Candidate.LastName[0]}
+                  </div>
+                  
+                  {isEditMode ? (
+                    <div className="emp-referral-candidate-name-edit">
+                      <p>
+                        {editForm.firstName || ""} {editForm.lastName || ""}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="emp-referral-candidate-name">
+                      <p>
+                        {Candidate.FirstName} {Candidate.LastName}
+                      </p>
+                      <span>{Position.PositionTitle}</span>
+                    </div>
+                  )}
+                </div>
+                
+                <hr />
+                
+                <div className="emp-referral-candidate-info">
+                  {isEditMode ? (
+                    <>
+                      <div className="emp-referral-edit-field">
+                        <label className="emp-referral-edit-label">
+                          <User size={18} />
+                          <span>
+                            First Name <span>*</span>
+                          </span>
+                        </label>
+                        <input
+                          name="firstName"
+                          value={editForm.firstName}
+                          onChange={handleFormChange}
+                          className="emp-referral-edit-input"
+                          placeholder="First Name"
+                        />
+                      </div>
+                      <div className="emp-referral-edit-field">
+                        <label className="emp-referral-edit-label">
+                          <User size={18} />
+                          <span>
+                            Last Name <span>*</span>
+                          </span>
+                        </label>
+                        <input
+                          name="lastName"
+                          value={editForm.lastName}
+                          onChange={handleFormChange}
+                          className="emp-referral-edit-input"
+                          placeholder="Last Name"
+                        />
+                      </div>
+                      <div className="emp-referral-edit-field">
+                        <label className="emp-referral-edit-label">
+                          <Mail size={18} />
+                          <span>
+                            Email <span>*</span>
+                          </span>
+                        </label>
+                        <input
+                          name="email"
+                          type="email"
+                          value={editForm.email}
+                          onChange={handleFormChange}
+                          className="emp-referral-edit-input"
+                          placeholder="Email"
+                        />
+                      </div>
+                      <div className="emp-referral-edit-field">
+                        <label className="emp-referral-edit-label">
+                          <Award size={18} />
+                          <span>
+                            Years of Experience <span>*</span>
+                          </span>
+                        </label>
+                        <input
+                          name="experience"
+                          type="number"
+                          value={editForm.experience}
+                          onChange={handleFormChange}
+                          className="emp-referral-edit-input"
+                          placeholder="Years of Experience"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="emp-referral-candidate-info-item">
+                        <Mail size={18} />
+                        <span>
+                          <strong>Email:</strong> {Candidate.Email}
+                        </span>
+                      </div>
+                      <div className="emp-referral-candidate-info-item">
+                        <Award size={18} />
+                        <span>
+                          <strong>Years of Experience:</strong> {Candidate.YearOfExperience}
+                        </span>
+                      </div>
+                      <div className="emp-referral-candidate-info-item">
+                        <Calendar size={18} />
+                        <span>
+                          <strong>Date:</strong>{" "}
+                          {new Date(Candidate.CreatedAt).toLocaleDateString("en-CA", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+                
+                <hr />
+                
+                <div className="emp-referral-cv-section">
+                  {!isEditMode && Candidate.CVUrl ? (
+                    <div className="emp-referral-cv-display">
+                      <span className="emp-referral-cv-name">
+                        {Candidate.FirstName} - CV
+                      </span>
+                      <a
+                        href={Candidate.CVUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="emp-referral-cv-download-btn"
+                        download
+                      >
+                        <Download size={16} />
+                        Download CV
+                      </a>
+                    </div>
+                  ) : isEditMode ? (
+                    <div
+                      className="emp-referral-cv-upload"
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onClick={() => document.getElementById("cvUploadEdit").click()}
+                    >
+                      <Upload size={28} className="emp-referral-upload-icon" />
+                      {cvFile ? (
+                        <div className="emp-referral-file-preview">
+                          <span className="emp-referral-file-icon">📄</span>
+                          <span className="emp-referral-file-name">{cvFile.name}</span>
+                          <button
+                            type="button"
+                            className="emp-referral-remove-file"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCvFile(null);
+                            }}
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ) : Candidate.CVUrl ? (
+                        <p>Click to upload new CV or drag and drop (PDF only). Current CV will be replaced.</p>
+                      ) : (
+                        <p>Click to upload or drag and drop (PDF only)</p>
+                      )}
+                      {cvError && <p className="emp-referral-error-text">{cvError}</p>}
+                      <input
+                        id="cvUploadEdit"
+                        type="file"
+                        accept=".pdf"
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </div>
-            <div className="referral-hd-position-title-section">
-              <p>{referralData.Position.PositionTitle}</p>
-              {referralData.Position.EmploymentType && (
-                <span className="referral-hd-employment-badge">
-                  {formatEmploymentType(referralData.Position.EmploymentType)}
-                </span>
-              )}
-            </div>
-            <hr />
-            <div className="referral-hd-content-right-details">
-            <div className="referral-hd-content-right-details-item">
-                <Building2 size={18} />
-                <span><strong>Company Name:</strong> {referralData.Position.CompanyName}</span>
-              </div>
-              <div className="referral-hd-content-right-details-item">
-                <Award size={18} />
-                <span><strong>Years Required:</strong> {referralData.Position.YearsRequired}</span>
-              </div>
-              <div className="referral-hd-content-right-details-item">
-                <Clock size={18} />
-                <span><strong>Timezone:</strong> {referralData.Position.Timezone}</span>
-              </div>
-              <div className="referral-hd-content-right-details-item">
-                <MapPin size={18} />
-                <span><strong>Location:</strong> {referralData.Position.PositionLocation}</span>
-              </div>
-              <div className="referral-hd-content-right-details-item">
-                <Circle size={18} />
-                <span><strong>State:</strong> {referralData.Position.PositionState}</span>
+            <div className="emp-referral-hd-content-right">
+              <div className="emp-referral-hd-content-right-card">
+                <div className="emp-referral-hd-content-right-header">
+                  <Briefcase size={18} />
+                  <h3>Position Details</h3>
+                </div>
+                
+                <div className="emp-referral-hd-content-right-title">
+                  <h4>{Position.PositionTitle}</h4>
+                  {Position.EmploymentType && (
+                    <span className="emp-referral-hd-content-right-title-label">
+                      {formatEmploymentType(Position.EmploymentType)}
+                    </span>
+                  )}
+                </div>
+                
+                <hr />
+                
+                <div className="emp-referral-hd-content-right-details">
+                  <div className="emp-referral-hd-content-right-details-item">
+                    <Building2 size={18} />
+                    <span>
+                      <strong>Company Name:</strong> {Position.CompanyName}
+                    </span>
+                  </div>
+                  <div className="emp-referral-hd-content-right-details-item">
+                    <Award size={18} />
+                    <span>
+                      <strong>Years Required:</strong> {Position.YearsRequired}
+                    </span>
+                  </div>
+                  <div className="emp-referral-hd-content-right-details-item">
+                    <Clock size={18} />
+                    <span>
+                      <strong>Timezone:</strong> {Position.Timezone}
+                    </span>
+                  </div>
+                  <div className="emp-referral-hd-content-right-details-item">
+                    <MapPin size={18} />
+                    <span>
+                      <strong>Location:</strong> {Position.PositionLocation}
+                    </span>
+                  </div>
+                  <div className="emp-referral-hd-content-right-details-item">
+                    <Circle size={18} />
+                    <span>
+                      <strong>Status:</strong> {Position.PositionState}
+                    </span>
+                  </div>
+                  <div className="emp-referral-hd-content-right-details-item">
+                    <Calendar size={18} />
+                    <span>
+                      <strong>Deadline:</strong> {Position.Deadline ? new Date(Position.Deadline).toLocaleDateString("en-CA", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      }) : "N/A"}
+                    </span>
+                  </div>
+                </div>
+                
+                {Position.Description && (
+                  <>
+                    <hr />
+                    <div className="emp-referral-hd-content-right-description">
+                      <h4>Description</h4>
+                      <div className="emp-referral-hd-content-right-description-content">
+                        <p>{Position.Description}</p>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -574,8 +679,7 @@ const EmployeeReferralHD = () => {
             </div>
           </div>
         )}
-
-      </div>
+      </>
   );
 };
 

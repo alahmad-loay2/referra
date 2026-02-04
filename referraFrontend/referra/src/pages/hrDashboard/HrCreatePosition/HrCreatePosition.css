@@ -1,5 +1,6 @@
 .HrCreatePosition {
-    padding: 30px;
+    padding: var(--page-padding-x) var(--page-padding-y);
+    min-width: 1000px;
 }
 
 .CreatePositionContainer {
@@ -12,7 +13,7 @@
 
 .createPositionHeader {
     display: flex;
-    gap: 10px;
+    gap: var(--gap-sm);
 }
 
 .CreatePositionContainer a {
@@ -33,12 +34,12 @@
 
 .formGroup {
     display: flex;
-    gap: 30px;
+    gap: var(--gap-xl);
 }
 
 .labelInput {
     display: flex;
-    gap: 10px;
+    gap: var(--gap-sm);
     flex-direction: column;
     width: 100%;
 }
@@ -91,7 +92,7 @@
 
 .buttonGroup {
     display: flex;
-    gap: 15px;
+    gap: var(--gap-md);
     justify-content: flex-end;
 }
 
@@ -151,7 +152,7 @@
 .createPosition-modalActions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--gap-md);
 }
 
 .createPosition-cancel {
