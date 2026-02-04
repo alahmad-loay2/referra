@@ -32,7 +32,7 @@ export const signin = async (req, res, next) => {
     const cookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 15 * 60 * 1000,
       path: "/",
     };
@@ -42,7 +42,7 @@ export const signin = async (req, res, next) => {
     const refreshCookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     };
@@ -74,7 +74,7 @@ export const verifyEmail = async (req, res, next) => {
     const cookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 15 * 60 * 1000,
       path: "/",
     };
@@ -84,7 +84,7 @@ export const verifyEmail = async (req, res, next) => {
     const refreshCookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     };
@@ -113,7 +113,7 @@ export const logout = async (req, res, next) => {
     const clearCookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 0,
       path: "/",
     };
@@ -163,7 +163,7 @@ export const resetPasswordController = async (req, res, next) => {
     const cookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 15 * 60 * 1000,
       path: "/",
     };
@@ -173,7 +173,7 @@ export const resetPasswordController = async (req, res, next) => {
     const refreshCookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     };

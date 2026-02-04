@@ -158,7 +158,7 @@ export const authenticate = async (req, res, next) => {
     res.cookie("accessToken", refreshed.session.access_token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 15 * 60 * 1000,
       path: "/",
     });
@@ -166,7 +166,7 @@ export const authenticate = async (req, res, next) => {
     res.cookie("refreshToken", refreshed.session.refresh_token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     });
