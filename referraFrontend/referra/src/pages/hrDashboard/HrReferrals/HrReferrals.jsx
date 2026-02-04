@@ -7,6 +7,7 @@ import { getHrPositions } from "../../../api/hrPositions.api.js";
 import { Mail, Briefcase, MapPin } from "lucide-react";
 import Loading from "../../../components/loading/Loading.jsx";
 import { getPaginationPages } from "../../../utils/pagination";
+import SearchableSelect from "../../../components/searchableSelect/SearchableSelect";
 
 const HrReferrals = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,14 +48,44 @@ const HrReferrals = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch positions for dropdown
+  // Fetch positions for dropdown - fetch ALL positions by paginating through all pages
   useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const data = await getHrPositions({ page: 1, limit: 1000 });
-        if (data && data.positions) {
-          setPositions(data.positions);
+        let allPositions = [];
+        let currentPage = 1;
+        let hasMorePages = true;
+        const pageSize = 50; // Max limit from backend
+
+        // Fetch all pages until we get all positions
+        while (hasMorePages) {
+          const data = await getHrPositions({
+            page: currentPage,
+            limit: pageSize,
+          });
+
+          if (data && data.positions && data.positions.length > 0) {
+            allPositions = [...allPositions, ...data.positions];
+          }
+
+          // Check if there are more pages
+          // Calculate hasNextPage from totalPages and current page
+          const hasNextPage =
+            data?.totalPages && currentPage < data.totalPages;
+          hasMorePages =
+            hasNextPage === true &&
+            data?.positions &&
+            data.positions.length > 0;
+          currentPage++;
+
+          // Safety check to prevent infinite loops
+          if (currentPage > 100) {
+            console.warn("Reached maximum page limit while fetching positions");
+            break;
+          }
         }
+
+        setPositions(allPositions);
       } catch (err) {
         console.error("Failed to fetch positions", err);
       }
@@ -169,18 +200,18 @@ const HrReferrals = () => {
           <Search className="searchIcon" size={16} />
         </div>
         <div className="selectContainer">
-          <select
-            name="position"
+          <SearchableSelect
+            options={[
+              { value: "", label: "All Positions" },
+              ...positions.map((pos) => ({
+                value: pos.PositionId,
+                label: pos.PositionTitle,
+              })),
+            ]}
             value={positionId}
-            onChange={(e) => setPositionId(e.target.value)}
-          >
-            <option value="">All Positions</option>
-            {positions.map((pos) => (
-              <option key={pos.PositionId} value={pos.PositionId}>
-                {pos.PositionTitle}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setPositionId(value)}
+            placeholder="All Positions"
+          />
           <select
             name="status"
             value={status}
