@@ -2,9 +2,11 @@
    LOGIN PAGE LAYOUT
    ========================= */
 .login-page {
+  min-height: 100vh;
   height: 100vh;
   display: flex;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* =========================
@@ -17,11 +19,13 @@
   justify-content: center;
   background-color: var(--background-color);
   flex: 1;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 /* LOGO */
 .logo_login {
-  width: 30%;
+  width: 180px;
   margin-bottom: 32px;
 }
 

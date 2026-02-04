@@ -1,23 +1,65 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5500/api'
 
 export const signup = async (payload) => {
-  const res = await fetch(`${API_BASE_URL}/auth/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(payload),
-  })
-  return res.json()
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      let errorMessage = 'Failed to sign up';
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch {
+        const errorText = await res.text();
+        errorMessage = errorText || errorMessage;
+      }
+      throw new Error(errorMessage);
+    }
+
+    return await res.json();
+  } catch (error) {
+    // Re-throw with a more user-friendly message for Safari/network issues
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+    throw error;
+  }
 }
 
 export const signin = async (email, password) => {
-  const res = await fetch(`${API_BASE_URL}/auth/signin`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ email, password }),
-  })
-  return res.json()
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/signin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    })
+
+    if (!res.ok) {
+      let errorMessage = 'Failed to sign in';
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch {
+        const errorText = await res.text();
+        errorMessage = errorText || errorMessage;
+      }
+      throw new Error(errorMessage);
+    }
+
+    return await res.json();
+  } catch (error) {
+    // Re-throw with a more user-friendly message for Safari/network issues
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+    throw error;
+  }
 }
 
 export const logout = async () => {
