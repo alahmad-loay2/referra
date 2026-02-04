@@ -29,12 +29,19 @@ const HrReferrals = () => {
     positionId: "",
   });
 
-  // Read positionId from URL params on mount
+  // Read positionId and search from URL params on mount
   useEffect(() => {
     const urlPositionId = searchParams.get("positionId");
+    const urlSearch = searchParams.get("search");
+
+    if (urlSearch) {
+      setSearchInput(urlSearch);
+      setFilters((prev) => ({ ...prev, search: urlSearch }));
+    }
+
     if (urlPositionId) {
       setPositionId(urlPositionId);
-      setFilters(prev => ({ ...prev, positionId: urlPositionId }));
+      setFilters((prev) => ({ ...prev, positionId: urlPositionId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -92,12 +99,12 @@ const HrReferrals = () => {
       positionId,
     };
     setFilters(newFilters);
-    // Update URL params if positionId is set
-    if (positionId) {
-      setSearchParams({ positionId });
-    } else {
-      setSearchParams({});
-    }
+
+    const params = {};
+    if (positionId) params.positionId = positionId;
+    if (searchInput) params.search = searchInput;
+
+    setSearchParams(params);
   };
 
   const goToPage = (newPage) => {

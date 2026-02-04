@@ -250,7 +250,7 @@ const HrPositions = () => {
       <div className="positionsTableContainer">
         <div className="tableHeader">
           <h3>All Positions</h3>
-          <Button text="Add New Position" to={"create-position"} />
+          <Button text="+ Add New Position" to={"create-position"} />
         </div>
 
         <table className="positionsTable">

@@ -9,6 +9,7 @@ import {
   Mail,
 } from "lucide-react";
 import Loading from "../../../components/loading/Loading.jsx";
+import Button from "../../../components/button/Button.jsx";
 import { getHrTeam } from "../../../api/hrTeam.api";
 import { getHrDepartments } from "../../../api/hrPositions.api.js";
 
@@ -189,9 +190,11 @@ const HrTeam = () => {
       <div className="HRTableContainer">
         <div className="tableHeader">
           <h3 className="title">Team Members</h3>
-          <button className="add-btn" onClick={() => setShowAddHr(true)}>
-            + Add New HR
-          </button>
+          <Button
+            text="+ Add New HR"
+            onClick={() => setShowAddHr(true)}
+            variant="primary"
+          />
         </div>
 
         <table className="HRTable">
