@@ -2,6 +2,7 @@ import React from "react";
 import { Search, Mail, Calendar, Briefcase, Check, X } from "lucide-react";
 import { fetchEmployeeApplications } from "../../../api/employeeReferrals.api";
 import Button from "../../../components/button/Button";
+import { getPaginationPages } from "../../../utils/pagination";
 
 import "./EmployeeReferrals.css";
 const STATUS_ORDER = [
@@ -46,11 +47,7 @@ const EmployeeReferrals = () => {
     if (page > 1) setPage(page - 1);
   };
   const getVisiblePages = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
+    return getPaginationPages(page, totalPages);
   };
 
   const getStatusBadge = (referral) => {
@@ -281,15 +278,24 @@ const EmployeeReferrals = () => {
           ← Previous
         </button>
 
-        {getVisiblePages().map((p) => (
-          <button
-            key={p}
-            className={p === page ? "active" : ""}
-            onClick={() => goToPage(p)}
-          >
-            {p}
-          </button>
-        ))}
+        {getVisiblePages().map((p, i) => {
+          if (p === "...") {
+            return (
+              <button key={`dots-${i}`} className="dots" disabled>
+                ...
+              </button>
+            );
+          }
+          return (
+            <button
+              key={p}
+              className={p === page ? "active" : ""}
+              onClick={() => goToPage(p)}
+            >
+              {p}
+            </button>
+          );
+        })}
 
         <button className="nav" onClick={goNext} disabled={page === totalPages}>
           Next →

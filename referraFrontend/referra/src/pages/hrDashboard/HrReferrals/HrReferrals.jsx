@@ -6,6 +6,7 @@ import { getReferrals } from "../../../api/hrReferrals.api.js";
 import { getHrPositions } from "../../../api/hrPositions.api.js";
 import { Mail, Briefcase, MapPin } from "lucide-react";
 import Loading from "../../../components/loading/Loading.jsx";
+import { getPaginationPages } from "../../../utils/pagination";
 
 const HrReferrals = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -121,11 +122,7 @@ const HrReferrals = () => {
   };
 
   const getVisiblePages = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
+    return getPaginationPages(page, totalPages);
   };
 
   const getStatusBadge = (referral) => {
@@ -293,15 +290,24 @@ const HrReferrals = () => {
           ← Previous
         </button>
 
-        {getVisiblePages().map((p) => (
-          <button
-            key={p}
-            className={p === page ? "active" : ""}
-            onClick={() => goToPage(p)}
-          >
-            {p}
-          </button>
-        ))}
+        {getVisiblePages().map((p, i) => {
+          if (p === "...") {
+            return (
+              <button key={`dots-${i}`} className="dots" disabled>
+                ...
+              </button>
+            );
+          }
+          return (
+            <button
+              key={p}
+              className={p === page ? "active" : ""}
+              onClick={() => goToPage(p)}
+            >
+              {p}
+            </button>
+          );
+        })}
 
         <button className="nav" onClick={goNext} disabled={page === totalPages}>
           Next →

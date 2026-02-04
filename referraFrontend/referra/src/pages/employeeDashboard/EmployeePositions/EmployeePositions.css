@@ -108,6 +108,11 @@
   cursor: not-allowed;
 }
 
+.pagination .dots {
+  cursor: default;
+  opacity: 0.6;
+}
+
 /* Skeleton */
 .skeleton {
   animation: pulse 1.4s infinite;

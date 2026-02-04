@@ -2,10 +2,11 @@ import React from "react";
 import { Briefcase, Calendar, Building2 } from "lucide-react";
 import { fetchVisiblePositions } from "../../../api/positions.api";
 import Button from "../../../components/button/Button";
+import { getPaginationPages } from "../../../utils/pagination";
 
 import "./EmployeePositions.css";
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 5;
 
 const EmployeePositions = () => {
   const [positions, setPositions] = React.useState([]);
@@ -103,15 +104,24 @@ const EmployeePositions = () => {
           ← Previous
         </button>
 
-        {[...Array(totalPages)].map((_, i) => (
-          <button
-            key={i}
-            className={page === i + 1 ? "active" : ""}
-            onClick={() => goToPage(i + 1)}
-          >
-            {i + 1}
-          </button>
-        ))}
+        {getPaginationPages(page, totalPages).map((p, i) => {
+          if (p === "...") {
+            return (
+              <button key={`dots-${i}`} className="dots" disabled>
+                ...
+              </button>
+            );
+          }
+          return (
+            <button
+              key={p}
+              className={page === p ? "active" : ""}
+              onClick={() => goToPage(p)}
+            >
+              {p}
+            </button>
+          );
+        })}
 
         <button
           disabled={page === totalPages}

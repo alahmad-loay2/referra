@@ -12,6 +12,7 @@ import Loading from "../../../components/loading/Loading.jsx";
 import Button from "../../../components/button/Button.jsx";
 import { getHrTeam } from "../../../api/hrTeam.api";
 import { getHrDepartments } from "../../../api/hrPositions.api.js";
+import { getPaginationPages } from "../../../utils/pagination";
 
 import AddHr from "./AddHr";
 import "./HrTeam.css";
@@ -110,11 +111,7 @@ const HrTeam = () => {
   };
 
   const getVisiblePages = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
+    return getPaginationPages(page, totalPages);
   };
 
   return (
@@ -307,15 +304,24 @@ const HrTeam = () => {
             ← Previous
           </button>
 
-          {getVisiblePages().map((p) => (
-            <button
-              key={p}
-              className={p === page ? "active" : ""}
-              onClick={() => goToPage(p)}
-            >
-              {p}
-            </button>
-          ))}
+          {getVisiblePages().map((p, i) => {
+            if (p === "...") {
+              return (
+                <button key={`dots-${i}`} className="dots" disabled>
+                  ...
+                </button>
+              );
+            }
+            return (
+              <button
+                key={p}
+                className={p === page ? "active" : ""}
+                onClick={() => goToPage(p)}
+              >
+                {p}
+              </button>
+            );
+          })}
 
           <button
             className="nav"

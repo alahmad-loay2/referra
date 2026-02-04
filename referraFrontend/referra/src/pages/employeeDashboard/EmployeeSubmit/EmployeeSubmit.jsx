@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { getVisiblePositions } from "../../../api/positions.api";
+import { fetchVisiblePositions } from "../../../api/positions.api";
 import { submitReferral } from "../../../api/employeeReferrals.api";
 import { Briefcase, Upload } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
+import SearchableSelect from "../../../components/searchableSelect/SearchableSelect";
 
 import "./EmployeeSubmit.css";
 
@@ -96,17 +97,50 @@ const EmployeeSubmit = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // for position fetching
+  // for position fetching - fetch ALL positions by paginating through all pages
   useEffect(() => {
     const loadPositions = async () => {
       setLoadingPositions(true);
+      setPositionsError("");
 
-      const result = await getVisiblePositions();
+      try {
+        let allPositions = [];
+        let currentPage = 1;
+        let hasMorePages = true;
+        const pageSize = 50; // Max limit from backend
 
-      if (result.error) {
-        setPositionsError(result.error);
-      } else {
-        setPositions(result.positions);
+        // Fetch all pages until we get all positions
+        while (hasMorePages) {
+          const result = await fetchVisiblePositions({
+            page: currentPage,
+            pageSize: pageSize,
+          });
+
+          if (result.error) {
+            setPositionsError(result.error);
+            break;
+          }
+
+          if (result.positions && result.positions.length > 0) {
+            allPositions = [...allPositions, ...result.positions];
+          }
+
+          // Check if there are more pages
+          // Stop if no more pages OR if we got no results
+          hasMorePages =
+            result.hasNextPage === true &&
+            result.positions &&
+            result.positions.length > 0;
+          currentPage++;
+
+          // Safety check to prevent infinite loops
+          if (currentPage > 100) {
+            console.warn("Reached maximum page limit while fetching positions");
+            break;
+          }
+        }
+
+        setPositions(allPositions);
 
         //  PRESELECT POSITION FROM URL
         if (preselectedPositionId) {
@@ -115,9 +149,11 @@ const EmployeeSubmit = () => {
             positionId: preselectedPositionId,
           }));
         }
+      } catch (error) {
+        setPositionsError(error.message || "Failed to load positions");
+      } finally {
+        setLoadingPositions(false);
       }
-
-      setLoadingPositions(false);
     };
 
     loadPositions();
@@ -223,23 +259,21 @@ const EmployeeSubmit = () => {
         </h4>
 
         <p>Choose the position you're referring the candidate for</p>
-        {positionsError && <p>{positionsError}</p>}
+        {positionsError && <p className="errorText">{positionsError}</p>}
 
-        <select
-          name="positionId"
+        <SearchableSelect
+          options={positions.map((pos) => ({
+            value: pos.PositionId,
+            label: pos.PositionTitle,
+          }))}
           value={form.positionId}
-          onChange={handleChange}
-          className="employeeSubmit-select"
+          onChange={(value) =>
+            setForm((prev) => ({ ...prev, positionId: value }))
+          }
+          placeholder="Select a position"
           disabled={loadingPositions}
-        >
-          <option value="">Select a position</option>
-
-          {positions.map((pos) => (
-            <option key={pos.PositionId} value={pos.PositionId}>
-              {pos.PositionTitle}
-            </option>
-          ))}
-        </select>
+          loading={loadingPositions}
+        />
         {errors.positionId && <p className="errorText">{errors.positionId}</p>}
       </div>
 

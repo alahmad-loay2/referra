@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getHrDashboard } from "../../../api/hrPositions.api.js";
 import { Users, Briefcase, Clock, CheckCircle, Mail, Calendar } from "lucide-react";
 import "./HrDashboardHome.css";
+import Loading from "../../../components/loading/Loading.jsx";
 
 const HrDashboardHome = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -41,7 +42,11 @@ const HrDashboardHome = () => {
             </div>
             <p>Total Referrals</p>
           </div>
-          <span>{dashboardData?.totalReferrals} <span className="hr-dashboard-home-header-item-extra">Total Referrals</span></span>
+          {loading ? (
+            <Loading />
+          ) : (
+            <span>{dashboardData?.totalReferrals ?? 0} <span className="hr-dashboard-home-header-item-extra">Total Referrals</span></span>
+          )}
         </div>
         <div className="hr-dashboard-home-header-item">
           <div className="hr-dashboard-home-icon-label">
@@ -50,7 +55,11 @@ const HrDashboardHome = () => {
             </div>
             <p>Open Positions</p>
           </div>
-          <span>{dashboardData?.openPositions} <span className="hr-dashboard-home-header-item-extra">In your departments</span></span>
+          {loading ? (
+            <Loading />
+          ) : (
+            <span>{dashboardData?.openPositions ?? 0} <span className="hr-dashboard-home-header-item-extra">In your departments</span></span>
+          )}
         </div>
         <div className="hr-dashboard-home-header-item">
           <div className="hr-dashboard-home-icon-label">
@@ -59,7 +68,11 @@ const HrDashboardHome = () => {
             </div>
             <p>Pending Reviews</p>
           </div>
-          <span>{dashboardData?.pendingReviews} <span className="hr-dashboard-home-header-item-extra">Pending Referrals</span></span>
+          {loading ? (
+            <Loading />
+          ) : (
+            <span>{dashboardData?.pendingReviews ?? 0} <span className="hr-dashboard-home-header-item-extra">Pending Referrals</span></span>
+          )}
         </div>
         <div className="hr-dashboard-home-header-item">
           <div className="hr-dashboard-home-icon-label">
@@ -68,7 +81,11 @@ const HrDashboardHome = () => {
             </div>
             <p>Successful Hires</p>
           </div>
-          <span>{dashboardData?.successfulHires} <span className="hr-dashboard-home-header-item-extra">Hired</span></span>
+          {loading ? (
+            <Loading />
+          ) : (
+            <span>{dashboardData?.successfulHires ?? 0} <span className="hr-dashboard-home-header-item-extra">Hired</span></span>
+          )}
         </div>
       </div>
 

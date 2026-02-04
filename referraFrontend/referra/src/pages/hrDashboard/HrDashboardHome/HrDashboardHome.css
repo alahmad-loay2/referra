@@ -62,6 +62,18 @@
     margin-left: 5px;
 }
 
+/* Smaller loading spinner for header items */
+.hr-dashboard-home-header-item .loading-spinner {
+    padding: 0;
+    justify-content: flex-start;
+}
+
+.hr-dashboard-home-header-item .spinner {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+}
+
 /* Recent referrals */
 .hr-dashboard-home-recent-section {
     margin-top: 40px;

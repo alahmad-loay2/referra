@@ -22,7 +22,7 @@ export const getVisiblePositions = async () => {
   }
 };
 
-export const fetchVisiblePositions = async ({ page = 1, pageSize = 3 }) => {
+export const fetchVisiblePositions = async ({ page = 1, pageSize = 5 }) => {
   try {
     const res = await fetch(
       `${API_BASE_URL}/employee/positions-employee?page=${page}&limit=${pageSize}`,

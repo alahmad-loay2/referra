@@ -9,6 +9,7 @@ import {
 } from "../../../api/hrPositions.api.js";
 import Loading from "../../../components/loading/Loading.jsx";
 import { useNavigate } from "react-router-dom";
+import { getPaginationPages } from "../../../utils/pagination";
 
 const HrPositions = () => {
   const navigate = useNavigate();
@@ -138,11 +139,7 @@ const HrPositions = () => {
   };
 
   const getVisiblePages = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
+    return getPaginationPages(page, totalPages);
   };
 
   const toggleDropdown = (positionId) => {
@@ -347,15 +344,24 @@ const HrPositions = () => {
             ← Previous
           </button>
 
-          {getVisiblePages().map((p) => (
-            <button
-              key={p}
-              className={p === page ? "active" : ""}
-              onClick={() => goToPage(p)}
-            >
-              {p}
-            </button>
-          ))}
+          {getVisiblePages().map((p, i) => {
+            if (p === "...") {
+              return (
+                <button key={`dots-${i}`} className="dots" disabled>
+                  ...
+                </button>
+              );
+            }
+            return (
+              <button
+                key={p}
+                className={p === page ? "active" : ""}
+                onClick={() => goToPage(p)}
+              >
+                {p}
+              </button>
+            );
+          })}
 
           <button className="nav" onClick={goNext} disabled={page === totalPages}>
             Next →
