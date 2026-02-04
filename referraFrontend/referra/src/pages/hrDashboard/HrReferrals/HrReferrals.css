@@ -149,6 +149,33 @@
     width: 60%;
 }
 
+.hr-referrals-avatar-name {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gap-md);
+}
+
+.hr-referrals-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: var(--fs-medium);
+    flex-shrink: 0;
+}
+
+.hr-referrals-name-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    margin-left: 8px;
+}
+
 .candidate .cardRight{
     display: flex;
     flex-direction: column;

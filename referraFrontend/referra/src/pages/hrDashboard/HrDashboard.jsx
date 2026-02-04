@@ -63,7 +63,7 @@ const HrDashboard = () => {
         <div id="Header">
           <Header
             text="Manage referrals and track hiring progress"
-            buttonText="View Referral"
+            buttonText="View Referrals"
             to="/dashboard/hr/referrals"
           />
         </div>

@@ -248,43 +248,17 @@ const EmployeeReferralHD = () => {
                 View and manage your referral details.
               </p>
             </div>
-            <div className="referral-hd-header-right">
-              {!isEditMode ? (
-                <>
-                  <button 
-                    className="referral-hd-edit-btn" 
-                    onClick={handleEdit}
-                    disabled={!isPending}
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    className="referral-hd-delete-btn" 
-                    onClick={handleDelete}
-                    disabled={!isPending || deleteLoading}
-                  >
-                    {deleteLoading ? "Deleting..." : "Delete"}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button 
-                    className="referral-hd-cancel-btn" 
-                    onClick={handleCancel}
-                    disabled={editLoading}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    className="referral-hd-save-btn" 
-                    onClick={handleSave}
-                    disabled={editLoading}
-                  >
-                    {editLoading ? "Saving..." : "Save"}
-                  </button>
-                </>
-              )}
-            </div>
+            {!isEditMode && (
+              <div className="referral-hd-header-right">
+                <button 
+                  className="referral-hd-delete-btn" 
+                  onClick={handleDelete}
+                  disabled={!isPending || deleteLoading}
+                >
+                  {deleteLoading ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            )}
           </div>
           <div className="emp-referral-hd-content">
             <div className="emp-referral-hd-content-left">
@@ -518,6 +492,35 @@ const EmployeeReferralHD = () => {
                       />
                     </div>
                   ) : null}
+                </div>
+                
+                <div className="emp-referral-candidate-info-actions">
+                  {!isEditMode ? (
+                    <button 
+                      className="referral-hd-edit-btn" 
+                      onClick={handleEdit}
+                      disabled={!isPending}
+                    >
+                      Edit
+                    </button>
+                  ) : (
+                    <>
+                      <button 
+                        className="referral-hd-cancel-btn" 
+                        onClick={handleCancel}
+                        disabled={editLoading}
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        className="referral-hd-save-btn" 
+                        onClick={handleSave}
+                        disabled={editLoading}
+                      >
+                        {editLoading ? "Saving..." : "Save"}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

@@ -29,19 +29,25 @@ export const signin = async (req, res, next) => {
   try {
     const result = await signinUser(req.body);
 
-    res.cookie("accessToken", result.accessToken, {
+    const cookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       maxAge: 15 * 60 * 1000,
-    });
+      path: "/",
+    };
 
-    res.cookie("refreshToken", result.refreshToken, {
+    res.cookie("accessToken", result.accessToken, cookieOptions);
+
+    const refreshCookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+      path: "/",
+    };
+
+    res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
 
     res.status(200).json({
       message: "Signed in successfully",
@@ -65,19 +71,25 @@ export const verifyEmail = async (req, res, next) => {
 
     const result = await verifyEmailService(access_token, refresh_token);
 
-    res.cookie("accessToken", result.accessToken, {
+    const cookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       maxAge: 15 * 60 * 1000,
-    });
+      path: "/",
+    };
 
-    res.cookie("refreshToken", result.refreshToken, {
+    res.cookie("accessToken", result.accessToken, cookieOptions);
+
+    const refreshCookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+      path: "/",
+    };
+
+    res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
 
     res.status(200).json({
       message: "Email verified successfully",
@@ -98,19 +110,16 @@ export const logout = async (req, res, next) => {
       clearUserCache(userId);
     }
 
-    res.cookie("accessToken", "", {
+    const clearCookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       maxAge: 0,
-    });
+      path: "/",
+    };
 
-    res.cookie("refreshToken", "", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 0,
-    });
+    res.cookie("accessToken", "", clearCookieOptions);
+    res.cookie("refreshToken", "", clearCookieOptions);
 
     res.status(200).json({
       message: "Logged out successfully",
@@ -151,19 +160,25 @@ export const resetPasswordController = async (req, res, next) => {
       new_password,
     );
 
-    res.cookie("accessToken", result.accessToken, {
+    const cookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       maxAge: 15 * 60 * 1000,
-    });
+      path: "/",
+    };
 
-    res.cookie("refreshToken", result.refreshToken, {
+    res.cookie("accessToken", result.accessToken, cookieOptions);
+
+    const refreshCookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+      path: "/",
+    };
+
+    res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
 
     res.status(200).json({
       message: result.message,

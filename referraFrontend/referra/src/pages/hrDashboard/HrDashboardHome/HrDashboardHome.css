@@ -145,8 +145,8 @@
 }
 
 .hr-dashboard-home-recent-avatar {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     background-color: var(--primary-color);
     color: var(--white);
@@ -181,6 +181,17 @@
 
 .candidate .cardRight span {
     opacity: .9;
+}
+
+.candidate-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: 52px; /* avatar width (36px) + gap (16px) = 52px to align under name */
+}
+
+.candidate-meta-item {
+    opacity: 0.7;
 }
 
 .iconText {

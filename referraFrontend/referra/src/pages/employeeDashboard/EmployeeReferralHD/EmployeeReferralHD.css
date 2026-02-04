@@ -387,8 +387,8 @@
 }
 
 .emp-referral-candidate-avatar {
-    width: 60px;
-    height: 60px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     background: var(--primary-color);
     color: var(--white);
@@ -396,7 +396,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: var(--fs-large);
+    font-size: var(--fs-medium);
     flex-shrink: 0;
 }
 
@@ -451,6 +451,15 @@
 .emp-referral-candidate-info-item strong {
     color: var(--gray-dark);
     font-weight: 600;
+}
+
+.emp-referral-candidate-info-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--gap-md);
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-light);
 }
 
 /* Edit Mode */

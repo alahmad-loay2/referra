@@ -133,16 +133,18 @@ const HrDashboardHome = () => {
                       </div>
                       <p>{fullName}</p>
                     </div>
-                    <span className="iconText">
-                      <Mail size={14} />
-                      <span className="iconTextLabel">{referral.Candidate.Email}</span>
-                    </span>
-                    {referral.Position?.PositionTitle && (
-                      <span className="iconText">
-                        <Briefcase size={14} />
-                        <span className="iconTextLabel">{referral.Position.PositionTitle}</span>
+                    <div className="candidate-meta">
+                      <span className="iconText candidate-meta-item">
+                        <Mail size={14} />
+                        <span className="iconTextLabel">{referral.Candidate.Email}</span>
                       </span>
-                    )}
+                      {referral.Position?.PositionTitle && (
+                        <span className="iconText candidate-meta-item">
+                          <Briefcase size={14} />
+                          <span className="iconTextLabel">{referral.Position.PositionTitle}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="cardRight">
                     {referral.Referral?.Status && (

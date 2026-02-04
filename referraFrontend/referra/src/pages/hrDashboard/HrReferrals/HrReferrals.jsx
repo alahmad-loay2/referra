@@ -267,22 +267,30 @@ const HrReferrals = () => {
           hrReferrals.map((ref) => (
             <div className="candidate" key={ref.id}>
               <div className="cardLeft">
-                <p>
-                  {ref.Candidate?.FirstName} {ref.Candidate?.LastName}
-                </p>
+                <div className="hr-referrals-avatar-name">
+                  <div className="hr-referrals-avatar">
+                    {ref.Candidate?.FirstName?.[0]}
+                    {ref.Candidate?.LastName?.[0]}
+                  </div>
+                  <div className="hr-referrals-name-content">
+                    <p>
+                      {ref.Candidate?.FirstName} {ref.Candidate?.LastName}
+                    </p>
 
-                <span className="iconText">
-                  <Mail size={14} />
-                  <span className="iconTextLabel">{ref.Candidate?.Email}</span>
-                </span>
-                {(() => {
-                  const badge = getStatusBadge(ref);
-                  return (
-                    <span className={`statusBadgeSecondary ${badge.className}`}>
-                      {badge.text}
+                    <span className="iconText">
+                      <Mail size={14} />
+                      <span className="iconTextLabel">{ref.Candidate?.Email}</span>
                     </span>
-                  );
-                })()}
+                    {(() => {
+                      const badge = getStatusBadge(ref);
+                      return (
+                        <span className={`statusBadgeSecondary ${badge.className}`}>
+                          {badge.text}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
               </div>
 
               <div className="cardRight">

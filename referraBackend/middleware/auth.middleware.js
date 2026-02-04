@@ -160,6 +160,7 @@ export const authenticate = async (req, res, next) => {
       secure: true,
       sameSite: "none",
       maxAge: 15 * 60 * 1000,
+      path: "/",
     });
 
     res.cookie("refreshToken", refreshed.session.refresh_token, {
@@ -167,6 +168,7 @@ export const authenticate = async (req, res, next) => {
       secure: true,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     return attachUser(req, refreshed.session.user, next);
