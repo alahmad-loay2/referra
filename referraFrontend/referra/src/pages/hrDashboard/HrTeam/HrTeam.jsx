@@ -122,7 +122,6 @@ const HrTeam = () => {
       {/* PAGE HEADER */}
       <div className="pageHeader">
         <h1 className="pageTitle">HR Team</h1>
-        <p className="pageSubtitle">Manage HR team members</p>
       </div>
 
       {/* =======================

@@ -90,7 +90,7 @@ const EmployeePositions = () => {
 
               <Button
                 text="View Details"
-                to={`../open-positions/${pos.PositionId}`}
+                to={`/dashboard/employee/open-positions/${pos.PositionId}`}
                 className="details-btn"
               />
             </div>

@@ -30,7 +30,7 @@
   justify-content: space-between;
   gap: var(--gap-xxl);
   width: 100%;
-  padding: 20px 0;
+  margin-top: 20px;
 }
 
 .HRCards {
@@ -144,7 +144,6 @@
 }
 
 .HRTableContainer {
-  margin-top: 20px;
   background-color: white;
   padding: 20px;
   border-radius: var(--radius-xl);

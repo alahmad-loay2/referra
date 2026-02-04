@@ -72,11 +72,11 @@ const AppRoutes = () => {
         <Route path="/dashboard/employee" element={<EmployeeDashboard />}>
           <Route index element={<EmployeeDashboardHome />} />
           <Route path="my-referrals" element={<EmployeeReferrals />} />
-          <Route path="open-positions" element={<EmployeePositions />} />
           <Route
             path="open-positions/:positionId"
             element={<EmployeePositionDetails />}
           />
+          <Route path="open-positions" element={<EmployeePositions />} />
           <Route path="submit-referrals" element={<EmployeeSubmit />} />
           <Route
             path="referral-history/:referralId"
