@@ -9,6 +9,7 @@ import {
   getEmployeeReferrals,
   editCandidate,
   getEmployeeReferralDetails,
+  findCandidateByEmail,
 } from "../services/employee/employeeReferrals.service.js";
 
 // controllers for employee related operations
@@ -229,7 +230,6 @@ export const GetReferralDetails = async (req, res, next) => {
   }
 };
 
-
 export const GetVisiblePositions = async (req, res, next) => {
   try {
     const result = await getVisiblePositions(req.user, req.query);
@@ -248,5 +248,29 @@ export const GetPositionDetails = async (req, res, next) => {
     res.status(200).json(result);
   } catch (error) {
     next(error);
+  }
+};
+
+export const CheckCandidateByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const candidate = await findCandidateByEmail(email.trim());
+
+    if (!candidate) {
+      return res.json({ exists: false });
+    }
+
+    return res.json({
+      exists: true,
+      candidate,
+    });
+  } catch (err) {
+    console.error("CheckCandidateByEmail error:", err);
+    res.status(500).json({ message: "Failed to check candidate" });
   }
 };

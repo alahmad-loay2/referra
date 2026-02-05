@@ -60,6 +60,42 @@ const AddHr = ({ onClose, onSuccess }) => {
       setLoading(false);
     }
   };
+  const DepartmentSelect = ({ options, value, onChange }) => {
+    const [open, setOpen] = useState(false);
+
+    const selected = options.find((o) => o.value === value);
+
+    return (
+      <div className="dept-select">
+        <div
+          className="dept-select-trigger"
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          <span>{selected ? selected.label : "Select Department"}</span>
+          <span className="dept-select-arrow">▾</span>
+        </div>
+
+        {open && (
+          <div className="dept-select-dropdown">
+            {options.map((opt) => (
+              <div
+                key={opt.value}
+                className={`dept-select-option ${
+                  opt.value === value ? "selected" : ""
+                }`}
+                onClick={() => {
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+              >
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="modal-overlay">
@@ -106,20 +142,20 @@ const AddHr = ({ onClose, onSuccess }) => {
             />
           </div>
           {/* DEPARTMENT */}
+
           <div className="form-group">
             <label>Assigned Department *</label>
-            <select
+
+            <DepartmentSelect
+              options={departments.map((d) => ({
+                value: d.DepartmentId,
+                label: d.DepartmentName,
+              }))}
               value={departmentId}
-              onChange={(e) => setDepartmentId(e.target.value)}
-            >
-              <option value="">Select Department</option>
-              {departments.map((d) => (
-                <option key={d.DepartmentId} value={d.DepartmentId}>
-                  {d.DepartmentName}
-                </option>
-              ))}
-            </select>
+              onChange={setDepartmentId}
+            />
           </div>
+
           {/* AGE */}
           <div className="form-group">
             <label>Age *</label>
