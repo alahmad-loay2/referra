@@ -140,6 +140,7 @@
     width: 100%;
     max-width: 100%;
     gap: var(--gap-lg);
+    overflow: hidden;
 }
 
 .candidate .cardLeft {
@@ -147,6 +148,7 @@
     flex-direction: column;
     gap: var(--gap-sm);
     width: 60%;
+    min-width: 0;
 }
 
 .hr-referrals-avatar-name {
@@ -174,16 +176,22 @@
     flex-direction: column;
     gap: var(--gap-sm);
     margin-left: 8px;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .candidate .cardRight{
     display: flex;
     flex-direction: column;
     gap: var(--gap-sm);
+    min-width: 0;
 }
 
 .candidate p {
     font-size: var(--fs-large);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .candidate span {
@@ -192,12 +200,20 @@
 
 .candidate .cardRight span {
     opacity: .9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .iconText {
   display: flex;
   align-items: center;
   gap: var(--gap-sm);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .iconTextLabel {

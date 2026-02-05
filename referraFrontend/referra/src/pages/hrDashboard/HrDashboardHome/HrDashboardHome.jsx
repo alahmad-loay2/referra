@@ -25,11 +25,9 @@ const HrDashboardHome = () => {
     fetchDashboard();
   }, []);
 
-  const handleSearchCandidate = (fullName) => {
-    if (!fullName) return;
-    const params = new URLSearchParams();
-    params.set("search", fullName);
-    navigate(`/dashboard/hr/referrals?${params.toString()}`);
+  const handleOpenReferralDetails = (referralId) => {
+    if (!referralId) return;
+    navigate(`/dashboard/hr/referrals/${referralId}`);
   };
 
   return (
@@ -120,6 +118,7 @@ const HrDashboardHome = () => {
           ) : (
             dashboardData?.recentReferrals?.map((referral) => {
               const fullName = `${referral.Candidate.FirstName} ${referral.Candidate.LastName}`;
+              const referralId = referral.Referral?.ReferralId;
               return (
                 <div
                   className="candidate"
@@ -168,9 +167,9 @@ const HrDashboardHome = () => {
                     <button
                       type="button"
                       className="referral-details-btn"
-                      onClick={() => handleSearchCandidate(fullName)}
+                      onClick={() => handleOpenReferralDetails(referralId)}
                     >
-                      Search candidate
+                      Referral Details
                     </button>
                   </div>
                 </div>

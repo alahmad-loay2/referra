@@ -34,6 +34,7 @@ export const CreateReferral = async (req, res, next) => {
       candidateFirstName,
       candidateLastName,
       candidateEmail,
+      candidatePhoneNumber,
       candidateYearOfExperience,
       positionId,
     } = req.body;
@@ -50,6 +51,7 @@ export const CreateReferral = async (req, res, next) => {
       candidateFirstName,
       candidateLastName,
       candidateEmail,
+      candidatePhoneNumber,
       candidateYearOfExperience,
       positionId,
       employeeId,
@@ -181,6 +183,7 @@ export const EditCandidate = async (req, res, next) => {
       candidateFirstName,
       candidateLastName,
       candidateEmail,
+      candidatePhoneNumber,
       candidateYearOfExperience,
     } = req.body;
 
@@ -192,6 +195,7 @@ export const EditCandidate = async (req, res, next) => {
       candidateFirstName,
       candidateLastName,
       candidateEmail,
+      candidatePhoneNumber,
       candidateYearOfExperience,
       cvFile,
     };

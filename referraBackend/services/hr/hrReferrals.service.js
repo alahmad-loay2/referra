@@ -47,13 +47,40 @@ export const getAllConfirmedReferrals = async ({
   });
 
   if (search && search.trim() !== "") {
+    const trimmedSearch = search.trim();
+    const terms = trimmedSearch.split(/\s+/);
+    const firstTerm = terms[0];
+    const secondTerm = terms.length > 1 ? terms[1] : null;
+
+    const candidateOr = [
+      // Simple single-field matches for the full search string
+      { FirstName: { contains: trimmedSearch, mode: "insensitive" } },
+      { LastName: { contains: trimmedSearch, mode: "insensitive" } },
+      { Email: { contains: trimmedSearch, mode: "insensitive" } },
+    ];
+
+    // If the user typed a first and last name (e.g. "loay alahmad"),
+    // also try matching first/last separately in either order.
+    if (secondTerm) {
+      candidateOr.push(
+        {
+          AND: [
+            { FirstName: { contains: firstTerm, mode: "insensitive" } },
+            { LastName: { contains: secondTerm, mode: "insensitive" } },
+          ],
+        },
+        {
+          AND: [
+            { FirstName: { contains: secondTerm, mode: "insensitive" } },
+            { LastName: { contains: firstTerm, mode: "insensitive" } },
+          ],
+        },
+      );
+    }
+
     andFilters.push({
       Candidate: {
-        OR: [
-          { FirstName: { contains: search, mode: "insensitive" } },
-          { LastName: { contains: search, mode: "insensitive" } },
-          { Email: { contains: search, mode: "insensitive" } },
-        ],
+        OR: candidateOr,
       },
     });
   }
@@ -237,6 +264,11 @@ export const advanceReferralStage = async (referralId, hrUser) => {
   if (!belongsToHrDept)
     throw new Error("HR not allowed to update this referral");
 
+  // Cannot advance if the position is closed
+  if (referral.Application.Position.PositionState === "CLOSED") {
+    throw new Error("Cannot advance referral for a closed position");
+  }
+
   // Check if Prospect is true - cannot advance if it is
   if (referral.Prospect) {
     throw new Error("Cannot advance referral stage when Prospect is true");
@@ -328,11 +360,12 @@ export const finalizeReferral = async (
     throw new Error("HR not allowed to update this referral");
   }
 
-  const candidateId = referral.Application.Candidate.CandidateId;
-  const employeeId = referral.Application.Employee.EmployeeId;
-  const positionId = referral.Application.PositionId;
-
   if (action === "Accept") {
+    // Position must be OPEN to hire
+    if (referral.Application.Position.PositionState === "CLOSED") {
+      throw new Error("Cannot accept candidate for a closed position");
+    }
+
     if (referral.Status !== "Acceptance") {
       throw new Error("Can only accept candidate in Acceptance stage");
     }
@@ -346,6 +379,10 @@ export const finalizeReferral = async (
     if (referral.AcceptedInOtherPosition) {
       throw new Error("Cannot accept candidate who is accepted in other position");
     }
+
+    const candidateId = referral.Application.Candidate.CandidateId;
+    const employeeId = referral.Application.Employee.EmployeeId;
+    const positionId = referral.Application.PositionId;
 
     // Find all other referral IDs for this candidate
     const otherApplications = await prisma.application.findMany({
