@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Mail, Calendar, Briefcase, Check, ArrowLeft, Edit, Trash2, User, Award, Download, FileText, Clock, MapPin, Circle, Upload, X, Building2, Users } from "lucide-react";
+import { Mail, Calendar, Briefcase, Check, ArrowLeft, Edit, Trash2, User, Award, Download, FileText, Clock, MapPin, Circle, Upload, X, Building2, Users, Phone } from "lucide-react";
 import { fetchEmployeeReferralDetails, editCandidate, deleteCandidate } from "../../../api/employeeReferrals.api";
 import "./EmployeeReferralHD.css";
 
@@ -26,10 +26,12 @@ const EmployeeReferralHD = () => {
     firstName: "",
     lastName: "",
     email: "",
+    phoneNumber: "",
     experience: "",
   });
   const [cvFile, setCvFile] = useState(null);
   const [cvError, setCvError] = useState("");
+  const [showExistingCV, setShowExistingCV] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -43,8 +45,10 @@ const EmployeeReferralHD = () => {
           firstName: data.Candidate.FirstName || "",
           lastName: data.Candidate.LastName || "",
           email: data.Candidate.Email || "",
+          phoneNumber: data.Candidate.PhoneNumber || "",
           experience: data.Candidate.YearOfExperience || "",
         });
+        setShowExistingCV(true);
         setError(null);
       } catch (error) {
         setError(error.message || "Failed to load referral details");
@@ -91,10 +95,12 @@ const EmployeeReferralHD = () => {
       firstName: referralData.Candidate.FirstName || "",
       lastName: referralData.Candidate.LastName || "",
       email: referralData.Candidate.Email || "",
+      phoneNumber: referralData.Candidate.PhoneNumber || "",
       experience: referralData.Candidate.YearOfExperience || "",
     });
     setCvFile(null);
     setCvError("");
+    setShowExistingCV(true);
     setShowCancelConfirm(false);
   };
 
@@ -111,6 +117,7 @@ const EmployeeReferralHD = () => {
       setIsEditMode(false);
       setCvFile(null);
       setCvError("");
+      setShowExistingCV(true);
       setShowSaveConfirm(false);
     } catch (error) {
       alert(error.message || "Failed to edit candidate");
@@ -391,6 +398,22 @@ const EmployeeReferralHD = () => {
                       </div>
                       <div className="emp-referral-edit-field">
                         <label className="emp-referral-edit-label">
+                          <Phone size={18} />
+                          <span>
+                            Phone Number <span>*</span>
+                          </span>
+                        </label>
+                        <input
+                          name="phoneNumber"
+                          type="tel"
+                          value={editForm.phoneNumber}
+                          onChange={handleFormChange}
+                          className="emp-referral-edit-input"
+                          placeholder="Phone Number"
+                        />
+                      </div>
+                      <div className="emp-referral-edit-field">
+                        <label className="emp-referral-edit-label">
                           <Award size={18} />
                           <span>
                             Years of Experience <span>*</span>
@@ -412,6 +435,12 @@ const EmployeeReferralHD = () => {
                         <Mail size={18} />
                         <span>
                           <strong>Email:</strong> {Candidate.Email}
+                        </span>
+                      </div>
+                      <div className="emp-referral-candidate-info-item">
+                        <Phone size={18} />
+                        <span>
+                          <strong>Phone:</strong> {Candidate.PhoneNumber || "N/A"}
                         </span>
                       </div>
                       <div className="emp-referral-candidate-info-item">
@@ -440,9 +469,15 @@ const EmployeeReferralHD = () => {
                 <div className="emp-referral-cv-section">
                   {!isEditMode && Candidate.CVUrl ? (
                     <div className="emp-referral-cv-display">
-                      <span className="emp-referral-cv-name">
-                        {Candidate.FirstName} - CV
-                      </span>
+                      <div className="emp-referral-cv-content">
+                        <FileText size={32} className="emp-referral-cv-icon" />
+                        <span className="emp-referral-cv-name">
+                          {Candidate.FirstName} - CV
+                        </span>
+                        <span className="emp-referral-cv-subtext">
+                          Click to download
+                        </span>
+                      </div>
                       <a
                         href={Candidate.CVUrl}
                         target="_blank"
@@ -477,8 +512,25 @@ const EmployeeReferralHD = () => {
                             <X size={16} />
                           </button>
                         </div>
+                      ) : Candidate.CVUrl && showExistingCV ? (
+                        <div className="emp-referral-file-preview">
+                          <span className="emp-referral-file-icon">📄</span>
+                          <span className="emp-referral-file-name">
+                            {getCVFileName(Candidate.CVUrl)}
+                          </span>
+                          <button
+                            type="button"
+                            className="emp-referral-remove-file"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowExistingCV(false);
+                            }}
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
                       ) : Candidate.CVUrl ? (
-                        <p>Click to upload new CV or drag and drop (PDF only). Current CV will be replaced.</p>
+                        <p>Click to upload new CV or drag and drop (PDF only). Current CV will be kept unless replaced.</p>
                       ) : (
                         <p>Click to upload or drag and drop (PDF only)</p>
                       )}

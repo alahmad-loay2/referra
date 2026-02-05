@@ -10,9 +10,23 @@ import { supabase } from "../../lib/supabase.js";
 import { createClient } from "@supabase/supabase-js";
 
 const getResend = () => {
+  // In test environment, return a no-op mock so tests don't require a real API key
+  if (process.env.NODE_ENV === "test") {
+    return {
+      emails: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        send: async (_args) => {
+          // no-op in tests
+          return;
+        },
+      },
+    };
+  }
+
   if (!RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY is not set in environment variables");
   }
+
   return new Resend(RESEND_API_KEY);
 };
 
@@ -25,6 +39,7 @@ export const createReferral = async (payload) => {
     candidateFirstName,
     candidateLastName,
     candidateEmail,
+    candidatePhoneNumber,
     candidateYearOfExperience,
     positionId,
     employeeId,
@@ -35,13 +50,14 @@ export const createReferral = async (payload) => {
     !candidateFirstName ||
     !candidateLastName ||
     !candidateEmail ||
+    !candidatePhoneNumber ||
     !candidateYearOfExperience ||
     !positionId ||
     !employeeId ||
     !cvFile
   ) {
     const error = new Error(
-      "candidateFirstName, candidateLastName, candidateEmail, candidateYearOfExperience, positionId, and cvFile are required",
+      "candidateFirstName, candidateLastName, candidateEmail, candidatePhoneNumber, candidateYearOfExperience, positionId, and cvFile are required",
     );
     error.statusCode = 400;
     throw error;
@@ -135,6 +151,7 @@ export const createReferral = async (payload) => {
           LastName: candidateLastName,
           Email: candidateEmail,
           YearOfExperience: parseInt(candidateYearOfExperience, 10),
+          PhoneNumber: candidatePhoneNumber,
           CVUrl: cvUrl,
         },
       });
@@ -518,6 +535,7 @@ export const editCandidate = async (payload) => {
     candidateFirstName,
     candidateLastName,
     candidateEmail,
+    candidatePhoneNumber,
     candidateYearOfExperience,
     cvFile,
   } = payload;
@@ -601,6 +619,9 @@ export const editCandidate = async (payload) => {
   }
   if (candidateLastName !== undefined && candidateLastName !== "") {
     dataToUpdate.LastName = candidateLastName;
+  }
+  if (candidatePhoneNumber !== undefined && candidatePhoneNumber !== "") {
+    dataToUpdate.PhoneNumber = candidatePhoneNumber;
   }
   if (
     candidateYearOfExperience !== undefined &&

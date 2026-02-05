@@ -4,6 +4,7 @@
     display: flex;
     flex-direction: column;
     padding: var(--page-padding-top-no-header) var(--page-padding-x);
+    box-sizing: border-box;
 }
 
 .referral-hd-header {
@@ -113,21 +114,25 @@
 .emp-referral-hd-content {
     display: flex;
     gap: var(--gap-lg);
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .emp-referral-hd-content-left {
-    flex: 3; /* ~60% */
+    flex: 3 1 0; /* ~60% */
     display: flex;
     flex-direction: column;
     gap: var(--gap-lg);
     min-width: 620px; /* Prevent application progress from breaking */
+    min-height: 0;
 }
 
 .emp-referral-hd-content-right {
-    flex: 2; /* ~40% */
+    flex: 2 1 0; /* ~40% */
     min-width: 0; /* Allow flex shrinking */
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 /* Position Details Card */
@@ -185,8 +190,11 @@
 
 .emp-referral-hd-content-right-details {
     display: flex;
-    flex-direction: column;
-    gap: var(--gap-xl);
+    flex-wrap: wrap;
+    column-gap: var(--gap-xl);
+    row-gap: var(--gap-lg);
+    margin-bottom: 20px;
+    flex: 0 0 auto;
 }
 
 .emp-referral-hd-content-right-details-item {
@@ -195,6 +203,8 @@
     gap: var(--gap-md);
     font-size: var(--fs-small);
     color: var(--gray-dark);
+    flex: 1 1 calc(50% - var(--gap-xl));
+    min-width: 220px;
 }
 
 .emp-referral-hd-content-right-details-item strong {
@@ -206,7 +216,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-sm);
-    flex-shrink: 0;
+    flex: 1 1 auto;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    background-color: #fafafa;
 }
 
 .emp-referral-hd-content-right-description h4 {
@@ -217,13 +231,15 @@
 }
 
 .emp-referral-hd-content-right-description-content {
+    flex: 1 1 auto;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
     padding-right: 8px;
+    min-height: 200px;
 }
 
 .emp-referral-hd-content-right-description-content p {
-    font-size: var(--fs-small);
+    font-size: var(--fs-medium);
     color: var(--gray-dark);
     line-height: 1.6;
     margin: 0;
@@ -364,7 +380,7 @@
     padding: 30px;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0; /* Allow flex shrinking */
 }
 
@@ -436,8 +452,9 @@
 
 .emp-referral-candidate-info {
     display: flex;
-    flex-direction: column;
-    gap: var(--gap-xl);
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--gap-lg);
 }
 
 .emp-referral-candidate-info-item {
@@ -446,6 +463,8 @@
     gap: var(--gap-md);
     font-size: var(--fs-small);
     color: var(--gray-dark);
+    flex: 1 1 calc(50% - var(--gap-lg));
+    min-width: 200px;
 }
 
 .emp-referral-candidate-info-item strong {
@@ -457,7 +476,7 @@
     display: flex;
     justify-content: flex-end;
     gap: var(--gap-md);
-    margin-top: 20px;
+    margin-top: auto;
     padding-top: 20px;
     border-top: 1px solid var(--gray-light);
 }
@@ -504,31 +523,60 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-md);
+    flex: 1;
+    min-height: 0;
+    max-height: 200px;
+    margin-top: 20px;
+    padding-bottom: 20px;
 }
 
 .emp-referral-cv-display {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     gap: var(--gap-md);
-    padding: 12px 16px;
-    border: 1px solid var(--gray-light);
+    padding: 16px;
+    border: 2px dashed var(--gray-light);
     border-radius: var(--radius-md);
     background: var(--white);
+    flex: 1;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+.emp-referral-cv-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-xs);
+    flex: 1;
+    text-align: center;
+}
+
+.emp-referral-cv-icon {
+    color: var(--gray-dark);
+    opacity: 0.7;
 }
 
 .emp-referral-cv-name {
     font-size: var(--fs-small);
+    font-weight: 500;
     color: var(--gray-dark);
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    text-align: center;
+}
+
+.emp-referral-cv-subtext {
+    font-size: 0.75rem;
+    color: var(--gray-dark);
+    opacity: 0.6;
+    text-align: center;
 }
 
 .emp-referral-cv-download-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--gap-sm);
     background-color: #e0e0e0;
     color: var(--gray-dark);
@@ -538,7 +586,7 @@
     font-size: var(--fs-small);
     transition: background-color 0.2s;
     white-space: nowrap;
-    flex-shrink: 0;
+    width: 100%;
 }
 
 .emp-referral-cv-download-btn:hover {

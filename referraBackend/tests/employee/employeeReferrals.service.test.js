@@ -18,6 +18,7 @@ test("createReferral creates candidate, referral and application for open positi
     candidateFirstName: "John",
     candidateLastName: "Doe",
     candidateEmail: "john@example.com",
+    candidatePhoneNumber: "+11234567890",
     candidateYearOfExperience: 5,
     positionId: 10,
     employeeId: 20,
@@ -93,6 +94,7 @@ test("createReferral creates candidate, referral and application for open positi
 
     assert.equal(result.ApplicationId, 200);
     assert.equal(result.Candidate.CandidateId, 1);
+    assert.equal(result.Candidate.PhoneNumber, "+11234567890");
     assert.equal(result.Position.PositionId, 10);
     assert.equal(result.Referral.ReferralId, 100);
   } finally {
@@ -328,6 +330,7 @@ test("editCandidate updates candidate fields when only pending referrals exist",
     candidateFirstName: "Updated",
     candidateLastName: "",
     candidateEmail: "",
+    candidatePhoneNumber: "+11234567890",
     candidateYearOfExperience: 10,
     cvFile: null,
   };
@@ -337,6 +340,7 @@ test("editCandidate updates candidate fields when only pending referrals exist",
     FirstName: "Old",
     LastName: "Name",
     Email: "old@example.com",
+    PhoneNumber: "+19876543210",
     Application: [
       {
         ReferralId: 800,
@@ -372,9 +376,11 @@ test("editCandidate updates candidate fields when only pending referrals exist",
 
     assert.equal(updateArgs.where.CandidateId, payload.candidateId);
     assert.equal(updateArgs.data.FirstName, "Updated");
+    assert.equal(updateArgs.data.PhoneNumber, "+11234567890");
     assert.equal(updateArgs.data.YearOfExperience, 10);
     assert.equal(result.updatedCandidate.CandidateId, 9);
     assert.equal(result.updatedCandidate.FirstName, "Updated");
+    assert.equal(result.updatedCandidate.PhoneNumber, "+11234567890");
   } finally {
     prisma.candidate.findUnique = originalFindUnique;
     prisma.$transaction = originalTx;

@@ -47,13 +47,40 @@ export const getAllConfirmedReferrals = async ({
   });
 
   if (search && search.trim() !== "") {
+    const trimmedSearch = search.trim();
+    const terms = trimmedSearch.split(/\s+/);
+    const firstTerm = terms[0];
+    const secondTerm = terms.length > 1 ? terms[1] : null;
+
+    const candidateOr = [
+      // Simple single-field matches for the full search string
+      { FirstName: { contains: trimmedSearch, mode: "insensitive" } },
+      { LastName: { contains: trimmedSearch, mode: "insensitive" } },
+      { Email: { contains: trimmedSearch, mode: "insensitive" } },
+    ];
+
+    // If the user typed a first and last name (e.g. "loay alahmad"),
+    // also try matching first/last separately in either order.
+    if (secondTerm) {
+      candidateOr.push(
+        {
+          AND: [
+            { FirstName: { contains: firstTerm, mode: "insensitive" } },
+            { LastName: { contains: secondTerm, mode: "insensitive" } },
+          ],
+        },
+        {
+          AND: [
+            { FirstName: { contains: secondTerm, mode: "insensitive" } },
+            { LastName: { contains: firstTerm, mode: "insensitive" } },
+          ],
+        },
+      );
+    }
+
     andFilters.push({
       Candidate: {
-        OR: [
-          { FirstName: { contains: search, mode: "insensitive" } },
-          { LastName: { contains: search, mode: "insensitive" } },
-          { Email: { contains: search, mode: "insensitive" } },
-        ],
+        OR: candidateOr,
       },
     });
   }

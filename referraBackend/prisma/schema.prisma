@@ -78,6 +78,7 @@ model Candidate {
   LastName String
   Email String @unique
   YearOfExperience Int
+  PhoneNumber String
   CVUrl String
   Acceptance Boolean @default(false)
   CreatedAt DateTime @default(now())

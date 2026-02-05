@@ -96,6 +96,7 @@ export const editCandidate = async (candidateId, form, cvFile) => {
   formData.append("candidateFirstName", form.firstName);
   formData.append("candidateLastName", form.lastName);
   formData.append("candidateEmail", form.email);
+  formData.append("candidatePhoneNumber", form.phoneNumber);
   formData.append("candidateYearOfExperience", form.experience);
   if (cvFile) {
     formData.append("cvFile", cvFile);
