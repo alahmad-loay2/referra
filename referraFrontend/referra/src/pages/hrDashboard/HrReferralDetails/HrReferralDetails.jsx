@@ -95,6 +95,9 @@ const HrReferralDetails = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [referralData, setReferralData] = useState(null);
   const [error, setError] = useState(null);
+  const [showCompModal, setShowCompModal] = useState(false);
+  const [compAmount, setCompAmount] = useState("");
+  const [compError, setCompError] = useState("");
 
   const loadDetails = async () => {
     try {
@@ -135,9 +138,7 @@ const HrReferralDetails = () => {
       }
 
       if (action === "accept") {
-        // compensation modal comes later
-        await finalizeReferral(referralId, "Accept", 0);
-        navigate("/dashboard/hr/referrals");
+        setShowCompModal(true);
         return;
       }
 
@@ -222,8 +223,8 @@ const HrReferralDetails = () => {
                       state = "active";
                     }
 
-                    // Prospect flow: show failure at Hired, but keep progress
-                    if (Referral.Prospect && step === "Hired") {
+                    // Prospect flow: show failure at CURRENT stage
+                    if (Referral.Prospect && index === currentIndex) {
                       state = "prospect";
                     }
 
@@ -441,6 +442,79 @@ const HrReferralDetails = () => {
             </div>
           </div>
         </div>
+        {showCompModal && (
+          <div className="hr-comp-modal-backdrop">
+            <div className="hr-comp-modal">
+              <button
+                className="hr-comp-modal-close"
+                onClick={() => {
+                  setShowCompModal(false);
+                  setCompAmount("");
+                  setCompError("");
+                }}
+                aria-label="Close"
+              >
+                <X size={22} />
+              </button>
+
+              <div className="hr-comp-modal-icon">
+                <Award size={88} />
+              </div>
+
+              <h3>Congratulations!</h3>
+              <p>
+                <strong>
+                  {referredUser?.FirstName} {referredUser?.LastName}
+                </strong>{" "}
+                successfully referred this candidate.
+              </p>
+              <p>How much do you want to compensate?</p>
+
+              <input
+                type="number"
+                min="0"
+                placeholder="Set amount"
+                value={compAmount}
+                onChange={(e) => {
+                  setCompAmount(e.target.value);
+                  setCompError("");
+                }}
+                className="hr-comp-modal-input"
+              />
+
+              {compError && (
+                <div className="hr-comp-modal-error">{compError}</div>
+              )}
+
+              <button
+                className="hr-comp-modal-submit"
+                onClick={async () => {
+                  if (compAmount === "" || Number(compAmount) < 0) {
+                    setCompError("Please enter a valid amount (0 or more)");
+                    return;
+                  }
+
+                  try {
+                    setActionLoading(true);
+                    await finalizeReferral(
+                      referralId,
+                      "Accept",
+                      Number(compAmount),
+                    );
+                    setShowCompModal(false);
+                    navigate("/dashboard/hr/referrals");
+                  } catch (err) {
+                    setCompError(err.message);
+                  } finally {
+                    setActionLoading(false);
+                  }
+                }}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

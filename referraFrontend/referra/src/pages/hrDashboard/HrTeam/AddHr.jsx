@@ -105,7 +105,21 @@ const AddHr = ({ onClose, onSuccess }) => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-
+          {/* DEPARTMENT */}
+          <div className="form-group">
+            <label>Assigned Department *</label>
+            <select
+              value={departmentId}
+              onChange={(e) => setDepartmentId(e.target.value)}
+            >
+              <option value="">Select Department</option>
+              {departments.map((d) => (
+                <option key={d.DepartmentId} value={d.DepartmentId}>
+                  {d.DepartmentName}
+                </option>
+              ))}
+            </select>
+          </div>
           {/* AGE */}
           <div className="form-group">
             <label>Age *</label>
@@ -135,22 +149,6 @@ const AddHr = ({ onClose, onSuccess }) => {
               value={gender}
               onChange={(e) => setGender(e.target.value)}
             />
-          </div>
-
-          {/* DEPARTMENT */}
-          <div className="form-group">
-            <label>Assigned Department *</label>
-            <select
-              value={departmentId}
-              onChange={(e) => setDepartmentId(e.target.value)}
-            >
-              <option value="">Select Department</option>
-              {departments.map((d) => (
-                <option key={d.DepartmentId} value={d.DepartmentId}>
-                  {d.DepartmentName}
-                </option>
-              ))}
-            </select>
           </div>
         </form>
 

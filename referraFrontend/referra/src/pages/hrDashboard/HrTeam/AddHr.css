@@ -11,7 +11,7 @@
 .modal-box {
   background: white;
   border-radius: var(--radius-lg);
-  padding: 30px;
+  padding: 20px;
   width: 100%;
   max-width: 500px;
   position: relative;
@@ -41,8 +41,10 @@
 .modal-box input,
 .modal-box select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
+
+  padding: 8px 10px;
+  margin-bottom: 6px;
+
   border-radius: var(--radius-md);
   border: 1px solid var(--gray-light);
 }
@@ -83,5 +85,10 @@
 .form-group label {
   font-size: 12px;
   font-weight: 500;
+  color: var(--gray-dark);
+}
+.modal-box select {
+  max-height: 160px;
+  overflow-y: auto;
   color: var(--gray-dark);
 }

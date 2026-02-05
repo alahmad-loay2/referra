@@ -234,17 +234,6 @@ const EmployeeSubmit = () => {
       setSubmitLoading(false);
     }
   };
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (!isFormDirty()) return;
-
-      e.preventDefault();
-      e.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [form, cvFile]);
 
   return (
     <div className="employeeSubmit">
