@@ -237,6 +237,11 @@ export const advanceReferralStage = async (referralId, hrUser) => {
   if (!belongsToHrDept)
     throw new Error("HR not allowed to update this referral");
 
+  // Cannot advance if the position is closed
+  if (referral.Application.Position.PositionState === "CLOSED") {
+    throw new Error("Cannot advance referral for a closed position");
+  }
+
   // Check if Prospect is true - cannot advance if it is
   if (referral.Prospect) {
     throw new Error("Cannot advance referral stage when Prospect is true");
@@ -328,11 +333,12 @@ export const finalizeReferral = async (
     throw new Error("HR not allowed to update this referral");
   }
 
-  const candidateId = referral.Application.Candidate.CandidateId;
-  const employeeId = referral.Application.Employee.EmployeeId;
-  const positionId = referral.Application.PositionId;
-
   if (action === "Accept") {
+    // Position must be OPEN to hire
+    if (referral.Application.Position.PositionState === "CLOSED") {
+      throw new Error("Cannot accept candidate for a closed position");
+    }
+
     if (referral.Status !== "Acceptance") {
       throw new Error("Can only accept candidate in Acceptance stage");
     }
@@ -346,6 +352,10 @@ export const finalizeReferral = async (
     if (referral.AcceptedInOtherPosition) {
       throw new Error("Cannot accept candidate who is accepted in other position");
     }
+
+    const candidateId = referral.Application.Candidate.CandidateId;
+    const employeeId = referral.Application.Employee.EmployeeId;
+    const positionId = referral.Application.PositionId;
 
     // Find all other referral IDs for this candidate
     const otherApplications = await prisma.application.findMany({
