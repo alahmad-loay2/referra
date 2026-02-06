@@ -286,6 +286,7 @@
     align-items: center;
     gap: var(--gap-md);
     margin-top: 8px;
+    flex-wrap: wrap;
 }
 
 .timeline {

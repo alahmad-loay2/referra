@@ -13,6 +13,7 @@ import {
   getHrDepartmentsController,
   getHrTeamController,
   getHrDashboardController,
+  UnprospectReferral,
 } from "../controllers/hr.controller.js";
 import { authenticate, requireHr } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
@@ -84,6 +85,14 @@ router.patch(
   authenticate,
   requireHr,
   FinalizeReferral,
+);
+
+router.patch(
+  "/referrals/:referralId/unprospect",
+  generalLimiter,
+  authenticate,
+  requireHr,
+  UnprospectReferral,
 );
 
 router.patch(

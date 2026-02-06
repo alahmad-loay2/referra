@@ -31,7 +31,7 @@ const HrReferrals = () => {
     positionId: "",
   });
 
-  // Read positionId and search from URL params on mount
+  // Read positionId and search from URL params
   useEffect(() => {
     const urlPositionId = searchParams.get("positionId");
     const urlSearch = searchParams.get("search");
@@ -45,8 +45,7 @@ const HrReferrals = () => {
       setPositionId(urlPositionId);
       setFilters((prev) => ({ ...prev, positionId: urlPositionId }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams]);
 
   // Fetch positions for dropdown - fetch ALL positions by paginating through all pages
   useEffect(() => {

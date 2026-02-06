@@ -21,6 +21,7 @@ import { getReferralDetails } from "../../../api/hrReferralsDetails.api";
 import {
   advanceReferralStage,
   finalizeReferral,
+  unprospectReferral,
 } from "../../../api/hrReferralActions.api";
 import "./HrReferralDetails.css";
 
@@ -46,10 +47,15 @@ const formatEmploymentType = (type) => {
 };
 
 const getHrActions = (referral) => {
+  // If already prospect, only show Unprospect action
+  if (referral.Prospect) {
+    return [
+      { label: "Unprospect", action: "unprospect", disabled: false },
+    ];
+  }
+
   const locked =
-    referral.Prospect ||
-    referral.Status === "Hired" ||
-    referral.AcceptedInOtherPosition;
+    referral.Status === "Hired" || referral.AcceptedInOtherPosition;
 
   switch (referral.Status) {
     case "Confirmed":
@@ -95,6 +101,7 @@ const HrReferralDetails = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [referralData, setReferralData] = useState(null);
   const [error, setError] = useState(null);
+  const [actionError, setActionError] = useState(null);
   const [showCompModal, setShowCompModal] = useState(false);
   const [compAmount, setCompAmount] = useState("");
   const [compError, setCompError] = useState("");
@@ -123,9 +130,21 @@ const HrReferralDetails = () => {
     loadDetails();
   }, [referralId]);
 
+  // Auto-clear error message after 4 seconds
+  useEffect(() => {
+    if (actionError) {
+      const timer = setTimeout(() => {
+        setActionError(null);
+      }, 4000); // 4 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [actionError]);
+
   const handleAction = async (action) => {
     try {
       setActionLoading(true);
+      setActionError(null); // Clear any previous errors
 
       if (action === "advance") {
         await advanceReferralStage(referralId);
@@ -137,6 +156,12 @@ const HrReferralDetails = () => {
         return;
       }
 
+      if (action === "unprospect") {
+        await unprospectReferral(referralId);
+        await loadDetails(); // refresh state
+        return;
+      }
+
       if (action === "accept") {
         setShowCompModal(true);
         return;
@@ -144,7 +169,17 @@ const HrReferralDetails = () => {
 
       await loadDetails();
     } catch (err) {
-      alert(err.message);
+      // Extract message from JSON if it's in that format
+      let errorMessage = err.message;
+      try {
+        const parsed = JSON.parse(err.message);
+        if (parsed.message) {
+          errorMessage = parsed.message;
+        }
+      } catch {
+        // If parsing fails, use the original message
+      }
+      setActionError(errorMessage);
     } finally {
       setActionLoading(false);
     }
@@ -183,20 +218,27 @@ const HrReferralDetails = () => {
 
           {/* HR ACTION BUTTONS */}
           <div className="hr-referral-hd-header-right">
-            {getHrActions(Referral).map((btn) => (
-              <button
-                key={btn.label}
-                disabled={actionLoading || btn.disabled}
-                className={
-                  btn.action === "prospect"
-                    ? "hr-referral-hd-secondary-btn"
-                    : "hr-referral-hd-primary-btn"
-                }
-                onClick={() => handleAction(btn.action)}
-              >
-                {btn.label}
-              </button>
-            ))}
+            <div className="hr-referral-hd-actions-wrapper">
+              <div className="hr-referral-hd-actions-buttons">
+                {getHrActions(Referral).map((btn) => (
+                  <button
+                    key={btn.label}
+                    disabled={actionLoading || btn.disabled}
+                    className={
+                      btn.action === "prospect" || btn.action === "unprospect"
+                        ? "hr-referral-hd-secondary-btn"
+                        : "hr-referral-hd-primary-btn"
+                    }
+                    onClick={() => handleAction(btn.action)}
+                  >
+                    {btn.label}
+                  </button>
+                ))}
+              </div>
+              {actionError && (
+                <div className="hr-referral-hd-action-error">{actionError}</div>
+              )}
+            </div>
           </div>
         </div>
 

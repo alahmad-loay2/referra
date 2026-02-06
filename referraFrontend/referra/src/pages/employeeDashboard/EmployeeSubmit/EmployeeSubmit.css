@@ -41,7 +41,7 @@
   border: 1px solid var(--gray-light);
 }
 
-.employeeSubmit-select .searchable-select-dropdown {
+.employeeSubmit-card .searchable-select-dropdown {
   width: 100%;
 }
 

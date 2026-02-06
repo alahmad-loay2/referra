@@ -53,3 +53,27 @@ export const finalizeReferral = async (
 
   return res.json();
 };
+
+/**
+ * Unprospect referral
+ * PATCH /hr/referrals/:referralId/unprospect
+ */
+export const unprospectReferral = async (referralId) => {
+  const res = await fetch(
+    `${API_BASE_URL}/hr/referrals/${referralId}/unprospect`,
+    {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Failed to unprospect referral");
+  }
+
+  return res.json();
+};

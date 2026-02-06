@@ -49,6 +49,19 @@
   align-items: center;
 }
 
+.hr-referral-hd-actions-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+  align-items: flex-end;
+}
+
+.hr-referral-hd-actions-buttons {
+  display: flex;
+  gap: var(--gap-sm);
+  align-items: center;
+}
+
 /* HR ACTION BUTTONS */
 .hr-referral-hd-primary-btn {
   background-color: var(--primary-color);
@@ -80,6 +93,14 @@
 .hr-referral-hd-secondary-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.hr-referral-hd-action-error {
+  color: #e53935;
+  font-size: var(--fs-small);
+  text-align: right;
+  margin-top: 4px;
+  max-width: 300px;
 }
 
 /* =============================

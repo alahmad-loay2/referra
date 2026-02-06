@@ -46,19 +46,13 @@
 
 .referralSearchContainer .selectContainer .searchable-select-dropdown {
   max-height: 500px;
-}
-
-.referralSearchContainer .selectContainer .searchable-select-search {
-  padding: 16px;
+  width: fit-content;
+  max-width: 400px;
 }
 
 .referralSearchContainer .selectContainer .searchable-select-input {
   font-size: var(--fs-small);
   padding: 4px 0;
-}
-
-.referralSearchContainer .selectContainer .searchable-select-options {
-  max-height: 400px;
 }
 
 .referralSearchContainer .selectContainer .searchable-select-option {

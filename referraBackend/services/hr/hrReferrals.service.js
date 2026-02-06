@@ -471,3 +471,75 @@ export const finalizeReferral = async (
   });
   return updatedApplication;
 };
+
+// Unprospect a referral (clear Prospect flag)
+export const unprospectReferral = async (referralId, hrUser) => {
+  if (!referralId) {
+    throw new Error("Referral ID is required");
+  }
+
+  const referral = await prisma.referral.findUnique({
+    where: { ReferralId: referralId },
+    include: {
+      Application: {
+        include: {
+          Position: {
+            include: {
+              Department: {
+                include: {
+                  Hrs: { include: { Hr: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!referral) {
+    throw new Error("Referral not found");
+  }
+
+  const belongsToHrDept = referral.Application.Position.Department.Hrs.some(
+    (hrDept) => hrDept.HrId === hrUser.HrId,
+  );
+
+  if (!belongsToHrDept) {
+    throw new Error("HR not allowed to update this referral");
+  }
+
+  if (!referral.Prospect) {
+    throw new Error("Referral is not a prospect");
+  }
+
+  // Cannot unprospect if already Hired
+  if (referral.Status === "Hired") {
+    throw new Error("Cannot unprospect candidate who is already hired");
+  }
+
+  // Cannot unprospect if AcceptedInOtherPosition is true
+  if (referral.AcceptedInOtherPosition) {
+    throw new Error("Cannot unprospect candidate who is accepted in other position");
+  }
+
+  // Cannot unprospect if position is closed
+  if (referral.Application.Position.PositionState === "CLOSED") {
+    throw new Error("Cannot unprospect candidate for a closed position");
+  }
+
+  await prisma.referral.update({
+    where: { ReferralId: referralId },
+    data: { Prospect: false },
+  });
+
+  const updatedApplication = await prisma.application.findUnique({
+    where: { ReferralId: referralId },
+    include: {
+      Candidate: true,
+      Referral: true,
+    },
+  });
+
+  return updatedApplication;
+};

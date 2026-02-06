@@ -12,6 +12,7 @@ import {
   finalizeReferral,
   getAllConfirmedReferrals,
   getReferralDetails,
+  unprospectReferral,
 } from "../services/hr/hrReferrals.service.js";
 import { getHrTeam } from "../services/hr/hrTeam.service.js";
 import { getHrDashboard } from "../services/hr/hrDashboard.service.js";
@@ -267,6 +268,34 @@ export const FinalizeReferral = async (req, res, next) => {
 
     res.status(200).json({
       message: `Referral ${action} completed successfully`,
+      candidate,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const UnprospectReferral = async (req, res, next) => {
+  try {
+    const hr = req.user?.Hr;
+    if (!hr) {
+      const error = new Error("HR profile not found");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const { referralId } = req.params;
+
+    if (!referralId) {
+      const error = new Error("Referral ID is required");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const candidate = await unprospectReferral(referralId, hr);
+
+    res.status(200).json({
+      message: "Referral unprospected successfully",
       candidate,
     });
   } catch (err) {

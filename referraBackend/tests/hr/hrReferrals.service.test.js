@@ -6,6 +6,7 @@ import {
   getReferralDetails,
   advanceReferralStage,
   finalizeReferral,
+  unprospectReferral,
 } from "../../services/hr/hrReferrals.service.js";
 import { prisma } from "../../lib/prisma.js";
 
@@ -351,6 +352,165 @@ test("finalizeReferral Prospects candidate even when position is closed", async 
     prisma.referral.findUnique = originalFindUnique;
     prisma.referral.update = originalUpdate;
     prisma.application.findUnique = originalAppFind;
+  }
+});
+
+test("unprospectReferral clears Prospect flag when HR is allowed", async () => {
+  const referralId = 350;
+  const hrUser = { HrId: 10 };
+
+  const fakeReferral = {
+    ReferralId: referralId,
+    Status: "Confirmed",
+    Prospect: true,
+    AcceptedInOtherPosition: false,
+    Application: {
+      Position: {
+        PositionState: "OPEN",
+        Department: {
+          Hrs: [{ HrId: hrUser.HrId }],
+        },
+      },
+    },
+  };
+
+  const originalFindUnique = prisma.referral.findUnique;
+  const originalRefUpdate = prisma.referral.update;
+  const originalAppFind = prisma.application.findUnique;
+
+  let updateArgs;
+
+  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.referral.update = async (args) => {
+    updateArgs = args;
+    return { ...fakeReferral, Prospect: false };
+  };
+
+  prisma.application.findUnique = async () => ({
+    ApplicationId: 2,
+    ReferralId: referralId,
+    Referral: { ReferralId: referralId, Prospect: false },
+  });
+
+  try {
+    const result = await unprospectReferral(referralId, hrUser);
+
+    assert.equal(updateArgs.where.ReferralId, referralId);
+    assert.equal(updateArgs.data.Prospect, false);
+    assert.equal(result.ReferralId, referralId);
+    assert.equal(result.Referral.Prospect, false);
+  } finally {
+    prisma.referral.findUnique = originalFindUnique;
+    prisma.referral.update = originalRefUpdate;
+    prisma.application.findUnique = originalAppFind;
+  }
+});
+
+test("unprospectReferral fails when referral is already Hired", async () => {
+  const referralId = 351;
+  const hrUser = { HrId: 10 };
+
+  const fakeReferral = {
+    ReferralId: referralId,
+    Status: "Hired",
+    Prospect: true,
+    AcceptedInOtherPosition: false,
+    Application: {
+      Position: {
+        PositionState: "OPEN",
+        Department: {
+          Hrs: [{ HrId: hrUser.HrId }],
+        },
+      },
+    },
+  };
+
+  const originalFindUnique = prisma.referral.findUnique;
+
+  prisma.referral.findUnique = async () => fakeReferral;
+
+  try {
+    await assert.rejects(
+      () => unprospectReferral(referralId, hrUser),
+      (err) => {
+        assert.equal(err.message, "Cannot unprospect candidate who is already hired");
+        return true;
+      },
+    );
+  } finally {
+    prisma.referral.findUnique = originalFindUnique;
+  }
+});
+
+test("unprospectReferral fails when candidate is accepted in other position", async () => {
+  const referralId = 352;
+  const hrUser = { HrId: 10 };
+
+  const fakeReferral = {
+    ReferralId: referralId,
+    Status: "Confirmed",
+    Prospect: true,
+    AcceptedInOtherPosition: true,
+    Application: {
+      Position: {
+        PositionState: "OPEN",
+        Department: {
+          Hrs: [{ HrId: hrUser.HrId }],
+        },
+      },
+    },
+  };
+
+  const originalFindUnique = prisma.referral.findUnique;
+
+  prisma.referral.findUnique = async () => fakeReferral;
+
+  try {
+    await assert.rejects(
+      () => unprospectReferral(referralId, hrUser),
+      (err) => {
+        assert.equal(err.message, "Cannot unprospect candidate who is accepted in other position");
+        return true;
+      },
+    );
+  } finally {
+    prisma.referral.findUnique = originalFindUnique;
+  }
+});
+
+test("unprospectReferral fails when position is closed", async () => {
+  const referralId = 353;
+  const hrUser = { HrId: 10 };
+
+  const fakeReferral = {
+    ReferralId: referralId,
+    Status: "Confirmed",
+    Prospect: true,
+    AcceptedInOtherPosition: false,
+    Application: {
+      Position: {
+        PositionState: "CLOSED",
+        Department: {
+          Hrs: [{ HrId: hrUser.HrId }],
+        },
+      },
+    },
+  };
+
+  const originalFindUnique = prisma.referral.findUnique;
+
+  prisma.referral.findUnique = async () => fakeReferral;
+
+  try {
+    await assert.rejects(
+      () => unprospectReferral(referralId, hrUser),
+      (err) => {
+        assert.equal(err.message, "Cannot unprospect candidate for a closed position");
+        return true;
+      },
+    );
+  } finally {
+    prisma.referral.findUnique = originalFindUnique;
   }
 });
 
