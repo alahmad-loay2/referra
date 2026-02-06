@@ -6,6 +6,7 @@ export const submitReferral = async (form, cvFile) => {
   formData.append("candidateFirstName", form.firstName);
   formData.append("candidateLastName", form.lastName);
   formData.append("candidateEmail", form.email);
+  formData.append("candidatePhoneNumber", form.phoneNumber);
   formData.append("candidateYearOfExperience", form.experience);
   formData.append("positionId", form.positionId);
   formData.append("cvFile", cvFile);
@@ -74,16 +75,13 @@ export const fetchEmployeeApplications = async ({
 };
 
 export const fetchEmployeeReferralDetails = async (referralId) => {
-  const res = await fetch(
-    `${API_BASE_URL}/employee/referrals/${referralId}`,
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const res = await fetch(`${API_BASE_URL}/employee/referrals/${referralId}`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+  });
 
   const data = await res.json();
 
@@ -146,5 +144,19 @@ export const deleteCandidate = async (referralId) => {
     throw new Error(data.message || "Failed to delete referral");
   }
 
+  return data;
+};
+
+export const checkCandidateByEmail = async (email) => {
+  const res = await fetch(
+    `${API_BASE_URL}/employee/candidate/by-email?email=${encodeURIComponent(email)}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+
+  const data = await res.json();
   return data;
 };

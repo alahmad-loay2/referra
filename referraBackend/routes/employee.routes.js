@@ -8,6 +8,7 @@ import {
   GetReferralDetails,
   GetVisiblePositions,
   GetPositionDetails,
+  CheckCandidateByEmail,
 } from "../controllers/employee.controller.js";
 import {
   authenticate,
@@ -26,7 +27,11 @@ employeeRoutes.post(
   uploadCV,
   CreateReferral,
 );
-employeeRoutes.get("/referral/confirm/:referralId", generalLimiter, ConfirmReferral);
+employeeRoutes.get(
+  "/referral/confirm/:referralId",
+  generalLimiter,
+  ConfirmReferral,
+);
 employeeRoutes.delete(
   "/referral/:referralId",
   generalLimiter,
@@ -71,6 +76,14 @@ employeeRoutes.get(
   authenticate,
   requireEmployee,
   GetPositionDetails,
+);
+
+employeeRoutes.get(
+  "/candidate/by-email",
+  generalLimiter,
+  authenticate,
+  requireEmployee,
+  CheckCandidateByEmail,
 );
 
 export default employeeRoutes;

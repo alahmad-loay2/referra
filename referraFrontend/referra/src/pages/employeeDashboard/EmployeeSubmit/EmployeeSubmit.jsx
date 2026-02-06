@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { fetchVisiblePositions } from "../../../api/positions.api";
-import { submitReferral } from "../../../api/employeeReferrals.api";
+import {
+  fetchVisiblePositions,
+  getPositionDetails,
+} from "../../../api/positions.api";
+import {
+  submitReferral,
+  checkCandidateByEmail,
+} from "../../../api/employeeReferrals.api";
 import { Briefcase, Upload } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import SearchableSelect from "../../../components/searchableSelect/SearchableSelect";
@@ -22,6 +28,7 @@ const EmployeeSubmit = () => {
     firstName: "",
     lastName: "",
     email: "",
+    phoneNumber: "",
     experience: "",
     positionId: "",
   });
@@ -37,11 +44,51 @@ const EmployeeSubmit = () => {
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [errors, setErrors] = useState({});
 
+  // for getting the position details
+  const [positionDetails, setPositionDetails] = useState(null);
+  const [positionDetailsError, setPositionDetailsError] = useState("");
+  const [loadingPositionDetails, setLoadingPositionDetails] = useState(false);
+
+  // for checking if the email exists so it autofills the fields
+  const [isExistingCandidate, setIsExistingCandidate] = useState(false);
+  const [lockedEmail, setLockedEmail] = useState(null);
+
+  useEffect(() => {
+    const loadPositionDetails = async () => {
+      if (!form.positionId) {
+        setPositionDetails(null);
+        return;
+      }
+
+      setLoadingPositionDetails(true);
+      setPositionDetailsError("");
+
+      try {
+        const res = await getPositionDetails(form.positionId);
+
+        if (res.error) {
+          setPositionDetailsError(res.error);
+          setPositionDetails(null);
+        } else {
+          setPositionDetails(res);
+        }
+      } catch (err) {
+        setPositionDetailsError("Failed to load position details");
+        setPositionDetails(null);
+      } finally {
+        setLoadingPositionDetails(false);
+      }
+    };
+
+    loadPositionDetails();
+  }, [form.positionId]);
+
   const isFormDirty = () => {
     return (
       form.firstName ||
       form.lastName ||
       form.email ||
+      form.phoneNumber ||
       form.experience ||
       form.positionId ||
       cvFile
@@ -89,6 +136,8 @@ const EmployeeSubmit = () => {
     if (!form.firstName) newErrors.firstName = "First name is required";
     if (!form.lastName) newErrors.lastName = "Last name is required";
     if (!form.email) newErrors.email = "Email is required";
+    if (!form.phoneNumber) newErrors.phoneNumber = "Phone number is required";
+
     if (!form.experience) newErrors.experience = "Experience is required";
     if (!cvFile) newErrors.cvFile = "CV is required";
 
@@ -122,7 +171,11 @@ const EmployeeSubmit = () => {
           }
 
           if (result.positions && result.positions.length > 0) {
-            allPositions = [...allPositions, ...result.positions];
+            const merged = [...allPositions, ...result.positions];
+
+            allPositions = Array.from(
+              new Map(merged.map((p) => [p.PositionId, p])).values(),
+            );
           }
 
           // Check if there are more pages
@@ -199,6 +252,7 @@ const EmployeeSubmit = () => {
       firstName: "",
       lastName: "",
       email: "",
+      phoneNumber: "",
       experience: "",
       positionId: "",
     });
@@ -235,6 +289,47 @@ const EmployeeSubmit = () => {
     }
   };
 
+  useEffect(() => {
+    const email = form.email.trim();
+
+    if (!email) {
+      setIsExistingCandidate(false);
+      setLockedEmail(null);
+      return;
+    }
+
+    const checkEmail = async () => {
+      try {
+        const res = await checkCandidateByEmail(email);
+        //  res = { exists, candidate }
+
+        if (res.exists) {
+          const c = res.candidate;
+
+          setIsExistingCandidate(true);
+          setLockedEmail(c.Email);
+
+          setForm((prev) => ({
+            ...prev,
+            firstName: c.FirstName,
+            lastName: c.LastName,
+            email: c.Email,
+          }));
+        } else {
+          setIsExistingCandidate(false);
+          setLockedEmail(null);
+        }
+      } catch (err) {
+        console.error("Email check failed", err);
+        setIsExistingCandidate(false);
+        setLockedEmail(null);
+      }
+    };
+
+    const t = setTimeout(checkEmail, 400);
+    return () => clearTimeout(t);
+  }, [form.email]);
+
   return (
     <div className="employeeSubmit">
       <h2>Submit a Referral</h2>
@@ -265,6 +360,77 @@ const EmployeeSubmit = () => {
         />
         {errors.positionId && <p className="errorText">{errors.positionId}</p>}
       </div>
+      {/* Position Details */}
+      {form.positionId && (
+        <div className="employeeSubmit-card">
+          <h4>Position Details</h4>
+          <p>Information about the selected position</p>
+
+          {loadingPositionDetails && (
+            <p className="employeeSubmit-muted">Loading position details...</p>
+          )}
+
+          {positionDetailsError && (
+            <p className="errorText">{positionDetailsError}</p>
+          )}
+
+          {positionDetails && (
+            <div className="employeeSubmit-detailsGrid">
+              <div className="employeeSubmit-detailItem">
+                <span className="employeeSubmit-detailLabel">Department</span>
+                <span className="employeeSubmit-detailValue">
+                  {positionDetails.Department.DepartmentName || "-"}
+                </span>
+              </div>
+
+              <div className="employeeSubmit-detailItem">
+                <span className="employeeSubmit-detailLabel">Location</span>
+                <span className="employeeSubmit-detailValue">
+                  {positionDetails.PositionLocation || "-"}
+                </span>
+              </div>
+
+              <div className="employeeSubmit-detailItem">
+                <span className="employeeSubmit-detailLabel">Job Type</span>
+                <span className="employeeSubmit-detailValue">
+                  {positionDetails.EmploymentType || "-"}
+                </span>
+              </div>
+
+              <div className="employeeSubmit-detailItem">
+                <span className="employeeSubmit-detailLabel">
+                  Required Experience
+                </span>
+                <span className="employeeSubmit-detailValue">
+                  {positionDetails.YearsRequired
+                    ? `${positionDetails.YearsRequired} years`
+                    : "-"}
+                </span>
+              </div>
+
+              <div className="employeeSubmit-detailItem">
+                <span className="employeeSubmit-detailLabel">
+                  Position Timezone
+                </span>
+                <span className="employeeSubmit-detailValue">
+                  {positionDetails.Timezone || "-"}
+                </span>
+              </div>
+
+              <div className="employeeSubmit-detailItem">
+                <span className="employeeSubmit-detailLabel">
+                  Application Deadline
+                </span>
+                <span className="employeeSubmit-detailValue">
+                  {positionDetails.Deadline
+                    ? new Date(positionDetails.Deadline).toLocaleDateString()
+                    : "-"}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Candidate Details */}
       <div className="employeeSubmit-card">
@@ -280,6 +446,7 @@ const EmployeeSubmit = () => {
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
+              disabled={isExistingCandidate}
               className="employeeSubmit-input"
               placeholder="Jana"
             />
@@ -296,6 +463,7 @@ const EmployeeSubmit = () => {
               name="lastName"
               value={form.lastName}
               onChange={handleChange}
+              disabled={isExistingCandidate}
               className="employeeSubmit-input"
               placeholder="Al-Mawla"
             />
@@ -304,16 +472,20 @@ const EmployeeSubmit = () => {
 
           <div className="employeeSubmit-field">
             <label className="employeeSubmit-label">
-              Email <span>*</span>
+              Phone Number <span>*</span>
             </label>
             <input
-              name="email"
-              value={form.email}
+              type="tel"
+              name="phoneNumber"
+              value={form.phoneNumber}
               onChange={handleChange}
               className="employeeSubmit-input"
-              placeholder="you@example.com"
+              placeholder="03060846"
             />
-            {errors.email && <p className="errorText">{errors.email}</p>}
+
+            {errors.phoneNumber && (
+              <p className="errorText">{errors.phoneNumber}</p>
+            )}
           </div>
 
           <div className="employeeSubmit-field">
@@ -331,7 +503,27 @@ const EmployeeSubmit = () => {
               <p className="errorText">{errors.experience}</p>
             )}
           </div>
+          <div className="employeeSubmit-field employeeSubmit-fullWidth">
+            <label className="employeeSubmit-label">
+              Email <span>*</span>
+            </label>
+            <input
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              disabled={!!lockedEmail}
+              className="employeeSubmit-input"
+              placeholder="you@example.com"
+            />
+
+            {errors.email && <p className="errorText">{errors.email}</p>}
+          </div>
         </div>
+        {isExistingCandidate && (
+          <p className="employeeSubmit-muted">
+            This candidate already exists. Name and email are locked.
+          </p>
+        )}
 
         <div
           className="employeeSubmit-upload"

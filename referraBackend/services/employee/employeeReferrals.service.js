@@ -297,7 +297,11 @@ export const confirmReferral = async (referralId) => {
 };
 
 // Employee deletes a candidate's application and referral if status is still pending
-export const deleteCandidate = async (referralId, employeeId, accessToken = null) => {
+export const deleteCandidate = async (
+  referralId,
+  employeeId,
+  accessToken = null,
+) => {
   if (!referralId) {
     const error = new Error("Referral ID is required");
     error.statusCode = 400;
@@ -331,7 +335,9 @@ export const deleteCandidate = async (referralId, employeeId, accessToken = null
   });
 
   if (!application) {
-    const error = new Error("Application not found for this employee and referral");
+    const error = new Error(
+      "Application not found for this employee and referral",
+    );
     error.statusCode = 404;
     throw error;
   }
@@ -350,25 +356,30 @@ export const deleteCandidate = async (referralId, employeeId, accessToken = null
 
   // Check if candidate has any other referrals that are Confirmed or above
   // Statuses: Pending < Confirmed < InterviewOne < InterviewTwo < Acceptance
-  const statusOrder = ["Pending", "Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
-  const hasConfirmedOrAbove = candidate.Application.some(
-    (app) => {
-      // Skip the current application we're deleting
-      if (app.ReferralId === referralId) {
-        return false;
-      }
-      const statusIndex = statusOrder.indexOf(app.Referral.Status);
-      const confirmedIndex = statusOrder.indexOf("Confirmed");
-      return statusIndex >= confirmedIndex;
+  const statusOrder = [
+    "Pending",
+    "Confirmed",
+    "InterviewOne",
+    "InterviewTwo",
+    "Acceptance",
+  ];
+  const hasConfirmedOrAbove = candidate.Application.some((app) => {
+    // Skip the current application we're deleting
+    if (app.ReferralId === referralId) {
+      return false;
     }
-  );
+    const statusIndex = statusOrder.indexOf(app.Referral.Status);
+    const confirmedIndex = statusOrder.indexOf("Confirmed");
+    return statusIndex >= confirmedIndex;
+  });
 
   // Only delete candidate if:
   // 1. This is their only application (so we can safely delete without foreign key issues), AND
   // 2. They have no other referrals that are Confirmed or above
-  // Since if this is their only application, they can't have other referrals, 
+  // Since if this is their only application, they can't have other referrals,
   // this simplifies to: delete if this is their only application
-  const willDeleteCandidate = candidate.Application.length === 1 && !hasConfirmedOrAbove;
+  const willDeleteCandidate =
+    candidate.Application.length === 1 && !hasConfirmedOrAbove;
 
   // Delete CV file from Supabase if we're deleting the candidate
   if (willDeleteCandidate && candidate.CVUrl) {
@@ -376,7 +387,7 @@ export const deleteCandidate = async (referralId, employeeId, accessToken = null
       // Extract filename from CVUrl (format: ${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName})
       // Handle both full URL and relative path formats
       let fileName = candidate.CVUrl;
-      
+
       // If it's a full URL, extract just the filename
       if (candidate.CVUrl.includes("/cvs/")) {
         const cvUrlParts = candidate.CVUrl.split("/cvs/");
@@ -387,20 +398,22 @@ export const deleteCandidate = async (referralId, employeeId, accessToken = null
         // If it's a path, get the last part (filename)
         fileName = candidate.CVUrl.split("/").pop();
       }
-      
+
       // Remove any query parameters if present
       fileName = fileName.split("?")[0];
-      
+
       // Create authenticated Supabase client with access token
       // This is needed to satisfy the RLS policy that requires authentication
       const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         global: {
-          headers: accessToken ? {
-            Authorization: `Bearer ${accessToken}`,
-          } : {},
+          headers: accessToken
+            ? {
+                Authorization: `Bearer ${accessToken}`,
+              }
+            : {},
         },
       });
-      
+
       const { data, error: deleteError } = await supabaseClient.storage
         .from("cvs")
         .remove([fileName]);
@@ -409,7 +422,7 @@ export const deleteCandidate = async (referralId, employeeId, accessToken = null
         console.error(`Failed to delete CV file from Supabase:`, {
           fileName,
           error: deleteError.message,
-          errorDetails: deleteError
+          errorDetails: deleteError,
         });
         // Continue with deletion even if file deletion fails
       }
@@ -417,7 +430,7 @@ export const deleteCandidate = async (referralId, employeeId, accessToken = null
       console.error(`Error deleting CV file from Supabase:`, {
         cvUrl: candidate.CVUrl,
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
       // Continue with deletion even if file deletion fails
     }
@@ -525,7 +538,7 @@ export const getEmployeeReferrals = async ({
       orderBy: {
         Referral: { CreatedAt: "desc" },
       },
-    })
+    }),
   ]);
 
   return {
@@ -601,18 +614,22 @@ export const editCandidate = async (payload) => {
 
   // Check if candidate has ANY other referral that is NOT Pending
   // If they have any referral that is Confirmed or above, don't allow edit
-  const statusOrder = ["Pending", "Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
-  const hasNonPendingReferral = candidate.Application.some(
-    (app) => {
-      // Skip the current application we're editing
-      if (app.ReferralId === application.ReferralId) {
-        return false;
-      }
-      const statusIndex = statusOrder.indexOf(app.Referral.Status);
-      const pendingIndex = statusOrder.indexOf("Pending");
-      return statusIndex > pendingIndex;
+  const statusOrder = [
+    "Pending",
+    "Confirmed",
+    "InterviewOne",
+    "InterviewTwo",
+    "Acceptance",
+  ];
+  const hasNonPendingReferral = candidate.Application.some((app) => {
+    // Skip the current application we're editing
+    if (app.ReferralId === application.ReferralId) {
+      return false;
     }
-  );
+    const statusIndex = statusOrder.indexOf(app.Referral.Status);
+    const pendingIndex = statusOrder.indexOf("Pending");
+    return statusIndex > pendingIndex;
+  });
 
   if (hasNonPendingReferral) {
     const error = new Error(
@@ -754,4 +771,18 @@ export const getEmployeeReferralDetails = async ({
   }
 
   return application;
+};
+
+export const findCandidateByEmail = async (email) => {
+  if (!email) return null;
+
+  return prisma.candidate.findUnique({
+    where: { Email: email },
+    select: {
+      CandidateId: true,
+      FirstName: true,
+      LastName: true,
+      Email: true,
+    },
+  });
 };
