@@ -1,5 +1,5 @@
 import React from "react";
-import { Briefcase, Calendar, Building2 } from "lucide-react";
+import { Briefcase, Calendar, Building2, Building } from "lucide-react";
 import { fetchVisiblePositions } from "../../../api/positions.api";
 import Button from "../../../components/button/Button";
 import { getPaginationPages } from "../../../utils/pagination";
@@ -73,6 +73,10 @@ const EmployeePositions = () => {
                   <h3>{pos.PositionTitle}</h3>
 
                   <div className="meta">
+                    <span>
+                      <Building size={14} />
+                      {pos.CompanyName || "-"}
+                    </span>
                     <span>
                       <Building2 size={14} />
                       {pos.Department.DepartmentName}

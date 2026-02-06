@@ -9,7 +9,8 @@ export const submitReferral = async (form, cvFile) => {
   formData.append("candidatePhoneNumber", form.phoneNumber);
   formData.append("candidateYearOfExperience", form.experience);
   formData.append("positionId", form.positionId);
-  formData.append("cvFile", cvFile);
+  // Explicitly preserve the original filename when appending to FormData
+  formData.append("cvFile", cvFile, cvFile.name);
 
   const res = await fetch(`${API_BASE_URL}/employee/referral`, {
     method: "POST",
@@ -97,7 +98,8 @@ export const editCandidate = async (candidateId, form, cvFile) => {
   formData.append("candidatePhoneNumber", form.phoneNumber);
   formData.append("candidateYearOfExperience", form.experience);
   if (cvFile) {
-    formData.append("cvFile", cvFile);
+    // Explicitly preserve the original filename when appending to FormData
+    formData.append("cvFile", cvFile, cvFile.name);
   }
 
   const res = await fetch(`${API_BASE_URL}/employee/candidate/${candidateId}`, {

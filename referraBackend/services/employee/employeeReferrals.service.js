@@ -44,6 +44,7 @@ export const createReferral = async (payload) => {
     positionId,
     employeeId,
     cvFile,
+    cvFileName,
   } = payload;
 
   if (
@@ -107,6 +108,15 @@ export const createReferral = async (payload) => {
   });
 
   if (candidate) {
+    // Check if candidate has already been accepted/hired
+    if (candidate.Acceptance === true) {
+      const error = new Error(
+        "Cannot refer a candidate who has already been accepted/hired",
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
     const existingApplication = await prisma.application.findFirst({
       where: {
         EmployeeId: employeeId,
@@ -125,8 +135,21 @@ export const createReferral = async (payload) => {
   }
 
   // Upload CV to Supabase first
-  const fileExt = "pdf";
-  const fileName = `${candidateEmail}-${Date.now()}.${fileExt}`;
+  // Generate filename from original filename + date
+  let fileName;
+  if (cvFileName) {
+    // Extract filename without extension
+    const originalName = cvFileName.replace(/\.(pdf|PDF)$/, '');
+    // Sanitize filename: remove special characters, keep only alphanumeric, spaces, hyphens, underscores
+    const sanitizedName = originalName.replace(/[^a-zA-Z0-9\s\-_]/g, '').trim().replace(/\s+/g, '-');
+    // Format date as YYYY-MM-DD
+    const dateStr = new Date().toISOString().split('T')[0];
+    fileName = `${sanitizedName}-${dateStr}.pdf`;
+  } else {
+    // Fallback to old format if original filename is not available
+    const fileExt = "pdf";
+    fileName = `${candidateEmail}-${Date.now()}.${fileExt}`;
+  }
 
   const { data: uploadData, error: uploadError } = await supabase.storage
     .from("cvs")
@@ -560,6 +583,8 @@ export const editCandidate = async (payload) => {
     candidatePhoneNumber,
     candidateYearOfExperience,
     cvFile,
+    cvFileName,
+    accessToken = null,
   } = payload;
 
   if (!candidateId) {
@@ -669,8 +694,77 @@ export const editCandidate = async (payload) => {
   }
 
   if (cvFile) {
-    const fileExt = "pdf";
-    const fileName = `${candidateEmail || candidate.Email}-${Date.now()}.${fileExt}`;
+    // Delete old CV file if it exists
+    if (candidate.CVUrl) {
+      try {
+        // Extract filename from CVUrl (format: ${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName})
+        // Handle both full URL and relative path formats
+        let oldFileName = candidate.CVUrl;
+
+        // If it's a full URL, extract just the filename
+        if (candidate.CVUrl.includes("/cvs/")) {
+          const cvUrlParts = candidate.CVUrl.split("/cvs/");
+          if (cvUrlParts.length === 2) {
+            oldFileName = cvUrlParts[1];
+          }
+        } else if (candidate.CVUrl.includes("/")) {
+          // If it's a path, get the last part (filename)
+          oldFileName = candidate.CVUrl.split("/").pop();
+        }
+
+        // Remove any query parameters if present
+        oldFileName = oldFileName.split("?")[0];
+
+        // Create authenticated Supabase client with access token
+        // This is needed to satisfy the RLS policy that requires authentication
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          global: {
+            headers: accessToken
+              ? {
+                  Authorization: `Bearer ${accessToken}`,
+                }
+              : {},
+          },
+        });
+
+        // Delete the old CV file from Supabase
+        const { data, error: deleteError } = await supabaseClient.storage
+          .from("cvs")
+          .remove([oldFileName]);
+
+        if (deleteError) {
+          console.error(`Failed to delete old CV file from Supabase:`, {
+            fileName: oldFileName,
+            error: deleteError.message,
+            errorDetails: deleteError,
+          });
+          // Continue with upload even if deletion fails (non-critical)
+        }
+      } catch (error) {
+        console.error(`Error deleting old CV file from Supabase:`, {
+          cvUrl: candidate.CVUrl,
+          error: error.message,
+          stack: error.stack,
+        });
+        // Continue with upload even if deletion fails (non-critical)
+      }
+    }
+
+    // Generate filename from original filename + date
+    let fileName;
+    if (cvFileName) {
+      // Extract filename without extension
+      const originalName = cvFileName.replace(/\.(pdf|PDF)$/, '');
+      // Sanitize filename: remove special characters, keep only alphanumeric, spaces, hyphens, underscores
+      const sanitizedName = originalName.replace(/[^a-zA-Z0-9\s\-_]/g, '').trim().replace(/\s+/g, '-');
+      // Format date as YYYY-MM-DD
+      const dateStr = new Date().toISOString().split('T')[0];
+      fileName = `${sanitizedName}-${dateStr}.pdf`;
+    } else {
+      // Fallback to old format if original filename is not available
+      const fileExt = "pdf";
+      fileName = `${candidateEmail || candidate.Email}-${Date.now()}.${fileExt}`;
+    }
     const { error: uploadError } = await supabase.storage
       .from("cvs")
       .upload(fileName, cvFile, {

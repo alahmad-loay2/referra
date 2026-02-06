@@ -15,36 +15,45 @@ const HrReferrals = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 9;
-  const [searchInput, setSearchInput] = useState("");
-  const [status, setStatus] = useState("");
-  const [date, setDate] = useState("");
-  const [positionId, setPositionId] = useState("");
   const [positions, setPositions] = useState([]);
   const [error, setError] = useState(false);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Initialize filters from URL params on mount
+  const initialPositionId = searchParams.get("positionId") || "";
+  const initialSearch = searchParams.get("search") || "";
+
   const [filters, setFilters] = useState({
-    search: "",
+    search: initialSearch,
     status: "",
     createdAt: "",
-    positionId: "",
+    positionId: initialPositionId,
   });
 
-  // Read positionId and search from URL params
+  // Initialize positionId and searchInput from URL params
+  const [positionId, setPositionId] = useState(initialPositionId);
+  const [searchInput, setSearchInput] = useState(initialSearch);
+  const [status, setStatus] = useState("");
+  const [date, setDate] = useState("");
+
+  // Read positionId and search from URL params and apply filters automatically
   useEffect(() => {
     const urlPositionId = searchParams.get("positionId");
     const urlSearch = searchParams.get("search");
 
-    if (urlSearch) {
-      setSearchInput(urlSearch);
-      setFilters((prev) => ({ ...prev, search: urlSearch }));
-    }
+    // Reset page when URL params change
+    setPage(1);
 
-    if (urlPositionId) {
-      setPositionId(urlPositionId);
-      setFilters((prev) => ({ ...prev, positionId: urlPositionId }));
-    }
+    // Update search input and filter
+    const newSearch = urlSearch || "";
+    setSearchInput(newSearch);
+    setFilters((prev) => ({ ...prev, search: newSearch }));
+
+    // Update positionId and filter
+    const newPositionId = urlPositionId || "";
+    setPositionId(newPositionId);
+    setFilters((prev) => ({ ...prev, positionId: newPositionId }));
   }, [searchParams]);
 
   // Fetch positions for dropdown - fetch ALL positions by paginating through all pages
@@ -204,7 +213,7 @@ const HrReferrals = () => {
               { value: "", label: "All Positions" },
               ...positions.map((pos) => ({
                 value: pos.PositionId,
-                label: pos.PositionTitle,
+                label: `${pos.PositionTitle} - ${pos.CompanyName}`,
               })),
             ]}
             value={positionId}

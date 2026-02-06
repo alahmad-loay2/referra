@@ -276,6 +276,7 @@ const HrPositions = () => {
           <thead>
             <tr>
               <th>Position</th>
+              <th>Company</th>
               <th>Department</th>
               <th>Location</th>
               <th>Applicants</th>
@@ -294,6 +295,7 @@ const HrPositions = () => {
                     <td><div className="skeleton-text"></div></td>
                     <td><div className="skeleton-text"></div></td>
                     <td><div className="skeleton-text"></div></td>
+                    <td><div className="skeleton-text"></div></td>
                     <td><div className="skeleton-status"></div></td>
                     <td><div className="skeleton-text"></div></td>
                   </tr>
@@ -303,6 +305,7 @@ const HrPositions = () => {
               hrPositions.map((p) => (
                 <tr key={p.PositionId}>
                   <td>{p.PositionTitle}</td>
+                  <td>{p.CompanyName || "-"}</td>
                   <td>{p.Department?.DepartmentName || "-"}</td>
                   <td>{p.PositionLocation}</td>
                   <td>{p.applicantsCount}</td>
@@ -352,7 +355,7 @@ const HrPositions = () => {
             ) : (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   style={{ textAlign: "center", padding: "20px" }}
                 >
                   {"No positions found"}

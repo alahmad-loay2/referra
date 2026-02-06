@@ -41,6 +41,7 @@ export const CreateReferral = async (req, res, next) => {
     } = req.body;
 
     const cvFile = req.file?.buffer;
+    const cvFileName = req.file?.originalname;
 
     if (!cvFile) {
       const error = new Error("CV file is required");
@@ -57,6 +58,7 @@ export const CreateReferral = async (req, res, next) => {
       positionId,
       employeeId,
       cvFile,
+      cvFileName,
     };
 
     const result = await createReferral(payload);
@@ -189,6 +191,8 @@ export const EditCandidate = async (req, res, next) => {
     } = req.body;
 
     const cvFile = req.file?.buffer;
+    const cvFileName = req.file?.originalname;
+    const accessToken = req.cookies?.accessToken;
 
     const payload = {
       candidateId,
@@ -199,6 +203,8 @@ export const EditCandidate = async (req, res, next) => {
       candidatePhoneNumber,
       candidateYearOfExperience,
       cvFile,
+      cvFileName,
+      accessToken,
     };
 
     const result = await editCandidate(payload);

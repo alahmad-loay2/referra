@@ -472,7 +472,7 @@ const EmployeeReferralHD = () => {
                       <div className="emp-referral-cv-content">
                         <FileText size={32} className="emp-referral-cv-icon" />
                         <span className="emp-referral-cv-name">
-                          {Candidate.FirstName} - CV
+                          {getCVFileName(Candidate.CVUrl) || `${Candidate.FirstName} - CV`}
                         </span>
                         <span className="emp-referral-cv-subtext">
                           Click to download

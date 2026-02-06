@@ -348,7 +348,7 @@ const EmployeeSubmit = () => {
         <SearchableSelect
           options={positions.map((pos) => ({
             value: pos.PositionId,
-            label: pos.PositionTitle,
+            label: `${pos.PositionTitle} - ${pos.CompanyName}`,
           }))}
           value={form.positionId}
           onChange={(value) =>
