@@ -131,9 +131,66 @@ export const updatePositionState = async (positionId, newState, hrUser) => {
     updateData.Deadline = newDeadline;
   }
 
-  return prisma.position.update({
-    where: { PositionId: positionId },
-    data: updateData,
+  // Use transaction to update position and referrals atomically
+  return await prisma.$transaction(async (tx) => {
+    // Update position state
+    const updatedPosition = await tx.position.update({
+      where: { PositionId: positionId },
+      data: updateData,
+    });
+
+    // If closing position: mark all referrals that aren't hired and aren't accepted in other position as prospects
+    if (position.PositionState === "OPEN" && state === "CLOSED") {
+      // Find all applications for this position
+      const applications = await tx.application.findMany({
+        where: {
+          PositionId: positionId,
+        },
+        include: {
+          Referral: true,
+        },
+      });
+
+      // Mark referrals as prospects if they meet criteria
+      for (const app of applications) {
+        const referral = app.Referral;
+        // Only mark as prospect if not Hired and not AcceptedInOtherPosition
+        if (
+          referral.Status !== "Hired" &&
+          !referral.AcceptedInOtherPosition
+        ) {
+          await tx.referral.update({
+            where: { ReferralId: referral.ReferralId },
+            data: { Prospect: true },
+          });
+        }
+      }
+    }
+
+    // If opening position: unmark prospects that were marked due to position closure
+    if (position.PositionState === "CLOSED" && state === "OPEN") {
+      // Find all applications for this position
+      const applications = await tx.application.findMany({
+        where: {
+          PositionId: positionId,
+        },
+        include: {
+          Referral: true,
+        },
+      });
+
+      // Unmark prospects for this position
+      for (const app of applications) {
+        if (app.Referral && app.Referral.Prospect) {
+          await tx.referral.update({
+            where: { ReferralId: app.Referral.ReferralId },
+            data: { Prospect: false },
+          });
+        }
+      }
+    }
+
+    return updatedPosition;
   });
 };
 

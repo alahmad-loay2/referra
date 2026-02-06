@@ -31,6 +31,8 @@ const HrPositions = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRefs = useRef({});
   const [departments, setDepartments] = useState([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -38,10 +40,24 @@ const HrPositions = () => {
     departmentId: "",
   });
 
-  const handleToggleState = async (positionId, currentState) => {
+  const handleToggleState = (positionId, currentState) => {
     const newState = currentState === "OPEN" ? "CLOSED" : "OPEN";
+    setPendingAction({ positionId, currentState, newState });
+    setShowConfirmModal(true);
+  };
+
+  const confirmToggleState = async () => {
+    if (!pendingAction) return;
+
+    // Close modal immediately for a snappier UX
+    const action = pendingAction;
+    setShowConfirmModal(false);
+    setPendingAction(null);
+
+    const { positionId, currentState, newState } = action;
 
     try {
+      // Optimistic UI update
       setHrPositions((prev) =>
         prev.map((p) =>
           p.PositionId === positionId ? { ...p, PositionState: newState } : p,
@@ -50,6 +66,7 @@ const HrPositions = () => {
 
       await updatePositionState(positionId, newState);
     } catch (err) {
+      // Revert on error
       setHrPositions((prev) =>
         prev.map((p) =>
           p.PositionId === positionId
@@ -57,8 +74,13 @@ const HrPositions = () => {
             : p,
         ),
       );
-      console.error("Failed to update position state");
+      alert(err.message || "Failed to update position state");
     }
+  };
+
+  const cancelToggleState = () => {
+    setShowConfirmModal(false);
+    setPendingAction(null);
   };
 
   useEffect(() => {
@@ -368,6 +390,62 @@ const HrPositions = () => {
           </button>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && pendingAction && (
+        <div className="position-confirm-modal-overlay">
+          <div className="position-confirm-modal">
+            <h3>
+              {pendingAction.newState === "CLOSED"
+                ? "Close Position?"
+                : "Open Position?"}
+            </h3>
+            <p>
+              {pendingAction.newState === "CLOSED" ? (
+                <>
+                  Are you sure you want to close this position?
+                  <br />
+                  <br />
+                  <strong>This will:</strong>
+                  <br />
+                  • Mark all referrals that are not hired and not accepted in
+                  other positions as prospects
+                  <br />
+                  • Prevent further referrals for this position
+                </>
+              ) : (
+                <>
+                  Are you sure you want to reopen this position?
+                  <br />
+                  <br />
+                  <strong>This will:</strong>
+                  <br />
+                  • Unmark all prospects that were marked when the position was
+                  closed
+                  <br />
+                  • Extend the deadline by 10 days from today
+                  <br />
+                  • Allow new referrals for this position
+                </>
+              )}
+            </p>
+            <div className="position-confirm-modal-actions">
+              <button
+                className="position-confirm-cancel"
+                onClick={cancelToggleState}
+              >
+                Cancel
+              </button>
+              <button
+                className="position-confirm-submit"
+                onClick={confirmToggleState}
+              >
+                {pendingAction.newState === "CLOSED" ? "Close" : "Open"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

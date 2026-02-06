@@ -253,6 +253,15 @@ export const confirmReferral = async (referralId) => {
     throw error;
   }
 
+  // Do not allow confirmation if the related position is closed
+  if (referral.Application?.Position?.PositionState === "CLOSED") {
+    const error = new Error(
+      "Cannot confirm referral for a closed position. Please contact the person who referred you or HR.",
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
   const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
   const referralAge = Date.now() - new Date(referral.CreatedAt).getTime();
 

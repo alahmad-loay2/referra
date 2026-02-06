@@ -80,23 +80,87 @@ test("updatePositionState closes and opens a position correctly", async () => {
     Deadline: new Date("2030-01-01T00:00:00.000Z"),
   };
 
+  const applications = [
+    {
+      ReferralId: "ref1",
+      Referral: {
+        ReferralId: "ref1",
+        Status: "Pending",
+        AcceptedInOtherPosition: false,
+        Prospect: false,
+      },
+    },
+    {
+      ReferralId: "ref2",
+      Referral: {
+        ReferralId: "ref2",
+        Status: "Confirmed",
+        AcceptedInOtherPosition: false,
+        Prospect: false,
+      },
+    },
+    {
+      ReferralId: "ref3",
+      Referral: {
+        ReferralId: "ref3",
+        Status: "Hired",
+        AcceptedInOtherPosition: false,
+        Prospect: false,
+      },
+    },
+    {
+      ReferralId: "ref4",
+      Referral: {
+        ReferralId: "ref4",
+        Status: "Pending",
+        AcceptedInOtherPosition: true,
+        Prospect: false,
+      },
+    },
+  ];
+
   let findFirstArgs;
   let updateArgs;
+  let findManyArgs;
+  let referralUpdateArgs = [];
 
   const originalFindFirst = prisma.position.findFirst;
-  const originalUpdate = prisma.position.update;
+  const originalTransaction = prisma.$transaction;
 
   prisma.position.findFirst = async (args) => {
     findFirstArgs = args;
     return existingPosition;
   };
 
-  prisma.position.update = async (args) => {
-    updateArgs = args;
-    return { ...existingPosition, ...args.data };
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      position: {
+        update: async (args) => {
+          updateArgs = args;
+          return { ...existingPosition, ...args.data };
+        },
+      },
+      application: {
+        findMany: async (args) => {
+          findManyArgs = args;
+          return applications;
+        },
+      },
+      referral: {
+        update: async (args) => {
+          referralUpdateArgs.push(args);
+          const referral = applications.find(
+            (app) => app.Referral.ReferralId === args.where.ReferralId,
+          )?.Referral;
+          return { ...referral, ...args.data };
+        },
+      },
+    };
+    return fn(tx);
   };
 
   try {
+    // Test closing position
     const result = await updatePositionState(positionId, "closed", hrUser);
 
     assert.equal(result.PositionState, "CLOSED");
@@ -107,9 +171,42 @@ test("updatePositionState closes and opens a position correctly", async () => {
     );
     assert.deepEqual(updateArgs.where.PositionId, positionId);
     assert.equal(updateArgs.data.PositionState, "CLOSED");
+    assert.deepEqual(findManyArgs.where.PositionId, positionId);
+    // Should mark ref1 and ref2 as prospects (not Hired, not AcceptedInOtherPosition)
+    // ref3 is Hired, so should not be marked
+    // ref4 is AcceptedInOtherPosition, so should not be marked
+    assert.equal(referralUpdateArgs.length, 2);
+    assert.equal(referralUpdateArgs[0].where.ReferralId, "ref1");
+    assert.equal(referralUpdateArgs[0].data.Prospect, true);
+    assert.equal(referralUpdateArgs[1].where.ReferralId, "ref2");
+    assert.equal(referralUpdateArgs[1].data.Prospect, true);
+
+    // Reset for opening test
+    referralUpdateArgs = [];
+    existingPosition.PositionState = "CLOSED";
+    applications[0].Referral.Prospect = true;
+    applications[1].Referral.Prospect = true;
+
+    // Test opening position
+    const openResult = await updatePositionState(positionId, "open", hrUser);
+
+    assert.equal(openResult.PositionState, "OPEN");
+    // Should unmark ref1 and ref2 as prospects
+    assert.equal(referralUpdateArgs.length, 2);
+    assert.equal(referralUpdateArgs[0].where.ReferralId, "ref1");
+    assert.equal(referralUpdateArgs[0].data.Prospect, false);
+    assert.equal(referralUpdateArgs[1].where.ReferralId, "ref2");
+    assert.equal(referralUpdateArgs[1].data.Prospect, false);
+    // Should extend deadline by 10 days
+    const expectedDeadline = new Date();
+    expectedDeadline.setDate(expectedDeadline.getDate() + 10);
+    const deadlineDiff = Math.abs(
+      openResult.Deadline.getTime() - expectedDeadline.getTime(),
+    );
+    assert.ok(deadlineDiff < 60000); // Within 1 minute tolerance
   } finally {
     prisma.position.findFirst = originalFindFirst;
-    prisma.position.update = originalUpdate;
+    prisma.$transaction = originalTransaction;
   }
 });
 

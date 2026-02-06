@@ -144,6 +144,45 @@ test("confirmReferral updates referral from Pending to Confirmed within time win
   }
 });
 
+test("confirmReferral fails when position is closed", async () => {
+  const referralId = 501;
+
+  const now = new Date();
+
+  const pendingReferralWithClosedPosition = {
+    ReferralId: referralId,
+    Status: "Pending",
+    CreatedAt: now.toISOString(),
+    Application: {
+      Candidate: {},
+      Position: {
+        PositionId: 10,
+        PositionState: "CLOSED",
+      },
+    },
+  };
+
+  const originalFind = prisma.referral.findUnique;
+
+  prisma.referral.findUnique = async () => pendingReferralWithClosedPosition;
+
+  try {
+    await assert.rejects(
+      () => confirmReferral(referralId),
+      (err) => {
+        assert.equal(
+          err.message,
+          "Cannot confirm referral for a closed position. Please contact the person who referred you or HR.",
+        );
+        assert.equal(err.statusCode, 400);
+        return true;
+      },
+    );
+  } finally {
+    prisma.referral.findUnique = originalFind;
+  }
+});
+
 test("deleteCandidate removes application and referral but keeps candidate when there are other applications", async () => {
   const referralId = 600;
   const employeeId = 30;
