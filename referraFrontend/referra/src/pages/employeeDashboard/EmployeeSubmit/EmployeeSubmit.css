@@ -1,9 +1,10 @@
 .employeeSubmit {
-  width: 1000px;
+  max-width: 1000px;
   margin: var(--page-padding-top-no-header) auto 40px;
   display: flex;
   flex-direction: column;
   padding: 0 20px;
+  overflow: hidden;
 }
 
 /* Cards */
@@ -29,8 +30,8 @@
 
 /* Form */
 .employeeSubmit-formGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--gap-lg);
   flex: 1;
 }
@@ -54,6 +55,12 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   color: var(--gray-dark);
+  overflow: hidden;
+}
+
+.employeeSubmit-upload p {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Actions */
@@ -61,6 +68,7 @@
   display: flex;
   justify-content: flex-end;
   gap: var(--gap-lg);
+  flex-wrap: wrap;
 }
 
 .employeeSubmit-reset {
@@ -93,22 +101,30 @@
 .employeeSubmit h2 {
   font-size: var(--fs-xlarge);
   margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .employeeSubmit > p {
   color: var(--gray-dark);
   margin-bottom: 28px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .employeeSubmit h4 {
   margin-bottom: 6px;
   font-size: var(--fs-large);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .employeeSubmit-card p {
   font-size: var(--fs-small);
   color: var(--gray-dark);
   margin-bottom: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .employeeSubmit-filePreview {
   display: flex;
@@ -117,6 +133,8 @@
   gap: var(--gap-sm);
   color: var(--secondary-color);
   font-size: 0.95rem;
+  overflow: hidden;
+  width: 100%;
 }
 
 .employeeSubmit-fileIcon {
@@ -165,12 +183,16 @@
 .employeeSubmit-modal h3 {
   margin-bottom: 10px;
   color: var(--secondary-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .employeeSubmit-modal p {
   font-size: 0.95rem;
   color: var(--gray-dark);
   margin-bottom: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Modal actions */
@@ -204,16 +226,22 @@
   color: green;
   margin-top: 10px;
   font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .employeeSubmit-field {
   display: flex;
   flex-direction: column;
+  flex: 1 1 calc(50% - var(--gap-lg) / 2);
+  min-width: 200px;
 }
 
 .errorText {
   font-size: 0.75rem;
   color: #d32f2f;
   margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* Feedback message (success / error) */
 .employeeSubmit-feedback {
@@ -226,6 +254,12 @@
   align-items: center;
   gap: var(--gap-sm);
   animation: fadeSlideIn 0.25s ease;
+  overflow: hidden;
+}
+
+.employeeSubmit-feedback > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Success style */
@@ -248,6 +282,13 @@
   align-items: center;
   gap: var(--gap-sm);
   font-size: var(--fs-large);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.employeeSubmit-title > *:not(svg) {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .employeeSubmit-titleIcon {
@@ -264,6 +305,8 @@
   font-weight: 500;
   color: var(--secondary-color);
   margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .employeeSubmit-label span {
@@ -276,6 +319,12 @@
   gap: var(--gap-lg);
 }
 
+@media (max-width: 768px) {
+  .employeeSubmit-detailsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .employeeSubmit-detailItem {
   display: flex;
   flex-direction: column;
@@ -283,6 +332,7 @@
   border: 1px solid var(--gray-light);
   border-radius: var(--radius-md);
   background: #fafafa;
+  overflow: hidden;
 }
 
 .employeeSubmit-detailLabel {
@@ -290,19 +340,27 @@
   color: var(--secondary-color);
   font-weight: 500;
   margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .employeeSubmit-detailValue {
   font-size: var(--fs-medium);
   color: var(--gray-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .employeeSubmit-muted {
   font-size: var(--fs-small);
   color: var(--gray-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .employeeSubmit-fullWidth {
-  grid-column: 1 / -1;
+  flex: 1 1 100%;
 }
 .employeeSubmit-input:disabled {
   background: #f5f5f5;

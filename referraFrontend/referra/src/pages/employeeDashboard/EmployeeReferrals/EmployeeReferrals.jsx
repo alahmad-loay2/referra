@@ -137,30 +137,32 @@ const EmployeeReferrals = () => {
         <div className="referrals-list">
           {[...Array(PAGE_SIZE)].map((_, index) => (
             <div key={`skeleton-${index}`} className="referral-card-skeleton">
-              <div className="referral-left-skeleton">
-                <div className="skeleton-avatar"></div>
-                <div className="referral-info-skeleton">
-                  <div className="skeleton-name"></div>
-                  <div className="meta-skeleton">
-                    <div className="skeleton-meta-item"></div>
-                    <div className="skeleton-meta-item"></div>
-                    <div className="skeleton-meta-item"></div>
+              <div className="referral-left">
+                <div className="avatar"></div>
+                <div className="referral-info">
+                  <h3></h3>
+                  <div className="meta">
+                    <span className="meta-item"></span>
+                    <span className="meta-item"></span>
+                    <span className="meta-item"></span>
                   </div>
-                  <div className="timeline-skeleton">
-                    {[...Array(5)].map((_, i) => (
-                      <React.Fragment key={i}>
-                        <div className="skeleton-step">
-                          <div className="skeleton-step-icon"></div>
-                          <div className="skeleton-step-label"></div>
-                        </div>
-                        {i < 4 && <div className="skeleton-line"></div>}
-                      </React.Fragment>
-                    ))}
+                  <div className="timeline-wrapper">
+                    <div className="timeline">
+                      {[...Array(5)].map((_, i) => (
+                        <React.Fragment key={i}>
+                          <div className="step">
+                            <span className="icon"></span>
+                            <span className="label"></span>
+                          </div>
+                          {i < 4 && <div className="line"></div>}
+                        </React.Fragment>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="referral-right-skeleton">
-                <div className="skeleton-button"></div>
+              <div className="referral-right">
+                <div className="details-btn"></div>
               </div>
             </div>
           ))}

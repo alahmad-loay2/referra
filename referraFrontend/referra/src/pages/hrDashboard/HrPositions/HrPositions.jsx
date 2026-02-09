@@ -272,7 +272,8 @@ const HrPositions = () => {
           <Button text="+ Add New Position" to={"create-position"} />
         </div>
 
-        <table className="positionsTable">
+        <div className="positionsTableWrapper">
+          <table className="positionsTable">
           <thead>
             <tr>
               <th>Position</th>
@@ -364,6 +365,7 @@ const HrPositions = () => {
             )}
           </tbody>
         </table>
+        </div>
         <div className="pagination">
           <button className="nav" onClick={goPrev} disabled={page === 1}>
             ← Previous

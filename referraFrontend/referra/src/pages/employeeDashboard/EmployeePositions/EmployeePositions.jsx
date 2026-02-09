@@ -50,13 +50,18 @@ const EmployeePositions = () => {
           {[...Array(PAGE_SIZE)].map((_, i) => (
             <div key={i} className="position-card skeleton">
               <div className="left">
-                <div className="avatar skeleton-box" />
+                <div className="avatar" />
                 <div className="info">
-                  <div className="skeleton-line title" />
-                  <div className="skeleton-line meta" />
+                  <h3></h3>
+                  <div className="meta">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
                 </div>
               </div>
-              <div className="skeleton-button" />
+              <div className="details-btn" />
             </div>
           ))}
         </div>
@@ -75,19 +80,19 @@ const EmployeePositions = () => {
                   <div className="meta">
                     <span>
                       <Building size={14} />
-                      {pos.CompanyName || "-"}
+                      <span className="meta-text">{pos.CompanyName || "-"}</span>
                     </span>
                     <span>
                       <Building2 size={14} />
-                      {pos.Department.DepartmentName}
+                      <span className="meta-text">{pos.Department.DepartmentName}</span>
                     </span>
                     <span>
                       <Briefcase size={14} />
-                      {formatEmploymentType(pos.EmploymentType)}
+                      <span className="meta-text">{formatEmploymentType(pos.EmploymentType)}</span>
                     </span>
                     <span>
                       <Calendar size={14} />
-                      {new Date(pos.Deadline).toLocaleDateString()}
+                      <span className="meta-text">{new Date(pos.Deadline).toLocaleDateString()}</span>
                     </span>
                   </div>
                 </div>

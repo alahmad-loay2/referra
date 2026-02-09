@@ -24,6 +24,25 @@
 
 @media (max-width: 768px) {
     .dashboardContainer {
-        grid-template-columns: 180px 1fr;
+        grid-template: 
+            "navbar"
+            "content";
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    #Sidebar {
+        grid-area: navbar;
+        height: auto;
+    }
+
+    #Header {
+        display: none;
+    }
+
+    #Content {
+        grid-area: content;
+        min-height: 0;
+        overflow-y: auto;
     }
 }

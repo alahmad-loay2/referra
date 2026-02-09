@@ -1,6 +1,6 @@
 .position-details-container {
   padding: var(--page-padding-top-no-header) var(--page-padding-x);
-  min-width: 1000px;
+  overflow: hidden;
 }
 
 .position-details-header {
@@ -8,20 +8,39 @@
   align-items: center;
   gap: var(--gap-sm);
   margin-bottom: 24px;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .position-details-header h1 {
   font-size: var(--fs-xlarge);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .title-group {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
+  min-width: 0;
+  overflow: hidden;
+  flex: 1;
+}
+
+.title-group h2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .company-name {
   font-size: var(--fs-small);
   color: var(--gray-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .back-btn {
@@ -42,6 +61,8 @@
   align-items: center;
   gap: var(--gap-md);
   margin-bottom: 24px;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .position-icon {
@@ -53,10 +74,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.position-title-row h2 {
-  font-size: var(--fs-large);
+  flex-shrink: 0;
 }
 
 .position-info-grid {
@@ -66,31 +84,45 @@
   margin-bottom: 24px;
 }
 
+@media (max-width: 768px) {
+  .position-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .info-box {
   border: 1px solid var(--gray-light);
-
   border-radius: var(--radius-md);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
+  overflow: hidden;
+  min-width: 0;
 }
 
 .info-box .label {
   font-size: var(--fs-meduim);
   color: var(--gray-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .info-box .value {
   font-size: var(--fs-small);
   color: var(--secondary-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .position-description {
   border: 1px solid var(--gray-light);
-
   border-radius: var(--radius-lg);
   padding: 16px;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .position-description .label {
@@ -98,11 +130,20 @@
   font-size: var(--fs-meduim);
   color: var(--gray-dark);
   margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .position-description p {
   font-size: var(--fs-small);
   line-height: 1.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
 }
 
 .position-details-actions {

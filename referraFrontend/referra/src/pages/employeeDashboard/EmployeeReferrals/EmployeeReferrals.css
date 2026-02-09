@@ -3,7 +3,6 @@
   min-height: calc(100vh - 120px); /* header height */
   display: flex;
   flex-direction: column;
-  min-width: 1000px;
 }
 
 /* Header */
@@ -36,6 +35,7 @@
 .selectCon {
   display: flex;
   gap: var(--gap-lg);
+  flex-wrap: wrap;
 }
 
 .searchInWrap {
@@ -48,7 +48,7 @@
   border: none;
   border-radius: var(--radius-md);
   width: 100%;
-  min-width: 200px;
+  min-width: 180px;
   font-size: var(--fs-small);
   height: 40px;
 }
@@ -73,6 +73,8 @@
 
 .referrals-filters input[type="date"] {
   height: 40px;
+  width: 180px;
+  flex-shrink: 0;
 }
 
 .referrals-filters input:focus,
@@ -95,12 +97,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  overflow: hidden;
 }
 
 /* Left */
 .referral-left {
   display: flex;
   gap: var(--gap-md);
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .avatar {
@@ -113,6 +120,13 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
+}
+
+.referral-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+  width: 100%;
 }
 
 .referral-info h3 {
@@ -158,11 +172,14 @@
   align-items: center;
   gap: var(--gap-md);
   margin-top: 8px;
+  flex-wrap: wrap;
 }
 
 .timeline {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
 }
 
 .step {
@@ -237,7 +254,10 @@
 
 /* Right */
 .referral-right {
-  text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    margin-left: auto;
+    margin-top: 10px;
 }
 
 .date {
@@ -261,10 +281,11 @@
 .meta {
   display: flex;
   align-items: center;
-  gap: var(--gap-xl);
+  gap: var(--gap-md) var(--gap-xl);
   font-size: var(--fs-small);
   color: var(--gray-dark);
   margin: 12px 0 8px;
+  flex-wrap: wrap;
 }
 
 .meta-item {
@@ -303,13 +324,6 @@
 .status-badge-in-progress {
   background-color: #e2e3e5;
   color: #383d41;
-}
-
-/* Right side button positioning */
-.referral-right {
-  display: flex;
-  align-items: flex-start;
-  padding-top: 6px;
 }
 
 /* Pagination */
@@ -356,6 +370,17 @@
 .pagination .dots {
   padding: 0 6px;
 }
+
+/* Mobile pagination - show only current page, prev, and next */
+@media (max-width: 768px) {
+  .pagination button:not(.nav):not(.active) {
+    display: none;
+  }
+
+  .pagination .dots {
+    display: none;
+  }
+}
 .apply-btn {
   background: var(--primary-color);
   color: white;
@@ -371,7 +396,7 @@
   opacity: 0.9;
 }
 
-/* Skeleton Loader */
+/* Skeleton - matches .referral-card structure exactly */
 .referral-card-skeleton {
   background: var(--white);
   border-radius: var(--radius-lg);
@@ -379,78 +404,76 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  flex-wrap: wrap;
 }
 
-.referral-left-skeleton {
+.referral-card-skeleton .referral-left {
   display: flex;
   gap: var(--gap-md);
-  flex: 1;
 }
 
-.skeleton-avatar {
+.referral-card-skeleton .avatar {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(
-    90deg,
-    var(--gray-light) 25%,
-    #e0e0e0 50%,
-    var(--gray-light) 75%
-  );
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s infinite;
+  flex-shrink: 0;
 }
 
-.referral-info-skeleton {
+.referral-card-skeleton .referral-info {
   display: flex;
   flex-direction: column;
-  gap: var(--gap-sm);
-  flex: 1;
+  gap: var(--gap-xs);
 }
 
-.skeleton-name {
-  height: 24px;
+.referral-card-skeleton .referral-info h3 {
   width: 180px;
-  background: linear-gradient(
-    90deg,
-    var(--gray-light) 25%,
-    #e0e0e0 50%,
-    var(--gray-light) 75%
-  );
+  max-width: 100%;
+  height: 24px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
-  border-radius: var(--radius-sm);
   animation: skeleton-shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+  margin: 0;
 }
 
-.meta-skeleton {
+.referral-card-skeleton .meta {
   display: flex;
-  align-items: center;
-  gap: var(--gap-lg);
-  margin: 4px 0;
+  gap: var(--gap-md) var(--gap-xl);
+  font-size: var(--fs-small);
+  flex-wrap: wrap;
+  margin: 12px 0 8px;
 }
 
-.skeleton-meta-item {
-  height: 16px;
+.referral-card-skeleton .meta-item {
   width: 140px;
-  background: linear-gradient(
-    90deg,
-    var(--gray-light) 25%,
-    #e0e0e0 50%,
-    var(--gray-light) 75%
-  );
+  max-width: 100%;
+  height: 16px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
-  border-radius: var(--radius-sm);
   animation: skeleton-shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+  display: block;
 }
 
-.timeline-skeleton {
+.referral-card-skeleton .timeline-wrapper {
   display: flex;
   align-items: center;
+  gap: var(--gap-md);
   margin-top: 8px;
+  flex-wrap: wrap;
 }
 
-.skeleton-step {
+.referral-card-skeleton .timeline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.referral-card-skeleton .step {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -458,65 +481,47 @@
   min-width: 70px;
 }
 
-.skeleton-step-icon {
+.referral-card-skeleton .step .icon {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(
-    90deg,
-    var(--gray-light) 25%,
-    #e0e0e0 50%,
-    var(--gray-light) 75%
-  );
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s infinite;
 }
 
-.skeleton-step-label {
-  height: 10px;
+.referral-card-skeleton .step .label {
   width: 50px;
-  background: linear-gradient(
-    90deg,
-    var(--gray-light) 25%,
-    #e0e0e0 50%,
-    var(--gray-light) 75%
-  );
+  height: 10px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
-  border-radius: var(--radius-sm);
   animation: skeleton-shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+  display: block;
 }
 
-.skeleton-line {
+.referral-card-skeleton .line {
   height: 2px;
   width: 30px;
-  background: linear-gradient(
-    90deg,
-    var(--gray-light) 25%,
-    #e0e0e0 50%,
-    var(--gray-light) 75%
-  );
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s infinite;
 }
 
-.referral-right-skeleton {
+.referral-card-skeleton .referral-right {
   display: flex;
-  align-items: flex-start;
-  padding-top: 6px;
+  width: 100%;
+  justify-content: flex-end;
+  margin-top: 10px;
 }
 
-.skeleton-button {
-  height: 36px;
+.referral-card-skeleton .details-btn {
   width: 120px;
-  background: linear-gradient(
-    90deg,
-    var(--gray-light) 25%,
-    #e0e0e0 50%,
-    var(--gray-light) 75%
-  );
+  height: 36px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
-  border-radius: var(--radius-md);
   animation: skeleton-shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
 }
 
 @keyframes skeleton-shimmer {
@@ -528,11 +533,20 @@
   }
 }
 
-@keyframes skeleton-pulse {
-  0%, 100% {
-    opacity: 1;
+/* Mobile styles - show only current stage */
+@media (max-width: 768px) {
+  /* Hide all timeline steps except the active one */
+  .timeline .step:not(.active) {
+    display: none;
   }
-  50% {
-    opacity: 0.7;
+
+  /* Hide all lines on mobile */
+  .timeline .line {
+    display: none;
+  }
+
+  /* Show only the active step */
+  .timeline .step.active {
+    display: flex;
   }
 }

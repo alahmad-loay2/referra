@@ -1,6 +1,5 @@
 .hr-dashboard-home {
     padding: var(--page-padding-x) var(--page-padding-y);
-    min-width: 1000px;
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 120px);
@@ -12,6 +11,7 @@
     justify-content: space-between;
     align-items: stretch;
     gap: var(--gap-xl);
+    flex-wrap: wrap;
 }
 
 .hr-dashboard-home-header-item {
@@ -126,6 +126,7 @@
     border-radius: var(--radius-md);
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     width: 100%;
     max-width: 100%;
     gap: var(--gap-lg);
@@ -135,7 +136,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-sm);
-    width: 60%;
 }
 
 .hr-dashboard-home-recent-avatar-name {
@@ -230,9 +230,11 @@
     border-radius: var(--radius-md);
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     width: 100%;
     gap: var(--gap-lg);
     animation: hr-dashboard-home-skeleton-pulse 1.5s ease-in-out infinite;
+    overflow: hidden;
 }
 
 .hr-dashboard-home-skeleton-card-left {
@@ -240,11 +242,14 @@
     flex-direction: column;
     gap: var(--gap-sm);
     width: 60%;
+    min-width: 0;
+    flex: 1;
 }
 
 .hr-dashboard-home-recent-avatar-skeleton {
     width: 36px;
     height: 36px;
+    min-width: 36px;
     border-radius: 50%;
     background: linear-gradient(
         90deg,
@@ -261,11 +266,15 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-sm);
+    min-width: 0;
+    flex: 1;
+    align-items: flex-end;
 }
 
 .hr-dashboard-home-skeleton-name {
     height: 24px;
     width: 70%;
+    max-width: 100%;
     background: linear-gradient(
         90deg,
         #e8e8e8 25%,
@@ -280,6 +289,7 @@
 .hr-dashboard-home-skeleton-email {
     height: 16px;
     width: 85%;
+    max-width: 100%;
     background: linear-gradient(
         90deg,
         #e8e8e8 25%,
@@ -294,6 +304,7 @@
 .hr-dashboard-home-skeleton-text-small {
     height: 16px;
     width: 120px;
+    max-width: 100%;
     background: linear-gradient(
         90deg,
         #e8e8e8 25%,
@@ -308,6 +319,7 @@
 .hr-dashboard-home-skeleton-button {
     height: 28px;
     width: 120px;
+    max-width: 100%;
     margin-top: 8px;
     background: linear-gradient(
         90deg,
@@ -335,5 +347,42 @@
     }
     50% {
         opacity: 0.7;
+    }
+}
+
+@media (max-width: 768px) {
+    .hr-dashboard-home-recent-avatar {
+        display: none;
+    }
+
+    .candidate-meta {
+        margin-left: 0;
+    }
+
+    .hr-dashboard-home-candidate-skeleton {
+        flex-direction: column;
+    }
+
+    .hr-dashboard-home-skeleton-card-left {
+        width: 100%;
+    }
+
+    .hr-dashboard-home-skeleton-card-right {
+        width: 100%;
+    }
+
+    .hr-dashboard-home-recent-avatar-skeleton {
+        display: none;
+    }
+
+    .hr-dashboard-home-skeleton-name,
+    .hr-dashboard-home-skeleton-email {
+        width: 100%;
+    }
+
+    .hr-dashboard-home-skeleton-text-small,
+    .hr-dashboard-home-skeleton-button {
+        width: 100%;
+        max-width: 100%;
     }
 }

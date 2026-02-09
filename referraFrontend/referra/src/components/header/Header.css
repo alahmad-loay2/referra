@@ -18,8 +18,7 @@
 }
 
 @media (max-width: 768px) {
-    .headerContainer h3,
-    .headerContainer p {
+    .headerContainer {
         display: none;
     }
 }

@@ -1,5 +1,4 @@
 .referralHr {
-    min-width: 1000px;
     overflow: auto;
     display: flex;
     flex-direction: column;
@@ -26,12 +25,14 @@
   display: flex;
   gap: var(--gap-lg);
   position: relative;
+  flex-wrap: wrap;
 }
 
 
 /* Make SearchableSelect bigger in HR Referrals */
 .referralSearchContainer .selectContainer .searchable-select {
-  min-width: 220px;
+  min-width: 180px;
+  width: fit-content !important;
 }
 
 .referralSearchContainer .selectContainer .searchable-select-dropdown {
@@ -95,6 +96,7 @@
 
 .referralSearchContainer input[type="date"] {
     height: 40px;
+    width: auto;
 }
 
 .referralSearchContainer input:focus,
@@ -461,5 +463,33 @@
   }
   50% {
     opacity: 0.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .hr-referrals-avatar {
+    display: none;
+  }
+
+  .hr-referrals-name-content {
+    margin-left: 0;
+  }
+   
+  .allCandidates {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .candidate {
+    flex-wrap: wrap;
+  }
+
+  .candidate .cardLeft {
+    width: 100%;
+  }
+
+  .candidate .cardRight {
+    width: 100%;
   }
 }

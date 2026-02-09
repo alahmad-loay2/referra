@@ -193,7 +193,8 @@ const HrTeam = () => {
           />
         </div>
 
-        <table className="HRTable">
+        <div className="HRTableWrapper">
+          <table className="HRTable">
           <thead>
             <tr>
               <th>Member</th>
@@ -299,6 +300,7 @@ const HrTeam = () => {
             )}
           </tbody>
         </table>
+        </div>
         <div className="pagination">
           <button className="nav" onClick={goPrev} disabled={page === 1}>
             ← Previous

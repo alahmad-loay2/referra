@@ -1,6 +1,5 @@
 .account {
   padding: 30px;
-  min-width: 1000px;
 }
 
 .account h3 {
@@ -22,12 +21,15 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gap-xl);
 }
 
 .accountContentLeft {
   display: flex;
   flex-direction: row;
   gap: var(--gap-xl);
+  flex-wrap: wrap;
 }
 
 .accountContentLeftAvatarContainer {
@@ -286,7 +288,15 @@
   background-color: var(--gray-light);
   padding: 20px;
   border-radius: var(--radius-md);
-  width:  calc(50% - 10px);
+  width: 100%;
+  overflow: hidden;
+}
+
+.personalInformationContentItem p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
 }
 
 .workInformation {
@@ -319,6 +329,13 @@
   background-color: var(--gray-light);
   padding: 20px;
   border-radius: var(--radius-md);
+}
+
+.workInformationContentItem p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
 }
 
 .accountInput {

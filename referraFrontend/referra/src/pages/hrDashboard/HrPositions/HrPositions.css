@@ -1,5 +1,4 @@
 .positionsHR {
-    min-width: 1000px;
     overflow: auto;
     display: flex;
     flex-direction: column;
@@ -13,6 +12,7 @@
     justify-content: space-between;
     gap: var(--gap-xl);
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .positionCards {
@@ -134,6 +134,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 
@@ -142,6 +143,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: var(--gap-sm);
 }
 
 .positionsTable {
@@ -149,9 +152,9 @@
     border-collapse: collapse;
 }
 
-.positionsTable tbody {
-  overflow: auto;
-  height: 20px;
+.positionsTableWrapper {
+    flex: 1;
+    overflow-y: auto;
 }
 
 .positionsTable th, .positionsTable td {
