@@ -9,13 +9,16 @@ import {
   ArrowLeft,
   User,
   Award,
+  Gift,
   Download,
   Clock,
   MapPin,
   Circle,
   Building2,
   Users,
+  Phone,
   X,
+  FileText,
 } from "lucide-react";
 import { getReferralDetails } from "../../../api/hrReferralsDetails.api";
 import {
@@ -354,6 +357,13 @@ const HrReferralDetails = () => {
                   </span>
                 </div>
                 <div className="hr-referral-candidate-info-item">
+                  <Phone size={18} />
+                  <span>
+                    <strong>Phone:</strong> {Candidate.PhoneNumber || "N/A"}
+                  </span>
+                </div>
+
+                <div className="hr-referral-candidate-info-item">
                   <Award size={18} />
                   <span>
                     <strong>Years of Experience:</strong>{" "}
@@ -372,10 +382,17 @@ const HrReferralDetails = () => {
               <hr />
 
               <div className="hr-referral-cv-display">
-                <span className="hr-referral-cv-name">
-                  {getCVFileName(Candidate.CVUrl) ||
-                    `${Candidate.FirstName} - CV`}
-                </span>
+                <div className="hr-referral-cv-content">
+                  <FileText size={32} className="hr-referral-cv-icon" />
+                  <span className="hr-referral-cv-name">
+                    {getCVFileName(Candidate.CVUrl) ||
+                      `${Candidate.FirstName} - CV`}
+                  </span>
+                  <span className="hr-referral-cv-subtext">
+                    Click to download
+                  </span>
+                </div>
+
                 <a
                   href={Candidate.CVUrl}
                   target="_blank"
@@ -499,19 +516,18 @@ const HrReferralDetails = () => {
                       : "N/A"}
                   </span>
                 </div>
-
-                {Position.Description && (
-                  <>
-                    <hr />
-                    <div className="hr-referral-hd-content-right-description">
-                      <h4>Description</h4>
-                      <div className="hr-referral-hd-content-right-description-content">
-                        <p>{Position.Description}</p>
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
+              {Position.Description && (
+                <>
+                  <hr />
+                  <div className="hr-referral-hd-content-right-description">
+                    <h4>Description</h4>
+                    <div className="hr-referral-hd-content-right-description-content">
+                      <p>{Position.Description}</p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -531,7 +547,7 @@ const HrReferralDetails = () => {
               </button>
 
               <div className="hr-comp-modal-icon">
-                <Award size={88} />
+                <Gift size={150} strokeWidth={0.5} />
               </div>
 
               <h3>Congratulations!</h3>
@@ -541,7 +557,11 @@ const HrReferralDetails = () => {
                 </strong>{" "}
                 successfully referred this candidate.
               </p>
-              <p>How much do you want to compensate?</p>
+              <p>
+                <span className="othercolor">
+                  How much do you want to compensate?
+                </span>{" "}
+              </p>
 
               <input
                 type="number"
