@@ -12,6 +12,8 @@ import {
   findCandidateByEmail,
 } from "../services/employee/employeeReferrals.service.js";
 
+import { getEmployeeDashboard } from "../services/employee/employeeDashboard.service.js";
+
 // controllers for employee related operations
 // business logic is in services
 
@@ -278,5 +280,17 @@ export const CheckCandidateByEmail = async (req, res) => {
   } catch (err) {
     console.error("CheckCandidateByEmail error:", err);
     res.status(500).json({ message: "Failed to check candidate" });
+  }
+};
+
+export const GetEmployeeDashboard = async (req, res, next) => {
+  try {
+    const employeeId = req.user.Employee?.EmployeeId;
+
+    const dashboard = await getEmployeeDashboard(employeeId);
+
+    res.json(dashboard);
+  } catch (err) {
+    next(err);
   }
 };

@@ -9,6 +9,7 @@ import {
   GetVisiblePositions,
   GetPositionDetails,
   CheckCandidateByEmail,
+  GetEmployeeDashboard,
 } from "../controllers/employee.controller.js";
 import {
   authenticate,
@@ -84,6 +85,14 @@ employeeRoutes.get(
   authenticate,
   requireEmployee,
   CheckCandidateByEmail,
+);
+
+employeeRoutes.get(
+  "/dashboard",
+  generalLimiter,
+  authenticate,
+  requireEmployee,
+  GetEmployeeDashboard,
 );
 
 export default employeeRoutes;
