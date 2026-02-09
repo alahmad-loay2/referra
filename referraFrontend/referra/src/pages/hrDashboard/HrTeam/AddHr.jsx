@@ -11,7 +11,8 @@ const AddHr = ({ onClose, onSuccess }) => {
   const [age, setAge] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [gender, setGender] = useState("");
-  const [departmentId, setDepartmentId] = useState("");
+  const [departmentIds, setDepartmentIds] = useState([]);
+
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -36,7 +37,7 @@ const AddHr = ({ onClose, onSuccess }) => {
       !age ||
       !phoneNumber ||
       !gender ||
-      !departmentId
+      departmentIds.length === 0
     ) {
       setError("All fields are required");
       return;
@@ -51,7 +52,7 @@ const AddHr = ({ onClose, onSuccess }) => {
         age,
         phoneNumber,
         gender,
-        departmentId,
+        departmentIds,
       });
       onSuccess();
     } catch (err) {
@@ -60,18 +61,29 @@ const AddHr = ({ onClose, onSuccess }) => {
       setLoading(false);
     }
   };
-  const DepartmentSelect = ({ options, value, onChange }) => {
+  const DepartmentMultiSelect = ({ options, value, onChange }) => {
     const [open, setOpen] = useState(false);
 
-    const selected = options.find((o) => o.value === value);
+    const toggle = (id) => {
+      if (value.includes(id)) {
+        onChange(value.filter((v) => v !== id));
+      } else {
+        onChange([...value, id]);
+      }
+    };
+
+    const selectedLabels = options
+      .filter((o) => value.includes(o.value))
+      .map((o) => o.label);
 
     return (
       <div className="dept-select">
-        <div
-          className="dept-select-trigger"
-          onClick={() => setOpen((prev) => !prev)}
-        >
-          <span>{selected ? selected.label : "Select Department"}</span>
+        <div className="dept-select-trigger" onClick={() => setOpen((p) => !p)}>
+          <span>
+            {selectedLabels.length
+              ? selectedLabels.join(", ")
+              : "Select Departments"}
+          </span>
           <span className="dept-select-arrow">▾</span>
         </div>
 
@@ -81,14 +93,16 @@ const AddHr = ({ onClose, onSuccess }) => {
               <div
                 key={opt.value}
                 className={`dept-select-option ${
-                  opt.value === value ? "selected" : ""
+                  value.includes(opt.value) ? "selected" : ""
                 }`}
-                onClick={() => {
-                  onChange(opt.value);
-                  setOpen(false);
-                }}
+                onClick={() => toggle(opt.value)}
               >
-                {opt.label}
+                <input
+                  type="checkbox"
+                  checked={value.includes(opt.value)}
+                  readOnly
+                />
+                <span>{opt.label}</span>
               </div>
             ))}
           </div>
@@ -146,13 +160,13 @@ const AddHr = ({ onClose, onSuccess }) => {
           <div className="form-group">
             <label>Assigned Department *</label>
 
-            <DepartmentSelect
+            <DepartmentMultiSelect
               options={departments.map((d) => ({
                 value: d.DepartmentId,
                 label: d.DepartmentName,
               }))}
-              value={departmentId}
-              onChange={setDepartmentId}
+              value={departmentIds}
+              onChange={setDepartmentIds}
             />
           </div>
 

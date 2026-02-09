@@ -49,9 +49,21 @@ const EmployeeSubmit = () => {
   const [positionDetailsError, setPositionDetailsError] = useState("");
   const [loadingPositionDetails, setLoadingPositionDetails] = useState(false);
 
-  // for checking if the email exists so it autofills the fields
-  const [isExistingCandidate, setIsExistingCandidate] = useState(false);
-  const [lockedEmail, setLockedEmail] = useState(null);
+  // for checking if the email exists already and it asks to prefill its info
+  const [showPrefillModal, setShowPrefillModal] = useState(false);
+  const [existingCandidate, setExistingCandidate] = useState(null);
+  const [emailChecked, setEmailChecked] = useState(false);
+
+  const fetchCvAsFile = async (cvUrl, filename) => {
+    const res = await fetch(cvUrl);
+    if (!res.ok) throw new Error("Failed to fetch CV");
+
+    const blob = await res.blob();
+
+    return new File([blob], filename, {
+      type: blob.type || "application/pdf",
+    });
+  };
 
   useEffect(() => {
     const loadPositionDetails = async () => {
@@ -293,43 +305,64 @@ const EmployeeSubmit = () => {
     const email = form.email.trim();
 
     if (!email) {
-      setIsExistingCandidate(false);
-      setLockedEmail(null);
+      setExistingCandidate(null);
+      setShowPrefillModal(false);
+      setEmailChecked(false);
       return;
     }
+
+    if (emailChecked) return;
 
     const checkEmail = async () => {
       try {
         const res = await checkCandidateByEmail(email);
-        //  res = { exists, candidate }
+        // res = { exists, candidate }
 
-        if (res.exists) {
-          const c = res.candidate;
-
-          setIsExistingCandidate(true);
-          setLockedEmail(c.Email);
-
-          setForm((prev) => ({
-            ...prev,
-            firstName: c.FirstName,
-            lastName: c.LastName,
-            email: c.Email,
-          }));
-        } else {
-          setIsExistingCandidate(false);
-          setLockedEmail(null);
+        if (res.exists && res.candidate) {
+          setExistingCandidate(res.candidate);
+          setShowPrefillModal(true);
         }
+
+        setEmailChecked(true);
       } catch (err) {
         console.error("Email check failed", err);
-        setIsExistingCandidate(false);
-        setLockedEmail(null);
       }
     };
 
     const t = setTimeout(checkEmail, 400);
     return () => clearTimeout(t);
-  }, [form.email]);
+  }, [form.email, emailChecked]);
+  const handlePrefillYes = async () => {
+    if (!existingCandidate) return;
 
+    setForm((prev) => ({
+      ...prev,
+      firstName: existingCandidate.FirstName ?? "",
+      lastName: existingCandidate.LastName ?? "",
+      phoneNumber: existingCandidate.PhoneNumber ?? "",
+      experience: String(existingCandidate.YearOfExperience ?? ""),
+      email: existingCandidate.Email ?? prev.email,
+    }));
+
+    if (existingCandidate.CVUrl) {
+      try {
+        const fileName = `${existingCandidate.FirstName}-${existingCandidate.LastName}-CV.pdf`;
+        const file = await fetchCvAsFile(existingCandidate.CVUrl, fileName);
+        setCvFile(file);
+        setCvError("");
+      } catch {
+        setCvError("Failed to load existing CV");
+      }
+    }
+
+    setEmailChecked(true);
+    setShowPrefillModal(false);
+  };
+
+  const handlePrefillNo = () => {
+    setEmailChecked(true);
+    setShowPrefillModal(false);
+  };
   return (
     <div className="employeeSubmit">
       <h2>Submit a Referral</h2>
@@ -446,7 +479,6 @@ const EmployeeSubmit = () => {
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
-              disabled={isExistingCandidate}
               className="employeeSubmit-input"
               placeholder="Jana"
             />
@@ -463,7 +495,6 @@ const EmployeeSubmit = () => {
               name="lastName"
               value={form.lastName}
               onChange={handleChange}
-              disabled={isExistingCandidate}
               className="employeeSubmit-input"
               placeholder="Al-Mawla"
             />
@@ -510,8 +541,10 @@ const EmployeeSubmit = () => {
             <input
               name="email"
               value={form.email}
-              onChange={handleChange}
-              disabled={!!lockedEmail}
+              onChange={(e) => {
+                setEmailChecked(false);
+                handleChange(e);
+              }}
               className="employeeSubmit-input"
               placeholder="you@example.com"
             />
@@ -519,11 +552,6 @@ const EmployeeSubmit = () => {
             {errors.email && <p className="errorText">{errors.email}</p>}
           </div>
         </div>
-        {isExistingCandidate && (
-          <p className="employeeSubmit-muted">
-            This candidate already exists. Name and email are locked.
-          </p>
-        )}
 
         <div
           className="employeeSubmit-upload"
@@ -612,6 +640,35 @@ const EmployeeSubmit = () => {
           </div>
         </div>
       )}
+      {showPrefillModal && (
+        <div className="employeeSubmit-modalOverlay">
+          <div className="employeeSubmit-modal">
+            <h3>Candidate already exists</h3>
+            <p>
+              A candidate with this email already exists.
+              <br />
+              Do you want to prefill their information?
+            </p>
+
+            <div className="employeeSubmit-modalActions">
+              <button
+                className="employeeSubmit-cancel"
+                onClick={handlePrefillNo}
+              >
+                No
+              </button>
+
+              <button
+                className="employeeSubmit-confirm"
+                onClick={handlePrefillYes}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {(submitSuccess || submitError) && (
         <div
           className={`employeeSubmit-feedback ${

@@ -51,27 +51,27 @@ const getCVFileName = (url) => {
   if (!url) return "";
   try {
     // Extract filename from URL
-    const urlPath = url.split('/').pop();
-    const fileName = urlPath.split('?')[0]; // Remove query params
-    
+    const urlPath = url.split("/").pop();
+    const fileName = urlPath.split("?")[0]; // Remove query params
+
     // Remove extension
-    let nameWithoutExt = fileName.replace(/\.(pdf|PDF)$/, '');
-    
+    let nameWithoutExt = fileName.replace(/\.(pdf|PDF)$/, "");
+
     // Remove date patterns (common formats: YYYY-MM-DD, YYYYMMDD, etc.)
-    nameWithoutExt = nameWithoutExt.replace(/\d{4}-\d{2}-\d{2}/g, ''); // YYYY-MM-DD
-    nameWithoutExt = nameWithoutExt.replace(/\d{8}/g, ''); // YYYYMMDD
-    nameWithoutExt = nameWithoutExt.replace(/\d{2}-\d{2}-\d{4}/g, ''); // DD-MM-YYYY
-    nameWithoutExt = nameWithoutExt.replace(/\d{2}\/\d{2}\/\d{4}/g, ''); // DD/MM/YYYY
-    
+    nameWithoutExt = nameWithoutExt.replace(/\d{4}-\d{2}-\d{2}/g, ""); // YYYY-MM-DD
+    nameWithoutExt = nameWithoutExt.replace(/\d{8}/g, ""); // YYYYMMDD
+    nameWithoutExt = nameWithoutExt.replace(/\d{2}-\d{2}-\d{4}/g, ""); // DD-MM-YYYY
+    nameWithoutExt = nameWithoutExt.replace(/\d{2}\/\d{2}\/\d{4}/g, ""); // DD/MM/YYYY
+
     // Clean up extra dashes/underscores
-    nameWithoutExt = nameWithoutExt.replace(/[-_]+/g, ' ').trim();
-    
+    nameWithoutExt = nameWithoutExt.replace(/[-_]+/g, " ").trim();
+
     // Truncate if too long and add ellipsis
     const maxLength = 30;
     if (nameWithoutExt.length > maxLength) {
-      return nameWithoutExt.substring(0, maxLength) + '...';
+      return nameWithoutExt.substring(0, maxLength) + "...";
     }
-    
+
     return nameWithoutExt || "CV";
   } catch (error) {
     return "CV";
@@ -81,9 +81,7 @@ const getCVFileName = (url) => {
 const getHrActions = (referral) => {
   // If already prospect, only show Unprospect action
   if (referral.Prospect) {
-    return [
-      { label: "Unprospect", action: "unprospect", disabled: false },
-    ];
+    return [{ label: "Unprospect", action: "unprospect", disabled: false }];
   }
 
   const locked =
@@ -375,7 +373,8 @@ const HrReferralDetails = () => {
 
               <div className="hr-referral-cv-display">
                 <span className="hr-referral-cv-name">
-                  {getCVFileName(Candidate.CVUrl) || `${Candidate.FirstName} - CV`}
+                  {getCVFileName(Candidate.CVUrl) ||
+                    `${Candidate.FirstName} - CV`}
                 </span>
                 <a
                   href={Candidate.CVUrl}

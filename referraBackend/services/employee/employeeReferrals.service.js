@@ -139,11 +139,14 @@ export const createReferral = async (payload) => {
   let fileName;
   if (cvFileName) {
     // Extract filename without extension
-    const originalName = cvFileName.replace(/\.(pdf|PDF)$/, '');
+    const originalName = cvFileName.replace(/\.(pdf|PDF)$/, "");
     // Sanitize filename: remove special characters, keep only alphanumeric, spaces, hyphens, underscores
-    const sanitizedName = originalName.replace(/[^a-zA-Z0-9\s\-_]/g, '').trim().replace(/\s+/g, '-');
+    const sanitizedName = originalName
+      .replace(/[^a-zA-Z0-9\s\-_]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
     // Format date as YYYY-MM-DD
-    const dateStr = new Date().toISOString().split('T')[0];
+    const dateStr = new Date().toISOString().split("T")[0];
     fileName = `${sanitizedName}-${dateStr}.pdf`;
   } else {
     // Fallback to old format if original filename is not available
@@ -754,11 +757,14 @@ export const editCandidate = async (payload) => {
     let fileName;
     if (cvFileName) {
       // Extract filename without extension
-      const originalName = cvFileName.replace(/\.(pdf|PDF)$/, '');
+      const originalName = cvFileName.replace(/\.(pdf|PDF)$/, "");
       // Sanitize filename: remove special characters, keep only alphanumeric, spaces, hyphens, underscores
-      const sanitizedName = originalName.replace(/[^a-zA-Z0-9\s\-_]/g, '').trim().replace(/\s+/g, '-');
+      const sanitizedName = originalName
+        .replace(/[^a-zA-Z0-9\s\-_]/g, "")
+        .trim()
+        .replace(/\s+/g, "-");
       // Format date as YYYY-MM-DD
-      const dateStr = new Date().toISOString().split('T')[0];
+      const dateStr = new Date().toISOString().split("T")[0];
       fileName = `${sanitizedName}-${dateStr}.pdf`;
     } else {
       // Fallback to old format if original filename is not available
@@ -877,6 +883,9 @@ export const findCandidateByEmail = async (email) => {
       FirstName: true,
       LastName: true,
       Email: true,
+      PhoneNumber: true,
+      YearOfExperience: true,
+      CVUrl: true,
     },
   });
 };

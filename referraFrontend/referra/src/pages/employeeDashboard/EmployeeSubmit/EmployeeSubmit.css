@@ -374,27 +374,6 @@
   box-shadow: none;
   outline: none;
 }
-/* Force email input to behave like text when disabled */
-.employeeSubmit-input[type="email"]:disabled,
-.employeeSubmit-input[type="email"]:disabled:focus,
-.employeeSubmit-input[type="email"]:disabled:active {
-  background-color: #f5f7fa; /* same as others */
-  color: #333;
-  box-shadow: none;
-  outline: none;
-  opacity: 1;
-}
-/* 🔥 Chrome autofill nuclear override */
-.employeeSubmit-input:-webkit-autofill,
-.employeeSubmit-input:-webkit-autofill:hover,
-.employeeSubmit-input:-webkit-autofill:focus,
-.employeeSubmit-input:-webkit-autofill:active,
-.employeeSubmit-input:-webkit-autofill:disabled {
-  -webkit-box-shadow: 0 0 0 1000px #f5f5f5 inset !important;
-  box-shadow: 0 0 0 1000px #f5f5f5 inset !important;
-  -webkit-text-fill-color: var(--gray-dark) !important;
-  caret-color: transparent;
-}
 
 /* Small animation */
 @keyframes fadeSlideIn {

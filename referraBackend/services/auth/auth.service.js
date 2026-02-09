@@ -333,8 +333,15 @@ export const bootstrapFirstHr = async (payload) => {
 
 // allow hr users to be created by existing hr users and send them invite email
 export const createHrUser = async (payload) => {
-  const { email, firstName, lastName, age, phoneNumber, gender, departmentId } =
-    payload || {};
+  const {
+    email,
+    firstName,
+    lastName,
+    age,
+    phoneNumber,
+    gender,
+    departmentIds,
+  } = payload || {};
 
   if (
     !email ||
@@ -343,20 +350,26 @@ export const createHrUser = async (payload) => {
     !age ||
     !phoneNumber ||
     !gender ||
-    !departmentId
+    !Array.isArray(departmentIds) ||
+    departmentIds.length === 0
   ) {
     const error = new Error(
-      "email, firstName, lastName, age, phoneNumber, gender, departmentId are required",
+      "email, firstName, lastName, age, phoneNumber, gender, departmentIds are required",
     );
     error.statusCode = 400;
     throw error;
   }
-  const department = await prisma.department.findUnique({
-    where: { DepartmentId: departmentId },
+
+  const departments = await prisma.department.findMany({
+    where: {
+      DepartmentId: {
+        in: departmentIds,
+      },
+    },
   });
 
-  if (!department) {
-    const error = new Error("Department not found");
+  if (departments.length !== departmentIds.length) {
+    const error = new Error("One or more departments not found");
     error.statusCode = 404;
     throw error;
   }
@@ -399,7 +412,7 @@ export const createHrUser = async (payload) => {
         phoneNumber,
         gender,
         role: "HR",
-        departmentId,
+        departmentIds,
       },
     },
   });
@@ -527,14 +540,15 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
     });
 
     if (!existingPrismaUser) {
-      const { firstName, lastName, age, phoneNumber, gender, departmentId } =
+      const { firstName, lastName, age, phoneNumber, gender, departmentIds } =
         userMetadata;
-      if (!departmentId) {
+      if (!Array.isArray(departmentIds) || departmentIds.length === 0) {
         throw Object.assign(
-          new Error("HR department is missing. Contact administrator."),
+          new Error("HR departments are missing. Contact administrator."),
           { statusCode: 400 },
         );
       }
+
       const createdUser = await prisma.users.create({
         data: {
           UserId: supabaseUser.id,
@@ -553,11 +567,11 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
       });
 
       //  Link HR to department (NEW SCHEMA)
-      await prisma.hrDepartment.create({
-        data: {
+      await prisma.hrDepartment.createMany({
+        data: departmentIds.map((depId) => ({
           HrId: createdUser.Hr.HrId,
-          DepartmentId: departmentId,
-        },
+          DepartmentId: depId,
+        })),
       });
     }
   }
