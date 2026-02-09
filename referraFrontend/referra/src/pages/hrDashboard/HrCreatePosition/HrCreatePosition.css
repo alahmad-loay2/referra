@@ -137,7 +137,7 @@
   padding: 24px;
   width: 100%;
   max-width: 420px;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100svh - 40px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   margin: auto;
   overflow-y: auto;
@@ -189,7 +189,7 @@
 
   .createPosition-modal {
     max-width: calc(100% - 20px);
-    max-height: calc(100vh - 20px);
+    max-height: calc(100svh - 20px);
     padding: 20px;
   }
 

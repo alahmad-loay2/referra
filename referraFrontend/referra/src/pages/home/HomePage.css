@@ -1,6 +1,6 @@
 /* PAGE WRAPPER */
 .page {
-  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
 }
@@ -30,7 +30,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  min-height: calc(100vh - 84px); /* navbar height */
+  min-height: calc(100svh - 84px); /* navbar height */
   padding-top: 100px; /* reduce */
   padding-bottom: 80px;
   gap: 200px;

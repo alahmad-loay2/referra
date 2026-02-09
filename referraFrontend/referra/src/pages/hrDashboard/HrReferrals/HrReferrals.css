@@ -2,7 +2,7 @@
     overflow: auto;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 120px); /* header height */
+    min-height: calc(100svh - 120px); /* header height */
     padding: var(--page-padding-x) var(--page-padding-y);
 }
 

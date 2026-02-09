@@ -1,6 +1,6 @@
 .register-page {
-  min-height: 100vh;
-  height: 100vh;
+  min-height: 100svh;
+  height: 100svh;
   display: flex;
   overflow-y: auto;
   overflow-x: hidden;
@@ -20,7 +20,7 @@
   flex-direction: column;
   justify-content: center;
   flex: 1;
-  min-height: 100vh;
+  min-height: 100svh;
   overflow-y: auto;
 }
 

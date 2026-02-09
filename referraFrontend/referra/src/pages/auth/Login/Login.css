@@ -2,8 +2,8 @@
    LOGIN PAGE LAYOUT
    ========================= */
 .login-page {
-  min-height: 100vh;
-  height: 100vh;
+  min-height: 100svh;
+  height: 100svh;
   display: flex;
   overflow-y: auto;
   overflow-x: hidden;
@@ -19,7 +19,7 @@
   justify-content: center;
   background-color: var(--background-color);
   flex: 1;
-  min-height: 100vh;
+  min-height: 100svh;
   overflow-y: auto;
 }
 

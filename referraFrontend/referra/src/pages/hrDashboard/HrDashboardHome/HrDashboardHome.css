@@ -2,7 +2,7 @@
     padding: var(--page-padding-x) var(--page-padding-y);
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 120px);
+    min-height: calc(100svh - 120px);
     flex: 1;
 }
 
