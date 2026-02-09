@@ -4,6 +4,6 @@ import { startCloseExpiredPositionsJob } from "./jobs/closeExpiredPosition.job.j
 
 app.listen(PORT, "0.0.0.0", async () => {
   console.log(`Server is running on port ${PORT}`);
-  //  Start background jobs
+  // Start background jobs
   startCloseExpiredPositionsJob();
 });

@@ -40,35 +40,49 @@ const attachUser = async (req, supabaseUser, next) => {
     return next();
   }
 
-  // Cache miss, query database
-  const user = await prisma.users.findUnique({
+  // Cache miss, query full user record once
+  const baseUser = await prisma.users.findUnique({
     where: { UserId: userId },
-    include: {
-      Employee: true,
-      Hr: {
-        include: {
-          Departments: {
-            include: {
-              Department: true,
-            },
-          },
-        },
-      },
-    },
   });
 
-  if (!user) {
+  if (!baseUser) {
     const error = new Error("User not found. Please verify your email.");
     error.statusCode = 404;
     throw error;
   }
 
+  // 2) Depending on role, fetch only the needed relation off Users:
+  //    - Employee → include Employee only
+  //    - HR       → include Hr with Departments -> Department (restored behavior)
+  let include = {};
+  if (baseUser.Role === "Employee") {
+    include = { Employee: true };
+  } else if (baseUser.Role === "HR") {
+    include = {
+      Hr: {
+        include: {
+          Departments: {
+            include: { Department: true },
+          },
+        },
+      },
+    };
+  }
+
+  const userWithRelations =
+    Object.keys(include).length > 0
+      ? await prisma.users.findUnique({
+          where: { UserId: userId },
+          include,
+        })
+      : baseUser;
+
   const userData = {
-    UserId: user.UserId,
-    Email: user.Email,
-    Role: user.Role,
-    Employee: user.Employee,
-    Hr: user.Hr,
+    UserId: userWithRelations.UserId,
+    Email: userWithRelations.Email,
+    Role: userWithRelations.Role,
+    Employee: userWithRelations.Employee || null,
+    Hr: userWithRelations.Hr || null,
   };
 
   // Cache the result

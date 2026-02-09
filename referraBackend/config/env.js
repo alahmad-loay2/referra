@@ -11,4 +11,5 @@ export const {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
   RESEND_API_KEY,
+  PRISMA_LOG_QUERIES
 } = process.env;
