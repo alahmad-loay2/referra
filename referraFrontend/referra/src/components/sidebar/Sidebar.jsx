@@ -3,6 +3,7 @@ import "./Sidebar.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getUserInfo } from "../../api/user.api.js";
 import { logout } from "../../api/auth.api.js";
+import { Menu, X } from "lucide-react";
 
 const Sidebar = (props) => {
   const location = useLocation();
@@ -10,8 +11,11 @@ const Sidebar = (props) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const dropdownRef = useRef(null);
   const accountRef = useRef(null);
+  const menuRef = useRef(null);
+  const burgerButtonRef = useRef(null);
 
   const fetchUser = async () => {
     try {
@@ -49,6 +53,14 @@ const Sidebar = (props) => {
         !accountRef.current.contains(event.target)
       ) {
         setShowDropdown(false);
+      }
+      if (
+        menuRef.current &&
+        burgerButtonRef.current &&
+        !menuRef.current.contains(event.target) &&
+        !burgerButtonRef.current.contains(event.target)
+      ) {
+        setShowMenu(false);
       }
     };
 
@@ -108,6 +120,14 @@ const Sidebar = (props) => {
     }
   };
 
+  const handleMenuToggle = () => {
+    setShowMenu(!showMenu);
+  };
+
+  const handleMenuLinkClick = () => {
+    setShowMenu(false);
+  };
+
   return (
     <div className="sidebarContainer">
       <div className="sidebarTop">
@@ -128,7 +148,34 @@ const Sidebar = (props) => {
             </Link>
           ))}
         </nav>
+
+        <button 
+          ref={burgerButtonRef}
+          className="sidebarBurgerButton"
+          onClick={handleMenuToggle}
+          aria-label="Toggle menu"
+        >
+          {showMenu ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
+
+      {showMenu && (
+        <div className="sidebarMenuDropdown" ref={menuRef}>
+          {props.pages.map((page) => (
+            <Link
+              key={page.link}
+              to={page.link}
+              className={`sidebarMenuDropdownItem ${
+                location.pathname === page.link ? "active" : ""
+              }`}
+              onClick={handleMenuLinkClick}
+            >
+              <span className="sidebarMenuIcon">{page.icon}</span>
+              <span className="sidebarMenuText">{page.name}</span>
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className="sidebarBottom">
         <div className="divider divider-bottom"></div>

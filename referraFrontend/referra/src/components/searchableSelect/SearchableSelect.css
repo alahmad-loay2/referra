@@ -32,7 +32,6 @@
   color: var(--secondary-color);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .searchable-select-placeholder {

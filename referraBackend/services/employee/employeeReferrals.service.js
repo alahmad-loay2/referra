@@ -64,6 +64,31 @@ export const createReferral = async (payload) => {
     throw error;
   }
 
+  // Length validations (must match prisma schema constraints)
+  if (candidateFirstName.length > 50) {
+    const error = new Error("First name must be at most 50 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (candidateLastName.length > 50) {
+    const error = new Error("Last name must be at most 50 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (candidateEmail.length > 255) {
+    const error = new Error("Email must be at most 255 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (candidatePhoneNumber.length > 32) {
+    const error = new Error("Phone number must be at most 32 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
   // Run position and employee lookups in parallel
   const [position, employee] = await Promise.all([
     prisma.position.findUnique({
@@ -168,6 +193,7 @@ export const createReferral = async (payload) => {
 
   const result = await prisma.$transaction(async (tx) => {
     if (!candidate) {
+      // Create new candidate with submitted data
       candidate = await tx.candidate.create({
         data: {
           FirstName: candidateFirstName,
@@ -179,10 +205,19 @@ export const createReferral = async (payload) => {
         },
       });
     } else {
-      // Update existing candidate's CV
+      // Email already exists → update the existing candidate with the latest info
+      // so the source of truth is always the most recent submission.
+      const updateData = {
+        FirstName: candidateFirstName,
+        LastName: candidateLastName,
+        PhoneNumber: candidatePhoneNumber,
+        YearOfExperience: parseInt(candidateYearOfExperience, 10),
+        CVUrl: cvUrl,
+      };
+
       candidate = await tx.candidate.update({
         where: { CandidateId: candidate.CandidateId },
-        data: { CVUrl: cvUrl },
+        data: updateData,
       });
     }
 
@@ -617,54 +652,26 @@ export const editCandidate = async (payload) => {
     throw error;
   }
 
-  // Find the specific application for this employee
-  const application = candidate.Application.find(
-    (app) => app.EmployeeId === employeeId,
-  );
-
-  if (!application) {
-    const error = new Error("Application not found for this employee");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  // Check if THIS specific referral is Pending
-  if (application.Referral.Status !== "Pending") {
-    const error = new Error(
-      `Cannot edit candidate. Referral status is ${application.Referral.Status}, not Pending`,
-    );
-    error.statusCode = 400;
-    throw error;
-  }
-
-  // Check if candidate has ANY other referral that is NOT Pending
-  // If they have any referral that is Confirmed or above, don't allow edit
-  const statusOrder = [
-    "Pending",
-    "Confirmed",
-    "InterviewOne",
-    "InterviewTwo",
-    "Acceptance",
-  ];
-  const hasNonPendingReferral = candidate.Application.some((app) => {
-    // Skip the current application we're editing
-    if (app.ReferralId === application.ReferralId) {
-      return false;
-    }
-    const statusIndex = statusOrder.indexOf(app.Referral.Status);
-    const pendingIndex = statusOrder.indexOf("Pending");
-    return statusIndex > pendingIndex;
-  });
-
-  if (hasNonPendingReferral) {
-    const error = new Error(
-      "Cannot edit candidate. Candidate has other referrals that are not Pending",
-    );
-    error.statusCode = 400;
-    throw error;
-  }
-
   const dataToUpdate = {};
+
+  // Length validations for editable fields (respect prisma limits)
+  if (candidateFirstName && candidateFirstName.length > 50) {
+    const error = new Error("First name must be at most 50 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (candidateLastName && candidateLastName.length > 50) {
+    const error = new Error("Last name must be at most 50 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (candidatePhoneNumber && candidatePhoneNumber.length > 32) {
+    const error = new Error("Phone number must be at most 32 characters");
+    error.statusCode = 400;
+    throw error;
+  }
   if (candidateFirstName !== undefined && candidateFirstName !== "") {
     dataToUpdate.FirstName = candidateFirstName;
   }

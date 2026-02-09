@@ -20,14 +20,14 @@ enum Role {
 
 model Users {
   UserId String @id @default(uuid())
-  FirstName String
-  LastName String
+  FirstName String @db.VarChar(50)
+  LastName  String @db.VarChar(50)
   Age Int
-  PhoneNumber String
-  Gender String
-  Email String @unique
+  PhoneNumber String @db.VarChar(32)
+  Gender      String @db.VarChar(32)
+  Email       String @unique @db.VarChar(255)
   Role Role @default(Employee)
-  ProfileUrl String?
+  ProfileUrl String? @db.VarChar(512)
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
 
@@ -74,12 +74,12 @@ model Application {
 
 model Candidate {
   CandidateId String @id @default(uuid())
-  FirstName String
-  LastName String
-  Email String @unique
+  FirstName  String @db.VarChar(50)
+  LastName   String @db.VarChar(50)
+  Email      String @unique @db.VarChar(255)
   YearOfExperience Int
-  PhoneNumber String
-  CVUrl String
+  PhoneNumber      String @db.VarChar(32)
+  CVUrl            String @db.VarChar(512)
   Acceptance Boolean @default(false)
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt 
@@ -125,15 +125,15 @@ enum EmploymentType {
 }
 model Position {
   PositionId String @id @default(uuid())
-  PositionTitle String
-  CompanyName String 
+  PositionTitle String @db.VarChar(100)
+  CompanyName   String @db.VarChar(100)
   PositionState PositionState @default(OPEN)
   EmploymentType EmploymentType
   YearsRequired Int
   Description String
-  Timezone String
+  Timezone    String @db.VarChar(64)
   Deadline DateTime
-  PositionLocation String
+  PositionLocation String @db.VarChar(100)
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
   DepartmentId String
@@ -148,7 +148,7 @@ model Position {
 }
 model Department {
   DepartmentId String @id @default(uuid())
-  DepartmentName String
+  DepartmentName String @db.VarChar(100)
 
   Hrs HrDepartment[]
   Positions Position[]

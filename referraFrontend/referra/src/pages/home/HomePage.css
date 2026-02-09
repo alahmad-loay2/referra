@@ -283,7 +283,6 @@
   .navbar .button-group {
     flex-direction: row; /* ⬅️ FORCE row */
     gap: var(--gap-sm);
-    flex-wrap: nowrap; /* ⬅️ NO wrapping */
     margin-left: auto; /* ⬅️ PUSH to right */
   }
   .navbar .button-style,
@@ -292,7 +291,6 @@
     padding: 8px 14px;
     font-size: var(--fs-small);
     border-radius: 999px;
-    white-space: nowrap; /* ⬅️ PREVENT line breaks */
     flex-shrink: 0; /* ⬅️ NO shrinking */
   }
   .content {
