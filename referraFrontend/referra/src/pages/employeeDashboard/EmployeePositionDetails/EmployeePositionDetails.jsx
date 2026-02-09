@@ -36,7 +36,6 @@ const EmployeePositionDetails = () => {
   if (!position) {
     return <div className="position-details-container">Position not found</div>;
   }
-  console.log(position);
   return (
     <div className="position-details-container">
       {/* Header */}

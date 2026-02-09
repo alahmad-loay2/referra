@@ -16,6 +16,9 @@ const HomePage = () => {
         <img src="/logo.svg" alt="Aspire Software" id="logo" />
 
         <div className="button-group">
+          <a href="/docs" target="_blank" rel="noopener noreferrer" className="docs-link">
+            Docs
+          </a>
           <Button text="Sign In" to="/login" variant="secondary" />
           <Button text="Get Started" to="/register" />
         </div>

@@ -27,11 +27,13 @@ import EmployeeReferralHD from "../pages/employeeDashboard/EmployeeReferralHD/Em
 import EmployeePositionDetails from "../pages/employeeDashboard/EmployeePositionDetails/EmployeePositionDetails.jsx";
 
 import Account from "../pages/Account/Account.jsx";
+import Docs from "../pages/docs/Docs.jsx";
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/docs" element={<Docs />} />
       <Route element={<AuthProtection />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />

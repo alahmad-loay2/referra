@@ -438,79 +438,87 @@ const Account = () => {
             <h3>Personal Information</h3>
             <p>Your basic personal and contact details.</p>
             <div className="personalInformationContent">
-              <div className="personalInformationContentItem">
-                <h4>First Name</h4>
-                {isEditMode ? (
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName || ""}
-                    onChange={handleInputChange}
-                    className="accountInput"
-                  />
-                ) : (
-                  <p>{profileData.FirstName}</p>
-                )}
+              <div className="personalInformationRow">
+                <div className="personalInformationContentItem">
+                  <h4>First Name</h4>
+                  {isEditMode ? (
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName || ""}
+                      onChange={handleInputChange}
+                      className="accountInput"
+                    />
+                  ) : (
+                    <p>{profileData.FirstName}</p>
+                  )}
+                </div>
+                <div className="personalInformationContentItem">
+                  <h4>Last Name</h4>
+                  {isEditMode ? (
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName || ""}
+                      onChange={handleInputChange}
+                      className="accountInput"
+                    />
+                  ) : (
+                    <p>{profileData.LastName}</p>
+                  )}
+                </div>
               </div>
-              <div className="personalInformationContentItem">
-                <h4>Last Name</h4>
-                {isEditMode ? (
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName || ""}
-                    onChange={handleInputChange}
-                    className="accountInput"
-                  />
-                ) : (
-                  <p>{profileData.LastName}</p>
-                )}
+
+              <div className="personalInformationRow">
+                <div className="personalInformationContentItem">
+                  <h4>Email</h4>
+                  <p>{profileData.Email}</p>
+                </div>
+                <div className="personalInformationContentItem">
+                  <h4>Age</h4>
+                  {isEditMode ? (
+                    <input
+                      type="number"
+                      name="age"
+                      value={formData.age || ""}
+                      onChange={handleInputChange}
+                      className="accountInput"
+                    />
+                  ) : (
+                    <p>{profileData.Age}</p>
+                  )}
+                </div>
               </div>
-              <div className="personalInformationContentItem">
-                <h4>Email</h4>
-                <p>{profileData.Email}</p>
-              </div>
-              <div className="personalInformationContentItem">
-                <h4>Age</h4>
-                {isEditMode ? (
-                  <input
-                    type="number"
-                    name="age"
-                    value={formData.age || ""}
-                    onChange={handleInputChange}
-                    className="accountInput"
-                  />
-                ) : (
-                  <p>{profileData.Age}</p>
-                )}
-              </div>
-              <div className="personalInformationContentItem">
-                <h4>Phone</h4>
-                {isEditMode ? (
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    value={formData.phoneNumber || ""}
-                    onChange={handleInputChange}
-                    className="accountInput"
-                  />
-                ) : (
-                  <p>{profileData.PhoneNumber}</p>
-                )}
-              </div>
-              <div className="personalInformationContentItem">
-                <h4>Gender</h4>
-                {isEditMode ? (
-                  <input
-                    type="text"
-                    name="gender"
-                    value={formData.gender || ""}
-                    onChange={handleInputChange}
-                    className="accountInput"
-                  />
-                ) : (
-                  <p>{profileData.Gender}</p>
-                )}
+
+              <div className="personalInformationRow">
+                <div className="personalInformationContentItem">
+                  <h4>Phone</h4>
+                  {isEditMode ? (
+                    <input
+                      type="text"
+                      name="phoneNumber"
+                      value={formData.phoneNumber || ""}
+                      onChange={handleInputChange}
+                      className="accountInput"
+                    />
+                  ) : (
+                    <p>{profileData.PhoneNumber}</p>
+                  )}
+                </div>
+                <div className="personalInformationContentItem">
+                  <h4>Gender</h4>
+                  {isEditMode ? (
+                    <input
+                      type="text"
+                      name="gender"
+                      value={formData.gender || ""}
+                      onChange={handleInputChange}
+                      className="accountInput"
+                    />
+                  ) : (
+                    <p>{profileData.Gender}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
