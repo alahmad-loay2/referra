@@ -70,6 +70,31 @@ export const updateUserInfo = async (userId, payload) => {
     throw error;
   }
 
+  // Basic length validations (aligned with prisma schema)
+  if (firstName && firstName.length > 50) {
+    const error = new Error("First name must be at most 50 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (lastName && lastName.length > 50) {
+    const error = new Error("Last name must be at most 50 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (phoneNumber && phoneNumber.length > 32) {
+    const error = new Error("Phone number must be at most 32 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (gender && gender.length > 32) {
+    const error = new Error("Gender must be at most 32 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
   // Check if user exists
   const existingUser = await prisma.users.findUnique({
     where: { UserId: userId },

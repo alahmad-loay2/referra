@@ -16,7 +16,6 @@
   font-size: var(--fs-xlarge);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   min-width: 0;
 }
 .title-group {
@@ -31,7 +30,6 @@
 .title-group h2 {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   min-width: 0;
 }
 
@@ -40,7 +38,6 @@
   color: var(--gray-dark);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .back-btn {
@@ -106,7 +103,6 @@
   color: var(--gray-dark);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .info-box .value {
@@ -114,7 +110,6 @@
   color: var(--secondary-color);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .position-description {
@@ -133,7 +128,6 @@
   margin-bottom: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .position-description p {

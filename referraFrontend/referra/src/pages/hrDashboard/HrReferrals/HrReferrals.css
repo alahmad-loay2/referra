@@ -187,7 +187,6 @@
     font-size: var(--fs-large);
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .candidate span {
@@ -198,7 +197,6 @@
     opacity: .9;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .iconText {
@@ -209,13 +207,11 @@
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .iconTextLabel {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 

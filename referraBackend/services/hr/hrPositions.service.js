@@ -30,6 +30,31 @@ export const createPosition = async (payload, hr) => {
     error.statusCode = 400;
     throw error;
   }
+
+  // Length validations (aligned with prisma schema)
+  if (positionTitle.length > 100) {
+    const error = new Error("Position title must be at most 100 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (companyName.length > 100) {
+    const error = new Error("Company name must be at most 100 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (positionLocation.length > 100) {
+    const error = new Error("Position location must be at most 100 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (timeZone.length > 64) {
+    const error = new Error("Timezone must be at most 64 characters");
+    error.statusCode = 400;
+    throw error;
+  }
   const normalizedEmploymentType = employmentType.toUpperCase();
 
   const allowedEmploymentTypes = [
@@ -237,6 +262,31 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
     departmentId,
     employmentType,
   } = payload;
+
+  // Length validations for provided fields
+  if (positionTitle && positionTitle.length > 100) {
+    const error = new Error("Position title must be at most 100 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (companyName && companyName.length > 100) {
+    const error = new Error("Company name must be at most 100 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (positionLocation && positionLocation.length > 100) {
+    const error = new Error("Position location must be at most 100 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (timeZone && timeZone.length > 64) {
+    const error = new Error("Timezone must be at most 64 characters");
+    error.statusCode = 400;
+    throw error;
+  }
 
   // Optional department change (must still belong to HR)
   if (departmentId && !allowedDepartmentIds.includes(departmentId)) {

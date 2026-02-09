@@ -203,7 +203,6 @@
 .iconTextLabel {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .candidate .referral-details-btn {
@@ -214,7 +213,6 @@
     color: var(--white);
     font-size: var(--fs-small);
     cursor: pointer;
-    white-space: nowrap;
     margin-top: 8px;
     width: fit-content;
 }

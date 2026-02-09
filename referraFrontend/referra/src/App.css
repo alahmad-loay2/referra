@@ -49,6 +49,7 @@ body {
   color: var(--secondary-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-width: 320px;
 }
 
 
@@ -59,5 +60,11 @@ body {
     --fs-large: 1.2rem;
     --fs-xlarge: 1.4rem;
     --fs-xxlarge: clamp(2.8rem, 4.5vw, 4.2rem);
+
+      /* Layout spacing */
+  --page-padding-x: 16px;
+  --page-padding-y: 16px;
+  /* For full-page views without the dashboard/header bar */
+  --page-padding-top-no-header: 12px;
   }
 }

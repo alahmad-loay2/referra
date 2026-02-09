@@ -12,7 +12,6 @@
   font-size: var(--fs-xlarge);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .positions-header p {
@@ -20,7 +19,6 @@
   margin-bottom: 24px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* List */
@@ -47,7 +45,6 @@
 .left {
   display: flex;
   gap: var(--gap-md);
-  width: 100%;
   overflow: hidden;
 }
 
@@ -72,7 +69,6 @@
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .meta {
@@ -100,7 +96,6 @@
 .meta-text {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* Button */

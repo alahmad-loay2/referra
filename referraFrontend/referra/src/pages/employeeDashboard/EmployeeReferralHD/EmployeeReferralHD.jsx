@@ -79,7 +79,6 @@ const EmployeeReferralHD = () => {
   };
 
   const handleEdit = () => {
-    if (referralData?.Referral?.Status !== "Pending") return;
     setIsEditMode(true);
   };
 
@@ -548,10 +547,9 @@ const EmployeeReferralHD = () => {
                 
                 <div className="emp-referral-candidate-info-actions">
                   {!isEditMode ? (
-                    <button 
+                <button 
                       className="referral-hd-edit-btn" 
                       onClick={handleEdit}
-                      disabled={!isPending}
                     >
                       Edit
                     </button>
