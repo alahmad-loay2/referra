@@ -1,18 +1,8 @@
 import "dotenv/config";
-import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient } from '../generated/prisma/client.js'
-
-const connectionString = `${process.env.DATABASE_URL}`
-
-const adapter = new PrismaPg({ connectionString })
-const prisma = new PrismaClient({ adapter })
-
-export { prisma }
-
-/* import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { PrismaClient } from "../generated/prisma/client.js";
+import { PRISMA_LOG_QUERIES, NODE_ENV } from "../config/env.js";
 
 // Detect when we are running under tests (set via npm script)
 const isTestRun = process.env.NODE_ENV === "test";
@@ -42,33 +32,43 @@ if (isTestRun) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
 
-  // Create connection pool with optimized settings for fast first connections
+  // Create a PostgreSQL connection pool (works well with Railway Postgres)
   const pool = new Pool({
     connectionString,
-    max: 30,
-    min: 5,
+    max: 10, // reasonable default for a small app
+    min: 0,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
-    allowExitOnIdle: false,
-    statement_timeout: 5000,
-  });
-
-  // Warm up the connection pool on startup (for faster first calls)
-  pool.on("connect", () => {
-    // Connection established
-  });
-
-  // Initialize pool immediately
-  pool.query("SELECT 1").catch(() => {
-    // Ignore errors during warmup, pool will connect on first real query
+    connectionTimeoutMillis: 5000,
   });
 
   const adapter = new PrismaPg(pool);
+
+  // Prisma Optimize / performance visibility: enable query logging in dev
   prisma = new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+    log:
+      NODE_ENV === "development"
+        ? [
+            { level: "query", emit: "event" }, // needed for Prisma Optimize & manual analysis
+            "error",
+            "warn",
+          ]
+        : ["error"],
+  });
+}
+
+// Optional: only dump queries when explicitly enabled to avoid noisy logs in dev
+if (PRISMA_LOG_QUERIES === "true" && prisma && typeof prisma.$on === "function") {
+  prisma.$on("query", (e) => {
+    // This is the data Prisma Optimize (CLI / cloud) uses under the hood
+    console.log(
+      `[Prisma Query] duration=${e.duration}ms`,
+      "\nSQL:",
+      e.query,
+      "\nParams:",
+      e.params,
+    );
   });
 }
 
 export { prisma };
-*/

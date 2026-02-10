@@ -167,18 +167,23 @@ export const signinUser = async (payload) => {
 
   const supabaseUser = authData.user;
 
-  const user = await prisma.users.findUnique({
+  // First, load base user data without heavy relations
+  const baseUser = await prisma.users.findUnique({
     where: { UserId: supabaseUser.id },
-    include: { Employee: true, Hr: true },
+    select: {
+      UserId: true,
+      Email: true,
+      Role: true,
+    },
   });
 
-  if (!user) {
+  if (!baseUser) {
     const error = new Error("Please verify your email before signing in");
     error.statusCode = 403;
     throw error;
   }
 
-  const isHr = user.Role === "HR";
+  const isHr = baseUser.Role === "HR";
 
   if (!supabaseUser.email_confirmed_at && !isHr) {
     const error = new Error("Please verify your email before signing in");
@@ -186,27 +191,41 @@ export const signinUser = async (payload) => {
     throw error;
   }
 
-  if (user.Role === "HR" && !user.Hr) {
-    const error = new Error(
-      "HR profile not found. Please contact an administrator.",
-    );
-    error.statusCode = 403;
-    throw error;
+  // For HR users, ensure an HR profile exists (but don't load departments here)
+  if (baseUser.Role === "HR") {
+    const hrProfile = await prisma.hr.findUnique({
+      where: { UserId: baseUser.UserId },
+    });
+
+    if (!hrProfile) {
+      const error = new Error(
+        "HR profile not found. Please contact an administrator.",
+      );
+      error.statusCode = 403;
+      throw error;
+    }
   }
 
-  if (user.Role === "Employee" && !user.Employee) {
-    const error = new Error(
-      "Employee profile not found. Please contact an administrator.",
-    );
-    error.statusCode = 403;
-    throw error;
+  // For Employee users, ensure an Employee profile exists
+  if (baseUser.Role === "Employee") {
+    const employeeProfile = await prisma.employee.findUnique({
+      where: { UserId: baseUser.UserId },
+    });
+
+    if (!employeeProfile) {
+      const error = new Error(
+        "Employee profile not found. Please contact an administrator.",
+      );
+      error.statusCode = 403;
+      throw error;
+    }
   }
 
   return {
     user: {
-      UserId: user.UserId,
-      Email: user.Email,
-      Role: user.Role,
+      UserId: baseUser.UserId,
+      Email: baseUser.Email,
+      Role: baseUser.Role,
     },
     accessToken: authData.session.access_token, // dies every 15 mins
     refreshToken: authData.session.refresh_token, // dies  after a week

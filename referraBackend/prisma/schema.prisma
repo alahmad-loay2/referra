@@ -70,6 +70,13 @@ model Application {
   Position Position @relation(fields: [PositionId], references: [PositionId])
 
   @@id([EmployeeId, CandidateId, PositionId])
+
+  // Frequently filtered / joined fields
+  @@index([EmployeeId])
+  @@index([CandidateId])
+  @@index([PositionId])
+  @@index([ReferralId])
+  @@index([EmployeeId, ReferralId])
 }
 
 model Candidate {
@@ -140,7 +147,7 @@ model Position {
   Department Department @relation(fields: [DepartmentId], references: [DepartmentId])
 
   Application Application[]
-    @@index([DepartmentId])
+  @@index([DepartmentId])
   @@index([PositionState])
   @@index([PositionTitle])
   @@index([CreatedAt])
@@ -152,6 +159,9 @@ model Department {
 
   Hrs HrDepartment[]
   Positions Position[]
+
+  // For lookups / dropdowns by name
+  @@index([DepartmentName])
 }
 model HrDepartment {
   HrId String
@@ -161,6 +171,7 @@ model HrDepartment {
   Department Department @relation(fields: [DepartmentId], references: [DepartmentId])
 
   @@id([HrId, DepartmentId])
+  @@index([DepartmentId])
 }
 
 
@@ -175,4 +186,7 @@ model Compensation {
 
   Amount Int
   CreatedAt DateTime @default(now())
+
+  @@index([HrId])
+  @@index([EmployeeId])
 }
