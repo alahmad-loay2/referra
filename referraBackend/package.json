@@ -9,6 +9,9 @@
   "scripts": {
     "test": "set NODE_ENV=test&& node --test",
     "dev": "nodemon server.js",
+    "postinstall": "prisma generate",
+    "build": "prisma generate",
+    "vercel-build": "prisma generate",
     "add-positions": "node scripts/addPositions.js"
   },
   "dependencies": {
