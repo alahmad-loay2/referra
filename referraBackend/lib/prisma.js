@@ -50,9 +50,9 @@ if (isTestRun) {
       existingPool ||
       new Pool({
         connectionString,
-        max: 10, // app-level pool size; PgBouncer will multiplex behind this
-        min: 2,
-        idleTimeoutMillis: 300000,
+        max: process.env.NODE_ENV === "production" ? 1 : 10,
+        min: 0,
+        idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 5000,
       });
 
