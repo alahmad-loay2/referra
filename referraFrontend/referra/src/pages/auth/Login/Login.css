@@ -75,7 +75,7 @@
 
   height: 55px;
   padding: 0 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--gray-light);
   border-radius: var(--radius-md);
   background-color: var(--white);
 }

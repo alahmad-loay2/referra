@@ -211,10 +211,6 @@
   background-color: var(--gray-light);
 }
 
-.HRTable tr:hover {
-  background-color: var(--gray-light);
-}
-
 /* MEMBER CELL */
 .member-cell {
   display: flex;
@@ -338,6 +334,27 @@
 
 .pagination .dots {
   padding: 0 6px;
+}
+
+.dept-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.dept-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--fs-small);
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+.dept-toggle:hover {
+  text-decoration: underline;
 }
 
 @keyframes shimmer {

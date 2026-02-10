@@ -10,6 +10,8 @@
   display: flex;
   gap: var(--gap-xl);
   flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .emp-dashboard-stat {
@@ -77,7 +79,8 @@
 }
 
 .emp-dashboard-section {
-  flex: 1;
+  flex: 1 1 480px; /* key line */
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--gap-md);
@@ -87,6 +90,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .emp-section-header h2 {
@@ -108,6 +112,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--gap-lg);
 }
 
@@ -120,14 +125,20 @@
   display: flex;
   gap: var(--gap-md);
   align-items: center;
-  flex: 1;
+
+  max-width: 360px; /* 👈 consistency */
   min-width: 0;
+}
+.emp-referral-left,
+.emp-card-right {
+  flex: 1 1 auto;
 }
 
 .emp-referral-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .emp-avatar {
@@ -139,12 +150,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   font-weight: 600;
 }
 
 .emp-name {
   font-size: var(--fs-medium);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .emp-meta {
@@ -164,7 +176,9 @@
 }
 .emp-card-right {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: column;
+
   align-items: flex-end;
   gap: 8px;
 }
@@ -182,6 +196,9 @@
 
 .emp-referral-details-btn:hover {
   opacity: 0.9;
+}
+.emp-position-card .emp-name {
+  max-width: 260px;
 }
 
 /* SKELETONS */
@@ -262,5 +279,17 @@
   }
   50% {
     opacity: 0.75;
+  }
+}
+
+/* Small screens: force button to new line */
+@media (max-width: 640px) {
+  .emp-card-right {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-end;
+    gap: 8px;
   }
 }

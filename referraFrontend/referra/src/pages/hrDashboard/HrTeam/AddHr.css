@@ -3,7 +3,7 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   z-index: 1000;
   overflow-y: auto;
@@ -16,10 +16,13 @@
   padding: 20px;
   width: 100%;
   max-width: 500px;
-  max-height: calc(100svh - 40px);
+  max-height: 100svh;
+
+  display: flex;
+  flex-direction: column;
+
   position: relative;
-  margin: auto;
-  overflow-y: auto;
+  overflow: visible;
   box-sizing: border-box;
 }
 
@@ -31,17 +34,20 @@
   border: none;
   cursor: pointer;
 }
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+}
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 
 .modal-subtitle {
   font-size: 0.9rem;
   color: var(--gray-dark);
   margin-bottom: 20px;
-}
-
-.modal-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--gap-md);
 }
 
 .modal-box input,
@@ -86,6 +92,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-sm);
+}
+.modal-row {
+  display: flex;
+  gap: var(--gap-md);
+}
+
+.modal-row .form-group {
+  flex: 1;
 }
 
 .form-group label {
@@ -168,17 +182,6 @@
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 10px;
-  }
-
-  .modal-box {
-    max-width: calc(100% - 20px);
-    max-height: calc(100svh - 20px);
-    padding: 16px;
-    margin: 0;
-  }
-
-  .modal-grid {
-    grid-template-columns: 1fr;
   }
 
   .modal-actions {

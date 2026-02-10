@@ -1,70 +1,70 @@
 .positionsHR {
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100svh - 120px); /* header height */
-    padding: var(--page-padding-x) var(--page-padding-y);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - 120px); /* header height */
+  padding: var(--page-padding-x) var(--page-padding-y);
 }
 
 .positionCardsContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--gap-xl);
-    width: 100%;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--gap-xl);
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .positionCards {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 20px 30px;
-    gap: var(--gap-lg);
-    width: 20vw;
-    min-width: 220px;
-    border-radius: var(--radius-xl);
-    flex: 1;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 20px 30px;
+  gap: var(--gap-lg);
+  width: 20vw;
+  min-width: 220px;
+  border-radius: var(--radius-xl);
+  flex: 1;
 }
 
 .positionsIcon {
-    background-color: var(--primary-color);
-    border-radius: 50%;
-    padding: 10px;
-    display: flex;
-    align-items: center;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .positionCardsText p {
-    font-size: var(--fs-small);
-    color: var(--gray-dark);
-    margin-bottom: 5px;
+  font-size: var(--fs-small);
+  color: var(--gray-dark);
+  margin-bottom: 5px;
 }
 
 /* Smaller loading spinner for position cards */
 .positionCardsText .loading-spinner {
-    padding: 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .positionCardsText .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--gray-light);
-    border-top: 2px solid var(--primary-color);
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-light);
+  border-top: 2px solid var(--primary-color);
 }
 
 .positionsSearchContainer {
-    background-color: var(--gray-light);
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--gap-xl);
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: var(--radius-xl);
+  background-color: var(--gray-light);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--gap-xl);
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: var(--radius-xl);
 }
 
 .selectContainer {
@@ -78,13 +78,13 @@
 }
 
 .positionsSearchContainer input {
-    padding: 10px;
-    border: none;
-    border-radius: var(--radius-md);
-    width: 100%;
-    min-width: 200px;
-    font-size: var(--fs-small);
-    height: 40px;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-md);
+  width: 100%;
+  min-width: 200px;
+  font-size: var(--fs-small);
+  height: 40px;
 }
 
 .searchIcon {
@@ -97,17 +97,17 @@
 }
 
 .positionsSearchContainer select {
-    padding: 10px;
-    border: none;
-    border-radius: var(--radius-md);
-    min-width: 150px;
-    font-size: var(--fs-small);
-    height: 40px;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-md);
+  min-width: 150px;
+  font-size: var(--fs-small);
+  height: 40px;
 }
 
 .positionsSearchContainer input:focus,
 .positionsSearchContainer select:focus {
-    outline: none;
+  outline: none;
 }
 
 .apply-btn {
@@ -125,56 +125,51 @@
   opacity: 0.9;
 }
 
-
-.positionsTableContainer{
-    background-color: white;
-    padding: 20px;
-    border-radius: var(--radius-xl);
-    font-size: var(--fs-medium);
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+.positionsTableContainer {
+  background-color: white;
+  padding: 20px;
+  border-radius: var(--radius-xl);
+  font-size: var(--fs-medium);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-
 .tableHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-    gap: var(--gap-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: var(--gap-sm);
 }
 
 .positionsTable {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .positionsTableWrapper {
-    flex: 1;
-    overflow-y: auto;
+  flex: 1;
+  overflow-y: auto;
 }
 
-.positionsTable th, .positionsTable td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid var(--gray-light);
+.positionsTable th,
+.positionsTable td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--gray-light);
 }
 
 .positionsTable th {
-    background-color: var(--gray-light);
-}
-
-.positionsTable tr:hover {
-    background-color: var(--gray-light);
+  background-color: var(--gray-light);
 }
 
 .positionsTable td button {
-    border: none;
-    background: none;
-    cursor: pointer;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
 .actions-cell {
@@ -271,25 +266,24 @@
 }
 
 .switch input:checked + .slider {
-  background-color: #1f9254; 
+  background-color: #1f9254;
 }
 
 .switch input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-
 .statusWrapper {
   display: flex;
-  align-items: center;    
-  gap: var(--gap-sm);                
+  align-items: center;
+  gap: var(--gap-sm);
   justify-content: flex-start;
 }
 
 .statusText {
   font-weight: 500;
-  width: 50px;          
-  text-align: left;          
+  width: 50px;
+  text-align: left;
 }
 
 /* Pagination */
@@ -379,7 +373,8 @@
 }
 
 @keyframes skeleton-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

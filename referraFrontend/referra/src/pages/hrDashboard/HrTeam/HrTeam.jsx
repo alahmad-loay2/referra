@@ -70,7 +70,7 @@ const HrTeam = () => {
 
         setHrMembers(data.hrMembers);
         setTotalPages(data.totalPages || 1);
-        
+
         // Set stats from the merged response
         if (data.stats) {
           setStats({
@@ -114,6 +114,36 @@ const HrTeam = () => {
     return getPaginationPages(page, totalPages);
   };
 
+  // this is a helper componenet to show first 2 departmetns when the departments of the hr exceeds 3 it shows ...
+  const DepartmentsCell = ({ departments }) => {
+    const [expanded, setExpanded] = useState(false);
+
+    if (!departments || departments.length === 0) {
+      return "—";
+    }
+
+    const names = departments.map((d) => d.DepartmentName);
+
+    const visible = expanded ? names : names.slice(0, 2);
+    const hasMore = names.length > 2;
+
+    return (
+      <div className="dept-cell">
+        <span>{visible.join(", ")}</span>
+
+        {hasMore && (
+          <button
+            type="button"
+            className="dept-toggle"
+            onClick={() => setExpanded((v) => !v)}
+          >
+            {expanded ? "less" : "..."}
+          </button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="HRteam">
       {/* PAGE HEADER */}
@@ -131,7 +161,9 @@ const HrTeam = () => {
           </div>
           <div className="HRCardsText">
             <p>Departments Covered</p>
-            <strong>{statsLoading ? <Loading /> : stats.departmentsCount}</strong>
+            <strong>
+              {statsLoading ? <Loading /> : stats.departmentsCount}
+            </strong>
           </div>
         </div>
 
@@ -195,111 +227,111 @@ const HrTeam = () => {
 
         <div className="HRTableWrapper">
           <table className="HRTable">
-          <thead>
-            <tr>
-              <th>Member</th>
-              <th>Department</th>
-              <th>Phone</th>
-              <th>Posted</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {tableLoading ? (
-              <>
-                {[...Array(6)].map((_, index) => (
-                  <tr key={`skeleton-${index}`} className="skeleton-row">
-                    <td>
-                      <div className="member-cell">
-                        <div className="skeleton-avatar" />
-                        <div className="member-info">
-                          <div className="skeleton-text short" />
-                          <div className="skeleton-text tiny" />
-                        </div>
-                      </div>
-                    </td>
-
-                    <td>
-                      <div className="skeleton-text" />
-                    </td>
-
-                    <td>
-                      <div className="skeleton-text" />
-                    </td>
-
-                    <td>
-                      <div className="skeleton-text" />
-                    </td>
-                  </tr>
-                ))}
-              </>
-            ) : hrMembers.length === 0 ? (
+            <thead>
               <tr>
-                <td colSpan={4} style={{ textAlign: "center", padding: 20 }}>
-                  No HR members found
-                </td>
+                <th>Member</th>
+                <th>Department</th>
+                <th>Phone</th>
+                <th>Posted</th>
               </tr>
-            ) : (
-              hrMembers.map((hr) => (
-                <tr key={hr.HrId}>
-                  {/* MEMBER */}
-                  <td>
-                    <div className="member-cell">
-                      <div className="avatar">
-                        {hr.User.ProfileUrl ? (
-                          <img
-                            src={hr.User.ProfileUrl}
-                            alt={`${hr.User.FirstName} ${hr.User.LastName}`}
-                            className="avatar-img"
-                          />
-                        ) : (
-                          <span>
-                            {hr.User.FirstName[0]}
-                            {hr.User.LastName[0]}
-                          </span>
-                        )}
-                      </div>
+            </thead>
 
-                      <div className="member-info">
-                        <strong>
-                          {hr.User.FirstName} {hr.User.LastName}
-                        </strong>
-                        <div className="icon-text">
-                          <Mail size={14} />
-                          <span>{hr.User.Email}</span>
+            <tbody>
+              {tableLoading ? (
+                <>
+                  {[...Array(6)].map((_, index) => (
+                    <tr key={`skeleton-${index}`} className="skeleton-row">
+                      <td>
+                        <div className="member-cell">
+                          <div className="skeleton-avatar" />
+                          <div className="member-info">
+                            <div className="skeleton-text short" />
+                            <div className="skeleton-text tiny" />
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </td>
+                      </td>
 
-                  {/* DEPARTMENT */}
-                  <td>
-                    <div className="icon-text">
-                      <Building2 size={14} />
-                      {hr.departments.map((d) => d.DepartmentName).join(", ")}
-                    </div>
-                  </td>
+                      <td>
+                        <div className="skeleton-text" />
+                      </td>
 
-                  {/* PHONE */}
-                  <td>
-                    <div className="icon-text">
-                      <Phone size={14} />
-                      {hr.User.PhoneNumber || "—"}
-                    </div>
-                  </td>
+                      <td>
+                        <div className="skeleton-text" />
+                      </td>
 
-                  {/* DATE */}
-                  <td>
-                    <div className="icon-text">
-                      <Calendar size={14} />
-                      {new Date(hr.User.CreatedAt).toLocaleDateString()}
-                    </div>
+                      <td>
+                        <div className="skeleton-text" />
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : hrMembers.length === 0 ? (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: "center", padding: 20 }}>
+                    No HR members found
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                hrMembers.map((hr) => (
+                  <tr key={hr.HrId}>
+                    {/* MEMBER */}
+                    <td>
+                      <div className="member-cell">
+                        <div className="avatar">
+                          {hr.User.ProfileUrl ? (
+                            <img
+                              src={hr.User.ProfileUrl}
+                              alt={`${hr.User.FirstName} ${hr.User.LastName}`}
+                              className="avatar-img"
+                            />
+                          ) : (
+                            <span>
+                              {hr.User.FirstName[0]}
+                              {hr.User.LastName[0]}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="member-info">
+                          <strong>
+                            {hr.User.FirstName} {hr.User.LastName}
+                          </strong>
+                          <div className="icon-text">
+                            <Mail size={14} />
+                            <span>{hr.User.Email}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* DEPARTMENT */}
+                    <td>
+                      <div className="icon-text">
+                        <Building2 size={14} />
+                        <DepartmentsCell departments={hr.departments} />
+                      </div>
+                    </td>
+
+                    {/* PHONE */}
+                    <td>
+                      <div className="icon-text">
+                        <Phone size={14} />
+                        {hr.User.PhoneNumber || "—"}
+                      </div>
+                    </td>
+
+                    {/* DATE */}
+                    <td>
+                      <div className="icon-text">
+                        <Calendar size={14} />
+                        {new Date(hr.User.CreatedAt).toLocaleDateString()}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
         <div className="pagination">
           <button className="nav" onClick={goPrev} disabled={page === 1}>

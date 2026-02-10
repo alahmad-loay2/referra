@@ -122,86 +122,86 @@ const AddHr = ({ onClose, onSuccess }) => {
         <p className="modal-subtitle">
           They will receive an email to set their password.
         </p>
+        <div className="modal-body">
+          <form className="modal-form">
+            {/* FIRST + LAST NAME */}
+            <div className="modal-grid">
+              <div className="form-group">
+                <label>First Name *</label>
+                <input
+                  name="hr-first-name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
 
-        <form>
-          {/* FIRST + LAST NAME */}
-          <div className="modal-grid">
+              <div className="form-group">
+                <label>Last Name *</label>
+                <input
+                  name="hr-last-name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* EMAIL */}
             <div className="form-group">
-              <label>First Name *</label>
+              <label>Email *</label>
               <input
-                name="hr-first-name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                name="hr-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            {/* DEPARTMENT */}
+
+            <div className="form-group">
+              <label>Assigned Department *</label>
+
+              <DepartmentMultiSelect
+                options={departments.map((d) => ({
+                  value: d.DepartmentId,
+                  label: d.DepartmentName,
+                }))}
+                value={departmentIds}
+                onChange={setDepartmentIds}
               />
             </div>
 
+            {/* AGE */}
             <div className="form-group">
-              <label>Last Name *</label>
+              <label>Age *</label>
               <input
-                name="hr-last-name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                name="hr-age"
+                type="number"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
               />
             </div>
-          </div>
 
-          {/* EMAIL */}
-          <div className="form-group">
-            <label>Email *</label>
-            <input
-              name="hr-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          {/* DEPARTMENT */}
+            {/* PHONE */}
+            <div className="form-group">
+              <label>Phone Number *</label>
+              <input
+                name="hr-phone"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+            </div>
 
-          <div className="form-group">
-            <label>Assigned Department *</label>
-
-            <DepartmentMultiSelect
-              options={departments.map((d) => ({
-                value: d.DepartmentId,
-                label: d.DepartmentName,
-              }))}
-              value={departmentIds}
-              onChange={setDepartmentIds}
-            />
-          </div>
-
-          {/* AGE */}
-          <div className="form-group">
-            <label>Age *</label>
-            <input
-              name="hr-age"
-              type="number"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-            />
-          </div>
-
-          {/* PHONE */}
-          <div className="form-group">
-            <label>Phone Number *</label>
-            <input
-              name="hr-phone"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-            />
-          </div>
-
-          {/* GENDER */}
-          <div className="form-group">
-            <label>Gender *</label>
-            <input
-              name="hr-gender"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-            />
-          </div>
-        </form>
-
+            {/* GENDER */}
+            <div className="form-group">
+              <label>Gender *</label>
+              <input
+                name="hr-gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+              />
+            </div>
+          </form>
+        </div>
         {error && <p className="modal-error">{error}</p>}
 
         <div className="modal-actions">

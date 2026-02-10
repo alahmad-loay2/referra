@@ -445,7 +445,7 @@ const HrReferralDetails = () => {
                 <div className="hr-referral-referred-by-info-item">
                   <Award size={18} />
                   <span>
-                    <strong>Total Compensation:</strong> {totalCompensation}
+                    <strong>Total Compensation:</strong> {totalCompensation}$
                   </span>
                 </div>
               </div>
@@ -536,7 +536,9 @@ const HrReferralDetails = () => {
             <div className="hr-comp-modal">
               <button
                 className="hr-comp-modal-close"
+                disabled={actionLoading}
                 onClick={() => {
+                  if (actionLoading) return; // prevent close mid-payment
                   setShowCompModal(false);
                   setCompAmount("");
                   setCompError("");
@@ -550,24 +552,24 @@ const HrReferralDetails = () => {
                 <Gift size={150} strokeWidth={0.5} />
               </div>
 
-              <h3>Congratulations!</h3>
-              <p>
-                <strong>
-                  {referredUser?.FirstName} {referredUser?.LastName}
-                </strong>{" "}
-                successfully referred this candidate.
-              </p>
+              <h3>Congratulation a new employee has been hired !</h3>
+
               <p>
                 <span className="othercolor">
-                  How much do you want to compensate?
+                  How much do you want to compensate{" "}
+                  <strong>
+                    {referredUser?.FirstName} {referredUser?.LastName}
+                  </strong>
+                  ?
                 </span>{" "}
               </p>
 
               <input
                 type="number"
                 min="0"
-                placeholder="Set amount"
+                placeholder="Set amount in $"
                 value={compAmount}
+                disabled={actionLoading}
                 onChange={(e) => {
                   setCompAmount(e.target.value);
                   setCompError("");
@@ -581,7 +583,10 @@ const HrReferralDetails = () => {
 
               <button
                 className="hr-comp-modal-submit"
+                disabled={actionLoading}
                 onClick={async () => {
+                  if (actionLoading) return; // HARD STOP double click
+
                   if (compAmount === "" || Number(compAmount) < 0) {
                     setCompError("Please enter a valid amount (0 or more)");
                     return;
@@ -589,11 +594,13 @@ const HrReferralDetails = () => {
 
                   try {
                     setActionLoading(true);
+
                     await finalizeReferral(
                       referralId,
                       "Accept",
                       Number(compAmount),
                     );
+
                     setShowCompModal(false);
                     navigate("/dashboard/hr/referrals");
                   } catch (err) {
@@ -603,7 +610,7 @@ const HrReferralDetails = () => {
                   }
                 }}
               >
-                Submit
+                {actionLoading ? "Processing payment…" : "Submit"}
               </button>
             </div>
           </div>
