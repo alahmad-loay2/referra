@@ -107,17 +107,19 @@ enum Status {
 }
 
 model Referral {
-ReferralId String @id @default(uuid())
-Status Status @default(Pending)
-AcceptedInOtherPosition Boolean @default(false)
-Prospect Boolean @default(false)
-CreatedAt DateTime @default(now())
-UpdatedAt DateTime @updatedAt
+  ReferralId             String   @id @default(uuid())
+  Status                 Status   @default(Pending)
+  AcceptedInOtherPosition Boolean @default(false)
+  Prospect               Boolean  @default(false)
+  CreatedAt              DateTime @default(now())
+  UpdatedAt              DateTime @updatedAt
 
-Application Application?
+  Application Application?
 
-@@index([Status])
-@@index([CreatedAt])
+  // Index by status for quick filtering, and by CreatedAt DESC for fast
+  // "latest referrals first" ordering.
+  @@index([Status])
+  @@index([CreatedAt(sort: Desc)])
 }
 enum PositionState {
   OPEN
@@ -150,7 +152,8 @@ model Position {
   @@index([DepartmentId])
   @@index([PositionState])
   @@index([PositionTitle])
-  @@index([CreatedAt])
+  // Optimize for ORDER BY "CreatedAt" DESC queries
+  @@index([CreatedAt(sort: Desc)])
 
 }
 model Department {

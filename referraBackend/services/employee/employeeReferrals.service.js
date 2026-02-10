@@ -170,9 +170,9 @@ export const createReferral = async (payload) => {
       .replace(/[^a-zA-Z0-9\s\-_]/g, "")
       .trim()
       .replace(/\s+/g, "-");
-    // Format date as YYYY-MM-DD
-    const dateStr = new Date().toISOString().split("T")[0];
-    fileName = `${sanitizedName}-${dateStr}.pdf`;
+    // Use full timestamp to ensure uniqueness even for multiple uploads per day
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    fileName = `${sanitizedName}-${timestamp}.pdf`;
   } else {
     // Fallback to old format if original filename is not available
     const fileExt = "pdf";
@@ -249,35 +249,39 @@ export const createReferral = async (payload) => {
     return application;
   });
 
-  try {
-    const frontendUrl = FRONTEND_URL;
-    const confirmationUrl = `${frontendUrl}/referral/confirm/${result.Referral.ReferralId}`;
+  // Fire-and-forget email send: do not block API response on Resend latency.
+  // If sending fails, we log it but still keep the created referral.
+  (async () => {
+    try {
+      const frontendUrl = FRONTEND_URL;
+      const confirmationUrl = `${frontendUrl}/referral/confirm/${result.Referral.ReferralId}`;
 
-    const resend = getResend();
-    await resend.emails.send({
-      from: "no-reply@referra.space",
-      to: candidateEmail,
-      subject: "Referral Confirmation Request",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Hello ${candidateFirstName} ${candidateLastName},</h2>
-          <p>You have been referred for the position: <strong>${result.Position.PositionTitle}</strong></p>
-          <p>Please click the link below to confirm your referral:</p>
-          <p style="text-align: center; margin: 30px 0;">
-            <a href="${confirmationUrl}" 
-               style="background-color:rgb(76, 87, 175); color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-              Confirm Referral
-            </a>
-          <strong>This link will expire in 2 days.</strong>
-          </p>
-          <p>Or copy and paste this link into your browser:</p>
-          <p style="color: #666; word-break: break-all;">${confirmationUrl}</p>
-        </div>
-      `,
-    });
-  } catch (emailError) {
-    console.error("Failed to send confirmation email:", emailError);
-  }
+      const resend = getResend();
+      await resend.emails.send({
+        from: "no-reply@referra.space",
+        to: candidateEmail,
+        subject: "Referral Confirmation Request",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Hello ${candidateFirstName} ${candidateLastName},</h2>
+            <p>You have been referred for the position: <strong>${result.Position.PositionTitle}</strong></p>
+            <p>Please click the link below to confirm your referral:</p>
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="${confirmationUrl}" 
+                 style="background-color:rgb(76, 87, 175); color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                Confirm Referral
+              </a>
+            <strong>This link will expire in 2 days.</strong>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style="color: #666; word-break: break-all;">${confirmationUrl}</p>
+          </div>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Failed to send confirmation email:", emailError);
+    }
+  })();
 
   return result;
 };

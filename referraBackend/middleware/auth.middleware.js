@@ -29,18 +29,18 @@ const throwAuthError = () => {
 
 const attachUser = async (req, supabaseUser, next) => {
   const userId = supabaseUser.id;
-  
+
   // Check user data cache first
   const userCacheKey = `user:${userId}`;
   const cachedUser = userDataCache.get(userCacheKey);
-  
+
   if (cachedUser && Date.now() - cachedUser.timestamp < USER_DATA_CACHE_TTL) {
     req.user = cachedUser.data;
     req.supabaseUserId = userId;
     return next();
   }
 
-  // Cache miss, query full user record once
+  // Cache miss, query base user once
   const baseUser = await prisma.users.findUnique({
     where: { UserId: userId },
   });
@@ -51,38 +51,33 @@ const attachUser = async (req, supabaseUser, next) => {
     throw error;
   }
 
-  // 2) Depending on role, fetch only the needed relation off Users:
-  //    - Employee → include Employee only
-  //    - HR       → include Hr with Departments -> Department (restored behavior)
-  let include = {};
+  // Depending on role, fetch only the needed relation in a separate query:
+  // - Employee → Employee by UserId
+  // - HR       → Hr by UserId with Departments -> Department
+  let employee = null;
+  let hr = null;
+
   if (baseUser.Role === "Employee") {
-    include = { Employee: true };
+    employee = await prisma.employee.findUnique({
+      where: { UserId: userId },
+    });
   } else if (baseUser.Role === "HR") {
-    include = {
-      Hr: {
-        include: {
-          Departments: {
-            include: { Department: true },
-          },
+    hr = await prisma.hr.findUnique({
+      where: { UserId: userId },
+      include: {
+        Departments: {
+          include: { Department: true },
         },
       },
-    };
+    });
   }
 
-  const userWithRelations =
-    Object.keys(include).length > 0
-      ? await prisma.users.findUnique({
-          where: { UserId: userId },
-          include,
-        })
-      : baseUser;
-
   const userData = {
-    UserId: userWithRelations.UserId,
-    Email: userWithRelations.Email,
-    Role: userWithRelations.Role,
-    Employee: userWithRelations.Employee || null,
-    Hr: userWithRelations.Hr || null,
+    UserId: baseUser.UserId,
+    Email: baseUser.Email,
+    Role: baseUser.Role,
+    Employee: employee,
+    Hr: hr,
   };
 
   // Cache the result
