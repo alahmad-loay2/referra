@@ -4,17 +4,18 @@ import { authenticate, requireHr } from "../middleware/auth.middleware.js";
 
 const authRoutes = Router();
 
-authRoutes.post("/signup", signup);
-authRoutes.post("/signin", signin);
-authRoutes.post("/verify-email", verifyEmail);
+authRoutes.post("/signup", authLimiter, signup);
+authRoutes.post("/signin", authLimiter, signin);
+authRoutes.post("/verify-email", authLimiter, verifyEmail);
 authRoutes.post("/logout", authenticate, logout);
-authRoutes.post("/forgot-password", forgotPasswordController);
-authRoutes.post("/reset-password", resetPasswordController);
+authRoutes.post("/forgot-password", authLimiter, forgotPasswordController);
+authRoutes.post("/reset-password", authLimiter, resetPasswordController);
 
-authRoutes.post("/bootstrap-first-hr", bootstrapFirstHrController);
+authRoutes.post("/bootstrap-first-hr", authLimiter, bootstrapFirstHrController);
 
-authRoutes.post("/hr/create", authenticate, requireHr, createHrController);
+authRoutes.post("/hr/create", authLimiter, authenticate, requireHr, createHrController);
 
+// this is to test authentication only
 authRoutes.get("/me", authenticate, (req, res) => {
   res.status(200).json({
     message: "You are authenticated!",

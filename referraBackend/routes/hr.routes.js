@@ -106,6 +106,7 @@ router.patch(
 
 router.get(
   "/departments-hr",
+  generalLimiter,
   authenticate,
   requireHr,
   getHrDepartmentsController,

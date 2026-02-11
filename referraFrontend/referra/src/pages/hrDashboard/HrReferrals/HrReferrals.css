@@ -99,6 +99,20 @@
     width: auto;
 }
 
+.in-progress-filter {
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-small);
+  color: var(--gray-dark);
+  gap: var(--gap-sm);
+}
+
+.in-progress-filter input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+}
+
 .referralSearchContainer input:focus,
 .referralSearchContainer select:focus {
     outline: none;

@@ -26,6 +26,13 @@ const HrOverview = () => {
       </section>
 
       <section className="hr-section">
+        <h2>Admin HR</h2>
+        <p className="hr-paragraph">
+          Admin HR users have additional permissions. In addition to the standard HR actions above, they can create and manage departments for the organization.
+        </p>
+      </section>
+
+      <section className="hr-section">
         <h2>Referral Flow</h2>
         <p className="hr-paragraph">
           Employees can refer candidates to open positions. A candidate may be

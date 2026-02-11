@@ -29,6 +29,7 @@ const HrReferrals = () => {
     status: "",
     createdAt: "",
     positionId: initialPositionId,
+    onlyInProgress: false,
   });
 
   // Initialize positionId and searchInput from URL params
@@ -36,6 +37,7 @@ const HrReferrals = () => {
   const [searchInput, setSearchInput] = useState(initialSearch);
   const [status, setStatus] = useState("");
   const [date, setDate] = useState("");
+  const [onlyInProgress, setOnlyInProgress] = useState(false);
 
   // Read positionId and search from URL params and apply filters automatically
   useEffect(() => {
@@ -114,6 +116,7 @@ const HrReferrals = () => {
           search: filters.search,
           createdAt: filters.createdAt,
           positionId: filters.positionId,
+          onlyInProgress: filters.onlyInProgress,
         });
         setHrReferrals(data.referrals || []);
         setTotalPages(data.totalPages || 1);
@@ -137,6 +140,7 @@ const HrReferrals = () => {
       status,
       createdAt: date,
       positionId,
+      onlyInProgress,
     };
     setFilters(newFilters);
 
@@ -237,9 +241,15 @@ const HrReferrals = () => {
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
-          <button className="apply-btn" onClick={handleApplyFilters}>
-            Apply
-          </button>
+          <label className="in-progress-filter">
+            <input
+              type="checkbox"
+              checked={onlyInProgress}
+              onChange={(e) => setOnlyInProgress(e.target.checked)}
+            />
+            <span>Only in-progress</span>
+          </label>
+          <button className="apply-btn" onClick={handleApplyFilters}>Apply</button>
         </div>
       </div>
 

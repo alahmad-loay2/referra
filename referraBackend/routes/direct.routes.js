@@ -5,6 +5,8 @@ import { generalLimiter } from "../middleware/rateLimit.middleware.js";
 
 const router = Router();
 
+// used this to test the timing on all the code with middlewares etc
+
 /**
  * Direct API endpoint with authentication and rate limiting
  * GET /api/direct/department/:id

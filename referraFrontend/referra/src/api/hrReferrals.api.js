@@ -8,6 +8,7 @@ export const getReferrals = async ({
   search = "",
   createdAt = "",
   positionId = "",
+  onlyInProgress = false,
 } = {}) => {
   const params = new URLSearchParams();
   params.append("page", page);
@@ -16,6 +17,7 @@ export const getReferrals = async ({
   if (search) params.append("search", search);
   if (createdAt) params.append("createdAt", createdAt);
   if (positionId) params.append("positionId", positionId);
+  if (onlyInProgress) params.append("onlyInProgress", "true");
 
   try {
     const res = await fetch(`${API_BASE_URL}/hr/referrals?${params.toString()}`, {

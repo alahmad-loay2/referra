@@ -25,6 +25,7 @@ export const getAllConfirmedReferrals = async ({
   createdAt,
   createdAfter,
   positionId,
+  onlyInProgress,
 }) => {
   if (!hrId) {
     throw new Error("HR ID is required");
@@ -91,21 +92,32 @@ export const getAllConfirmedReferrals = async ({
     throw error;
   }
 
-  if (status) {
-    andFilters.push({
-      Referral: {
-        Status: status,
+  let referralFilter;
+
+  if (onlyInProgress) {
+    // In-progress referrals: not hired, not prospects, not accepted in other position
+    referralFilter = {
+      Status: {
+        in: ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"],
       },
-    });
+      Prospect: false,
+      AcceptedInOtherPosition: false,
+    };
+  } else if (status) {
+    referralFilter = {
+      Status: status,
+    };
   } else {
-    andFilters.push({
-      Referral: {
-        Status: {
-          not: "Pending",
-        },
+    referralFilter = {
+      Status: {
+        not: "Pending",
       },
-    });
+    };
   }
+
+  andFilters.push({
+    Referral: referralFilter,
+  });
 
   if (createdAt) {
     const startOfDay = new Date(createdAt);
