@@ -219,6 +219,15 @@ const Sidebar = (props) => {
               >
                 Logout
               </button>
+              <button
+                className="sidebarAccountDropdownItem"
+                onClick={() => {
+                  setShowDropdown(false);
+                  navigate("/");
+                }}
+              >
+                Go back home
+              </button>
             </div>
           )}
         </div>

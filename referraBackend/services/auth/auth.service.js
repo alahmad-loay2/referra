@@ -244,6 +244,7 @@ export const bootstrapFirstHr = async (payload) => {
     phoneNumber,
     gender,
     departmentId,
+    admin = true, // default to true for the first HR
   } = payload || {};
 
   if (
@@ -300,6 +301,7 @@ export const bootstrapFirstHr = async (payload) => {
         gender,
         role: "HR",
         departmentId,
+        isAdmin: admin,
       },
     },
   });
@@ -330,6 +332,7 @@ export const bootstrapFirstHr = async (payload) => {
       PhoneNumber: phoneNumber,
       Gender: gender,
       Role: "HR",
+      isAdmin: admin,
       Hr: {
         create: {},
       },

@@ -166,7 +166,7 @@
     overflow: hidden;
     z-index: 1000;
     min-width: 180px;
-    width: max-content;
+    width: 100%;
 }
 
 .sidebarAccountDropdownItem {
@@ -355,6 +355,6 @@
     .sidebarAccountDropdown {
         right: auto;
         min-width: 180px;
-        width: max-content;
+        width: 100%;
     }
 }

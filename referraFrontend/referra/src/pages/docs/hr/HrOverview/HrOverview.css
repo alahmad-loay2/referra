@@ -1,0 +1,45 @@
+.hr-overview {
+  max-width: 800px;
+  padding: 20px;
+  line-height: 1.7;
+}
+
+.hr-title {
+  font-size: 32px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.hr-section {
+  margin-top: 30px;
+}
+
+.hr-section h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  border-left: 4px solid #4f46e5;
+  padding-left: 10px;
+    color: #1e293b;
+}
+
+.hr-paragraph {
+  margin-bottom: 15px;
+  color: #444;
+}
+
+.hr-list {
+  list-style-type: disc;
+  padding-left: 25px;
+}
+
+.hr-list li {
+  margin-bottom: 10px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.hr-list li:hover {
+  transform: translateX(4px);
+  color: #4f46e5;
+}

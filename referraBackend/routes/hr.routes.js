@@ -14,8 +14,9 @@ import {
   getHrTeamController,
   getHrDashboardController,
   UnprospectReferral,
+  createDepartmentController,
 } from "../controllers/hr.controller.js";
-import { authenticate, requireHr } from "../middleware/auth.middleware.js";
+import { authenticate, requireAdmin, requireHr } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
 // later we will add auth + HR middleware here
 const router = Router();
@@ -125,5 +126,7 @@ router.get(
   requireHr,
   getHrDashboardController,
 );
+
+router.post("/department", generalLimiter, authenticate, requireAdmin, createDepartmentController)
 
 export default router;
