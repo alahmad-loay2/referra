@@ -33,6 +33,7 @@ model Users {
 
   Employee Employee?
   Hr Hr?
+  IdempotencyKeys IdempotencyKey[]
 }
 
 model Employee {
@@ -193,4 +194,23 @@ model Compensation {
 
   @@index([HrId])
   @@index([EmployeeId])
+}
+
+model IdempotencyKey {
+  IdempotencyKeyId String @id @default(uuid())
+  Key String @db.VarChar(255)
+  UserId String?
+  User Users? @relation(fields: [UserId], references: [UserId])
+  Method String @db.VarChar(10)
+  Path String @db.VarChar(512)
+  RequestHash String? @db.VarChar(64)
+  ResponseStatus Int
+  ResponseBody Json
+  CreatedAt DateTime @default(now())
+  ExpiresAt DateTime
+
+  @@unique([Key, UserId])
+  @@index([Key])
+  @@index([UserId])
+  @@index([ExpiresAt])
 }

@@ -17,6 +17,9 @@ import {
 } from "../middleware/auth.middleware.js";
 import { uploadCV } from "../middleware/upload.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
+import { idempotencyMiddleware } from "../middleware/idempotency.middleware.js";
+import { validateBody, validateParams } from "../middleware/validation.middleware.js";
+import { candidateBodySchemas, paramsSchemas } from "../validation/schemas.js";
 
 const employeeRoutes = Router();
 
@@ -25,12 +28,15 @@ employeeRoutes.post(
   generalLimiter,
   authenticate,
   requireEmployee,
+  idempotencyMiddleware,
   uploadCV,
+  validateBody(candidateBodySchemas.createReferral),
   CreateReferral,
 );
 employeeRoutes.get(
   "/referral/confirm/:referralId",
   generalLimiter,
+  validateParams(paramsSchemas.referralId),
   ConfirmReferral,
 );
 employeeRoutes.delete(
@@ -38,6 +44,7 @@ employeeRoutes.delete(
   generalLimiter,
   authenticate,
   requireEmployee,
+  validateParams(paramsSchemas.referralId),
   DeleteCandidate,
 );
 employeeRoutes.get(
@@ -53,6 +60,8 @@ employeeRoutes.put(
   authenticate,
   requireEmployee,
   uploadCV,
+  validateParams(paramsSchemas.candidateId),
+  validateBody(candidateBodySchemas.editCandidate),
   EditCandidate,
 );
 employeeRoutes.get(
@@ -60,6 +69,7 @@ employeeRoutes.get(
   generalLimiter,
   authenticate,
   requireEmployee,
+  validateParams(paramsSchemas.referralId),
   GetReferralDetails,
 );
 
@@ -76,6 +86,7 @@ employeeRoutes.get(
   generalLimiter,
   authenticate,
   requireEmployee,
+  validateParams(paramsSchemas.positionId),
   GetPositionDetails,
 );
 

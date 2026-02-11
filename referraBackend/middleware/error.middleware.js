@@ -1,14 +1,38 @@
 // Centralized error handling middleware
-// Express knows this is an error handler because it has 4 args: (err, req, res, next)
-// `next` is kept in the signature even if we don't always call it, so Express wires it correctly.
+
+import { Prisma } from "../generated/prisma/client.js";
 
 const errorMiddleware = (err, req, res, next) => {
     const isDev = process.env.NODE_ENV === "development";
+
+    // Handle Prisma validation errors
+    if (err instanceof Prisma.PrismaClientValidationError) {
+        err.statusCode = 400;
+        err.message = "Invalid input data.";
+    }
+
+    // Handle Prisma errors
+    if (err.code === "P2002") {
+        // Unique constraint violation
+        const fieldName = err.meta?.target?.[0] || "field";
+        err.statusCode = 409;
+        err.message = `A record with this ${fieldName} already exists.`;
+    } else if (err.code === "P2025") {
+        // Record not found
+        err.statusCode = 404;
+        err.message = err.meta?.cause || "The requested record was not found.";
+    } else if (err.code === "P2003") {
+        // Foreign key constraint violation
+        err.statusCode = 400;
+        err.message = "Invalid reference: the related record does not exist.";
+    }
 
     // Fallbacks so we always have sane values
     const statusCode = err.statusCode && Number.isInteger(err.statusCode)
         ? err.statusCode
         : 500;
+
+    const message = err.message || "Internal Server Error";
 
     // In dev: log full error details to the console
     if (isDev) {

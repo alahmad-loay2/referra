@@ -129,36 +129,34 @@ export const updatePositionState = async (positionId, newState, hrUser) => {
 
   const allowedDepartmentIds = hrUser.Departments.map((d) => d.DepartmentId);
 
-  const position = await prisma.position.findFirst({
-    where: {
-      PositionId: positionId,
-      DepartmentId: {
-        in: allowedDepartmentIds,
-      },
-    },
-  });
-
-  if (!position) {
-    const error = new Error("Position not found or access denied");
-    error.statusCode = 403;
-    throw error;
-  }
-
-  const updateData = {
-    PositionState: state,
-  };
-
-  // If HR reopened the position extend deadline by 10 days from NOW
-  if (position.PositionState === "CLOSED" && state === "OPEN") {
-    const newDeadline = new Date();
-    newDeadline.setDate(newDeadline.getDate() + 10);
-
-    updateData.Deadline = newDeadline;
-  }
-
-  // Use transaction to update position and referrals atomically
   return await prisma.$transaction(async (tx) => {
-    // Update position state
+    const position = await tx.position.findFirst({
+      where: {
+        PositionId: positionId,
+        DepartmentId: {
+          in: allowedDepartmentIds,
+        },
+      },
+    });
+
+    if (!position) {
+      const error = new Error("Position not found or access denied");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const updateData = {
+      PositionState: state,
+    };
+
+    // If HR reopened the position extend deadline by 10 days from NOW
+    if (position.PositionState === "CLOSED" && state === "OPEN") {
+      const newDeadline = new Date();
+      newDeadline.setDate(newDeadline.getDate() + 10);
+
+      updateData.Deadline = newDeadline;
+    }
+
     const updatedPosition = await tx.position.update({
       where: { PositionId: positionId },
       data: updateData,
@@ -237,20 +235,6 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
 
   const allowedDepartmentIds = hr.Departments.map((d) => d.DepartmentId);
 
-  // Ensure HR owns this position
-  const position = await prisma.position.findFirst({
-    where: {
-      PositionId: positionId,
-      DepartmentId: { in: allowedDepartmentIds },
-    },
-  });
-
-  if (!position) {
-    const error = new Error("Position not found or access denied");
-    error.statusCode = 403;
-    throw error;
-  }
-
   const {
     positionTitle,
     companyName,
@@ -312,25 +296,40 @@ export const updatePositionDetails = async (positionId, payload, hr) => {
     }
   }
 
-  return prisma.position.update({
-    where: { PositionId: positionId },
-    data: {
-      ...(positionTitle && { PositionTitle: positionTitle }),
-      ...(companyName && { CompanyName: companyName }),
-      ...(yearsRequired && {
-        YearsRequired: Number(yearsRequired),
-      }),
-      ...(description && { Description: description }),
-      ...(timeZone && { Timezone: timeZone }),
-      ...(deadline && { Deadline: new Date(deadline) }),
-      ...(positionLocation && {
-        PositionLocation: positionLocation,
-      }),
-      ...(departmentId && { DepartmentId: departmentId }),
-      ...(employmentType && {
-        EmploymentType: employmentType.toUpperCase(),
-      }),
-    },
+  return await prisma.$transaction(async (tx) => {
+    const position = await tx.position.findFirst({
+      where: {
+        PositionId: positionId,
+        DepartmentId: { in: allowedDepartmentIds },
+      },
+    });
+
+    if (!position) {
+      const error = new Error("Position not found or access denied");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    return await tx.position.update({
+      where: { PositionId: positionId },
+      data: {
+        ...(positionTitle && { PositionTitle: positionTitle }),
+        ...(companyName && { CompanyName: companyName }),
+        ...(yearsRequired && {
+          YearsRequired: Number(yearsRequired),
+        }),
+        ...(description && { Description: description }),
+        ...(timeZone && { Timezone: timeZone }),
+        ...(deadline && { Deadline: new Date(deadline) }),
+        ...(positionLocation && {
+          PositionLocation: positionLocation,
+        }),
+        ...(departmentId && { DepartmentId: departmentId }),
+        ...(employmentType && {
+          EmploymentType: employmentType.toUpperCase(),
+        }),
+      },
+    });
   });
 };
 // get positions created by hr with filters on department and status and pagination and search

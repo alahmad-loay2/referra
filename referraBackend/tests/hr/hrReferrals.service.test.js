@@ -98,15 +98,29 @@ test("advanceReferralStage advances referral to next stage when allowed", async 
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
-  const originalUpdate = prisma.referral.update;
+  const originalTransaction = prisma.$transaction;
 
   let updateArgs;
 
-  prisma.referral.findUnique = async () => fakeReferral;
-  prisma.referral.update = async (args) => {
-    updateArgs = args;
-    return { ...fakeReferral, Status: "InterviewOne", Application: {} };
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async (args) => {
+          updateArgs = args;
+          return {
+            ...fakeReferral,
+            Status: "InterviewOne",
+            Application: {
+              ApplicationId: 1,
+              Candidate: {},
+              Referral: { ReferralId: referralId, Status: "InterviewOne" },
+            },
+          };
+        },
+      },
+    };
+    return fn(tx);
   };
 
   try {
@@ -115,8 +129,7 @@ test("advanceReferralStage advances referral to next stage when allowed", async 
     assert.equal(updateArgs.where.ReferralId, referralId);
     assert.equal(updateArgs.data.Status, "InterviewOne");
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
-    prisma.referral.update = originalUpdate;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -139,9 +152,19 @@ test("advanceReferralStage fails when referral is already at final stage or beyo
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -152,7 +175,7 @@ test("advanceReferralStage fails when referral is already at final stage or beyo
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -175,9 +198,19 @@ test("advanceReferralStage fails when position is closed", async () => {
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -188,7 +221,7 @@ test("advanceReferralStage fails when position is closed", async () => {
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -211,9 +244,19 @@ test("advanceReferralStage fails when referral not in HR department", async () =
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -224,7 +267,7 @@ test("advanceReferralStage fails when referral not in HR department", async () =
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -247,9 +290,19 @@ test("advanceReferralStage fails when referral is already a prospect", async () 
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -263,7 +316,7 @@ test("advanceReferralStage fails when referral is already a prospect", async () 
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -286,9 +339,19 @@ test("advanceReferralStage fails when candidate was accepted in other position",
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -302,7 +365,7 @@ test("advanceReferralStage fails when candidate was accepted in other position",
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -325,22 +388,28 @@ test("finalizeReferral Prospects candidate even when position is closed", async 
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
-  const originalUpdate = prisma.referral.update;
-  const originalAppFind = prisma.application.findUnique;
+  const originalTransaction = prisma.$transaction;
 
   let updateArgs;
 
-  prisma.referral.findUnique = async () => fakeReferral;
-  prisma.referral.update = async (args) => {
-    updateArgs = args;
-    return { ...fakeReferral, Prospect: true };
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async (args) => {
+          updateArgs = args;
+          return { ...fakeReferral, Prospect: true };
+        },
+      },
+      application: {
+        findUnique: async () => ({
+          ApplicationId: 1,
+          ReferralId: referralId,
+        }),
+      },
+    };
+    return fn(tx);
   };
-
-  prisma.application.findUnique = async () => ({
-    ApplicationId: 1,
-    ReferralId: referralId,
-  });
 
   try {
     const result = await finalizeReferral(referralId, "Prospect", hrUser);
@@ -349,9 +418,7 @@ test("finalizeReferral Prospects candidate even when position is closed", async 
     assert.equal(updateArgs.data.Prospect, true);
     assert.equal(result.ReferralId, referralId);
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
-    prisma.referral.update = originalUpdate;
-    prisma.application.findUnique = originalAppFind;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -374,23 +441,29 @@ test("unprospectReferral clears Prospect flag when HR is allowed", async () => {
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
-  const originalRefUpdate = prisma.referral.update;
-  const originalAppFind = prisma.application.findUnique;
+  const originalTransaction = prisma.$transaction;
 
   let updateArgs;
 
-  prisma.referral.findUnique = async () => fakeReferral;
-  prisma.referral.update = async (args) => {
-    updateArgs = args;
-    return { ...fakeReferral, Prospect: false };
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async (args) => {
+          updateArgs = args;
+          return { ...fakeReferral, Prospect: false };
+        },
+      },
+      application: {
+        findUnique: async () => ({
+          ApplicationId: 2,
+          ReferralId: referralId,
+          Referral: { ReferralId: referralId, Prospect: false },
+        }),
+      },
+    };
+    return fn(tx);
   };
-
-  prisma.application.findUnique = async () => ({
-    ApplicationId: 2,
-    ReferralId: referralId,
-    Referral: { ReferralId: referralId, Prospect: false },
-  });
 
   try {
     const result = await unprospectReferral(referralId, hrUser);
@@ -400,9 +473,7 @@ test("unprospectReferral clears Prospect flag when HR is allowed", async () => {
     assert.equal(result.ReferralId, referralId);
     assert.equal(result.Referral.Prospect, false);
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
-    prisma.referral.update = originalRefUpdate;
-    prisma.application.findUnique = originalAppFind;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -425,9 +496,24 @@ test("unprospectReferral fails when referral is already Hired", async () => {
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+      application: {
+        findUnique: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -438,7 +524,7 @@ test("unprospectReferral fails when referral is already Hired", async () => {
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -461,9 +547,24 @@ test("unprospectReferral fails when candidate is accepted in other position", as
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+      application: {
+        findUnique: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -474,7 +575,7 @@ test("unprospectReferral fails when candidate is accepted in other position", as
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -497,9 +598,24 @@ test("unprospectReferral fails when position is closed", async () => {
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+      application: {
+        findUnique: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -510,7 +626,7 @@ test("unprospectReferral fails when position is closed", async () => {
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -541,15 +657,7 @@ test("finalizeReferral Accept performs hire workflow and marks other referrals",
     { ReferralId: 401 },
   ];
 
-  const originalFindUnique = prisma.referral.findUnique;
-  const originalFindMany = prisma.application.findMany;
-  const originalTx = prisma.$transaction;
-  const originalRefUpdate = prisma.referral.update;
-  const originalCandUpdate = prisma.candidate.update;
-  const originalCompCreate = prisma.compensation.create;
-  const originalEmpUpdate = prisma.employee.update;
-  const originalRefUpdateMany = prisma.referral.updateMany;
-  const originalAppFind = prisma.application.findUnique;
+  const originalTransaction = prisma.$transaction;
 
   const calls = {
     referralUpdate: null,
@@ -559,38 +667,47 @@ test("finalizeReferral Accept performs hire workflow and marks other referrals",
     referralUpdateMany: null,
   };
 
-  prisma.referral.findUnique = async () => fakeReferral;
-  prisma.application.findMany = async () => otherApplications;
-
-  prisma.referral.update = async (args) => {
-    calls.referralUpdate = args;
-    return {};
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async (args) => {
+          calls.referralUpdate = args;
+          return {};
+        },
+        updateMany: async (args) => {
+          calls.referralUpdateMany = args;
+          return {};
+        },
+      },
+      application: {
+        findMany: async () => otherApplications,
+        findUnique: async () => ({
+          ApplicationId: 999,
+          ReferralId: referralId,
+        }),
+      },
+      candidate: {
+        update: async (args) => {
+          calls.candidateUpdate = args;
+          return {};
+        },
+      },
+      compensation: {
+        create: async (args) => {
+          calls.compensationCreate = args;
+          return {};
+        },
+      },
+      employee: {
+        update: async (args) => {
+          calls.employeeUpdate = args;
+          return {};
+        },
+      },
+    };
+    return fn(tx);
   };
-  prisma.candidate.update = async (args) => {
-    calls.candidateUpdate = args;
-    return {};
-  };
-  prisma.compensation.create = async (args) => {
-    calls.compensationCreate = args;
-    return {};
-  };
-  prisma.employee.update = async (args) => {
-    calls.employeeUpdate = args;
-    return {};
-  };
-  prisma.referral.updateMany = async (args) => {
-    calls.referralUpdateMany = args;
-    return {};
-  };
-
-  prisma.$transaction = async (ops) => {
-    await Promise.all(ops);
-  };
-
-  prisma.application.findUnique = async () => ({
-    ApplicationId: 999,
-    ReferralId: referralId,
-  });
 
   try {
     const result = await finalizeReferral(referralId, "Accept", hrUser, 100);
@@ -623,15 +740,7 @@ test("finalizeReferral Accept performs hire workflow and marks other referrals",
       true,
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
-    prisma.application.findMany = originalFindMany;
-    prisma.$transaction = originalTx;
-    prisma.referral.update = originalRefUpdate;
-    prisma.candidate.update = originalCandUpdate;
-    prisma.compensation.create = originalCompCreate;
-    prisma.employee.update = originalEmpUpdate;
-    prisma.referral.updateMany = originalRefUpdateMany;
-    prisma.application.findUnique = originalAppFind;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -657,9 +766,24 @@ test("finalizeReferral Accept fails when position is closed", async () => {
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+      application: {
+        findUnique: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -670,7 +794,7 @@ test("finalizeReferral Accept fails when position is closed", async () => {
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -696,9 +820,24 @@ test("finalizeReferral fails when HR is not in department", async () => {
     },
   };
 
-  const originalFindUnique = prisma.referral.findUnique;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => fakeReferral;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => fakeReferral,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+      application: {
+        findUnique: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -709,6 +848,6 @@ test("finalizeReferral fails when HR is not in department", async () => {
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFindUnique;
+    prisma.$transaction = originalTransaction;
   }
 });

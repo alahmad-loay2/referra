@@ -1,13 +1,17 @@
+import { generateIdempotencyKey } from './idempotency.utils.js';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
 
 export const createDepartment = async (name) => {
+  const body = { name };
   const res = await fetch(`${API_BASE_URL}/hr/department`, {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      'Idempotency-Key': await generateIdempotencyKey('/hr/department', body),
     },
-    body: JSON.stringify({ name }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {

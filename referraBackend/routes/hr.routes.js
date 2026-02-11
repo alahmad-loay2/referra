@@ -18,6 +18,9 @@ import {
 } from "../controllers/hr.controller.js";
 import { authenticate, requireAdmin, requireHr } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
+import { idempotencyMiddleware } from "../middleware/idempotency.middleware.js";
+import { validateBody, validateParams } from "../middleware/validation.middleware.js";
+import { positionBodySchemas, paramsSchemas, referralBodySchemas, departmentBodySchemas } from "../validation/schemas.js";
 // later we will add auth + HR middleware here
 const router = Router();
 
@@ -27,6 +30,8 @@ router.post(
   generalLimiter,
   authenticate,
   requireHr,
+  idempotencyMiddleware,
+  validateBody(positionBodySchemas.createPosition),
   CreatePosition,
 );
 
@@ -37,6 +42,8 @@ router.patch(
   generalLimiter,
   authenticate,
   requireHr,
+  validateParams(paramsSchemas.positionId),
+  validateBody(positionBodySchemas.updatePositionState),
   UpdatePositionState,
 );
 // UPDATE position details
@@ -45,6 +52,8 @@ router.put(
   generalLimiter,
   authenticate,
   requireHr,
+  validateParams(paramsSchemas.positionId),
+  validateBody(positionBodySchemas.updatePosition),
   UpdatePosition,
 );
 router.get("/positions-hr", authenticate, requireHr, getHrPositionsController);
@@ -53,6 +62,7 @@ router.get(
   "/positions-hr/:positionId",
   authenticate,
   requireHr,
+  validateParams(paramsSchemas.positionId),
   getHrPositionDetailsController,
 );
 
@@ -78,6 +88,7 @@ router.get(
   generalLimiter,
   authenticate,
   requireHr,
+  validateParams(paramsSchemas.referralId),
   getConfirmedReferralDetails,
 );
 router.patch(
@@ -85,6 +96,8 @@ router.patch(
   generalLimiter,
   authenticate,
   requireHr,
+  validateParams(paramsSchemas.referralId),
+  validateBody(referralBodySchemas.finalizeReferral),
   FinalizeReferral,
 );
 
@@ -93,6 +106,7 @@ router.patch(
   generalLimiter,
   authenticate,
   requireHr,
+  validateParams(paramsSchemas.referralId),
   UnprospectReferral,
 );
 
@@ -101,6 +115,7 @@ router.patch(
   generalLimiter,
   authenticate,
   requireHr,
+  validateParams(paramsSchemas.referralId),
   AdvanceReferralStage,
 );
 
@@ -128,6 +143,6 @@ router.get(
   getHrDashboardController,
 );
 
-router.post("/department", generalLimiter, authenticate, requireAdmin, createDepartmentController)
+router.post("/department", generalLimiter, authenticate, requireAdmin, idempotencyMiddleware, validateBody(departmentBodySchemas.createDepartment), createDepartmentController)
 
 export default router;
