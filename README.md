@@ -178,7 +178,8 @@ You can view and test all the API endpoints using the Postman collection:
 
 - When first starting the application use bootstrap api to create first department and hr employee (use your email)
 - You can create dummy data with 100 positions using the script
-- Only admin Hr member can manage departments 
+- Only admin Hr member can manage departments
+- Non documented APIs in postman include only verify email for candidate + Reset password
 
 ---
 
