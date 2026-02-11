@@ -174,6 +174,13 @@ You can view and test all the API endpoints using the Postman collection:
 
 > This collection includes all endpoints for Referra, including authentication, referrals, positions, and HR management. You can import it into Postman to test the API locally or with your deployed backend.
 
+#### Important notes: 
+
+- When first starting the application use bootstrap api to create first department and hr employee (use your email)
+- You can create dummy data with 100 positions using the script
+- Only admin Hr member can manage departments
+- Non documented APIs in postman include only verify email for candidate + Reset password
+
 ---
 
 [Back To The Top](#referra--referral-web-app-to-ease-the-hiring-process)
