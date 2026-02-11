@@ -1,4 +1,5 @@
 # Referra – Referral Web App to Ease the Hiring Process
+Referra is a web application designed to simplify and streamline the employee referral process for companies. Employees can submit referrals for open positions, track their referral status, and potentially earn compensation. HR teams can manage positions, review referrals, and track candidates’ progress in a centralized dashboard.
 
 ---
 
@@ -7,36 +8,41 @@
 - [Features](#features)
 - [Technologies](#technologies)
 - [Installation full setup](#installation)
+- [Usage](#usage)
 
 ---
 
 ## Features
 
-- Role based authentication (Employee/HR) with Supabase
-- Employee referral submission
-- Referral status tracking
-- HR dashboard
-- Email notifications (Resend)
-- Secure backend with Prisma ORM
-- PostgreSQL database
+- Role-Based Authentication: Employee and HR roles with Supabase authentication.
+- Employee Referral Submission: Submit new candidates with auto-fill for existing ones.
+- Referral Tracking: Monitor referral status through interviews, acceptance, and hiring.
+- HR Dashboard: View and manage referrals, positions, and team members.
+- Email Notifications: Automated email notifications using resend.
+- Position Management: HR can create, open/close, and manage positions in their departments.
+- Compensation Tracking: Employees can receive compensation for successfully hired referrals.
+- Secure Backend: Built with Express.js and Prisma ORM.
+- Database: PostgreSQL (Supabase) for reliable and scalable data storage.
+- Deployment: Frontend and backend deployed separately on Vercel.
 
 ---
 
 ## Technologies
 
 ### Frontend
-- Vite
+- Vite + React
+- Lucide Icons
 
 ### Backend
 - Express.js
-- Prisma
+- Prisma ORM
 
 ### Services
 - Supabase (authentication & storage)
 - Resend (emails)
 
 ### Database
-- PostgreSQL (Neon)
+- PostgreSQL (Supabase)
 
 ### Deployment
 - Vercel (separate deployments for frontend and backend)
@@ -110,6 +116,8 @@ SUPABASE_ANON_KEY="your supabase anon key"
 
 #resend 
 RESEND_API_KEY="Your resend api key for your domain"
+
+PRISMA_LOG_QUERIES=true
 ```
 
 
@@ -138,5 +146,34 @@ npm run dev
 ```
 
 --- 
+
+## Usage
+
+#### 1. HR Creates a Position
+HR users create open positions within their assigned departments. They define job title, company, department, location, deadline, employment type, and years of experience required.
+
+#### 2. Employee Submits a Referral
+Employees view available positions and submit referrals for candidates. If the candidate already exists, their information can be auto-filled and updated across all referrals.
+
+#### 3. Candidate Confirmation
+Referred candidates must confirm their referral via email. Only confirmed referrals are visible to HR for review.
+
+#### 4. HR Reviews & Advances Candidates
+HR can prospect, move candidates through interview stages, or accept candidates in the acceptance stage.
+
+#### 5. Compensation
+If a candidate is successfully hired, the employee who referred them can be compensated.
+
+---
+
+## Postman API docs
+
+You can view and test all the API endpoints using the Postman collection:
+
+[View & Import Postman Collection](https://documenter.getpostman.com/view/27697858/2sBXcAKiMi)
+
+> This collection includes all endpoints for Referra, including authentication, referrals, positions, and HR management. You can import it into Postman to test the API locally or with your deployed backend.
+
+---
 
 [Back To The Top](#referra--referral-web-app-to-ease-the-hiring-process)
