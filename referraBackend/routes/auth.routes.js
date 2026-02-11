@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { signup, signin, verifyEmail, logout, forgotPasswordController, resetPasswordController, bootstrapFirstHrController, createHrController } from "../controllers/auth.controller.js";
 import { authenticate, requireHr } from "../middleware/auth.middleware.js";
+import { authLimiter } from "../middleware/rateLimit.middleware.js";
 
 const authRoutes = Router();
 
