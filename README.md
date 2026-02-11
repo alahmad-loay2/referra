@@ -149,20 +149,30 @@ npm run dev
 
 ## Usage
 
-### 1. HR Creates a Position
+#### 1. HR Creates a Position
 HR users create open positions within their assigned departments. They define job title, company, department, location, deadline, employment type, and years of experience required.
 
-### 2. Employee Submits a Referral
+#### 2. Employee Submits a Referral
 Employees view available positions and submit referrals for candidates. If the candidate already exists, their information can be auto-filled and updated across all referrals.
 
-### 3. Candidate Confirmation
+#### 3. Candidate Confirmation
 Referred candidates must confirm their referral via email. Only confirmed referrals are visible to HR for review.
 
-### 4. HR Reviews & Advances Candidates
+#### 4. HR Reviews & Advances Candidates
 HR can prospect, move candidates through interview stages, or accept candidates in the acceptance stage.
 
-### 5. Compensation
+#### 5. Compensation
 If a candidate is successfully hired, the employee who referred them can be compensated.
+
+---
+
+## Postman API docs
+
+You can view and test all the API endpoints using the Postman collection:
+
+[View & Import Postman Collection](https://documenter.getpostman.com/view/27697858/2sBXcAKiMi)
+
+> This collection includes all endpoints for Referra, including authentication, referrals, positions, and HR management. You can import it into Postman to test the API locally or with your deployed backend.
 
 ---
 
