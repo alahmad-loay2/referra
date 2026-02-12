@@ -76,10 +76,16 @@ input[type="date"] {
 
   font-size: var(--fs-small);
   padding: 12px;
+  padding-right: 40px; /* space for calendar icon */
   border-radius: var(--radius-md);
   border: 1px solid var(--gray-light);
   background-color: var(--white) !important;
   color: black !important;
+  /* Custom calendar icon (works on desktop + mobile) */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239297A0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2' ry='2'></rect><line x1='16' y1='2' x2='16' y2='6'></line><line x1='8' y1='2' x2='8' y2='6'></line><line x1='3' y1='10' x2='21' y2='10'></line></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 18px 18px;
 }
 
 /* Make sure the date text is visible on mobile (iOS / Android) */
@@ -93,13 +99,11 @@ input[type="date"]::-webkit-datetime-edit-day-field {
   background-color: white !important;
 }
 
-/* Calendar icon visibility and background on mobile webkit browsers */
+/* Hide native picker icon so only our custom icon shows */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 1;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239297A0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2' ry='2'></rect><line x1='16' y1='2' x2='16' y2='6'></line><line x1='8' y1='2' x2='8' y2='6'></line><line x1='3' y1='10' x2='21' y2='10'></line></svg>");
-  background-repeat: no-repeat;
-  background-position: 1px center;
-  background-size: auto 110%;
+  opacity: 0;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 
