@@ -24,7 +24,7 @@ test("getVisiblePositions returns paginated open positions for employee", async 
     },
   ];
 
-  const originalCount = prisma.position.count;
+  const originalCount = prisma.position.count; // stores the real functions so u can restore them later
   const originalFindMany = prisma.position.findMany;
 
   prisma.position.count = async () => 1;
@@ -74,4 +74,3 @@ test("getPositionDetails returns open, non-expired position for employee", async
     prisma.position.findUnique = originalFindUnique;
   }
 });
-

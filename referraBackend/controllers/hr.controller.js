@@ -152,7 +152,7 @@ export const getHrDepartmentsController = async (req, res, next) => {
 
 export const getHrTeamController = async (req, res, next) => {
   try {
-    const result = await getHrTeam(req.query);
+    const result = await getHrTeam(req.query, req.user.Hr?.HrId);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -188,7 +188,16 @@ export const getConfirmedReferrals = async (req, res, next) => {
     if (!hrId) {
       return res.status(403).json({ message: "HR access only" });
     }
-    const { page = "1", pageSize = "10", search, status, createdAt, createdAfter, positionId, onlyInProgress } = req.query;
+    const {
+      page = "1",
+      pageSize = "10",
+      search,
+      status,
+      createdAt,
+      createdAfter,
+      positionId,
+      onlyInProgress,
+    } = req.query;
     const referrals = await getAllConfirmedReferrals({
       hrId,
       page: parseInt(page, 10),
@@ -332,7 +341,6 @@ export const getHrDashboardController = async (req, res, next) => {
   }
 };
 
-
 export const createDepartmentController = async (req, res, next) => {
   try {
     const hr = req.user?.Hr;
@@ -347,4 +355,4 @@ export const createDepartmentController = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
+};

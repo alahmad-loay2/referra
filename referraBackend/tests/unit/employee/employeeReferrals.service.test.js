@@ -369,10 +369,7 @@ test("getEmployeeReferrals returns paginated applications for employee", async (
     createdAt: "2030-01-01",
   };
 
-  const fakeApplications = [
-    { ApplicationId: 1 },
-    { ApplicationId: 2 },
-  ];
+  const fakeApplications = [{ ApplicationId: 1 }, { ApplicationId: 2 }];
 
   const originalCount = prisma.application.count;
   const originalFindMany = prisma.application.findMany;
@@ -485,4 +482,3 @@ test("getEmployeeReferralDetails returns application for employee and referral",
     prisma.application.findFirst = originalFindFirst;
   }
 });
-
