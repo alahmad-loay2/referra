@@ -12,7 +12,9 @@ import Loading from "../../../components/loading/Loading.jsx";
 import Button from "../../../components/button/Button.jsx";
 import { getHrTeam } from "../../../api/hrTeam.api";
 import { getHrDepartments } from "../../../api/hrPositions.api.js";
+import { createDepartment } from "../../../api/hrDepartments.api.js";
 import { getPaginationPages } from "../../../utils/pagination";
+import { useUserStore } from "../../../store/userStore.js";
 
 import AddHr from "./AddHr";
 import "./HrTeam.css";
@@ -42,6 +44,11 @@ const HrTeam = () => {
   const [departments, setDepartments] = useState([]);
 
   const [showAddHr, setShowAddHr] = useState(false);
+  const isAdmin = useUserStore((state) => state.isAdmin);
+  const [showCreateDept, setShowCreateDept] = useState(false);
+  const [newDeptName, setNewDeptName] = useState("");
+  const [createDeptLoading, setCreateDeptLoading] = useState(false);
+  const [createDeptError, setCreateDeptError] = useState("");
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -112,6 +119,33 @@ const HrTeam = () => {
 
   const getVisiblePages = () => {
     return getPaginationPages(page, totalPages);
+  };
+
+  const handleCreateDepartment = async () => {
+    if (!newDeptName.trim()) {
+      setCreateDeptError("Please enter a department name.");
+      return;
+    }
+    try {
+      setCreateDeptLoading(true);
+      setCreateDeptError("");
+      const created = await createDepartment(newDeptName.trim());
+      if (created && created.DepartmentId && created.DepartmentName) {
+        setDepartments((prev) => [
+          ...prev,
+          {
+            DepartmentId: created.DepartmentId,
+            DepartmentName: created.DepartmentName,
+          },
+        ]);
+      }
+      setNewDeptName("");
+      setShowCreateDept(false);
+    } catch (err) {
+      setCreateDeptError(err.message || "Failed to create department.");
+    } finally {
+      setCreateDeptLoading(false);
+    }
   };
 
   // this is a helper componenet to show first 2 departmetns when the departments of the hr exceeds 3 it shows ...
@@ -218,11 +252,22 @@ const HrTeam = () => {
       <div className="HRTableContainer">
         <div className="tableHeader">
           <h3 className="title">Team Members</h3>
-          <Button
-            text="+ Add New HR"
-            onClick={() => setShowAddHr(true)}
-            variant="primary"
-          />
+          <div className="tableHeaderActions">
+            {isAdmin && (
+              <button
+                type="button"
+                className="create-dept-btn"
+                onClick={() => setShowCreateDept(true)}
+              >
+                + New Department
+              </button>
+            )}
+            <Button
+              text="+ Add New HR"
+              onClick={() => setShowAddHr(true)}
+              variant="primary"
+            />
+          </div>
         </div>
 
         <div className="HRTableWrapper">
@@ -375,6 +420,53 @@ const HrTeam = () => {
             setFilters((prev) => ({ ...prev })); // refresh table only
           }}
         />
+      )}
+
+      {isAdmin && showCreateDept && (
+        <div className="dept-modal-overlay">
+          <div className="dept-modal">
+            <h3>Create New Department</h3>
+            <p className="dept-modal-subtitle">
+              Add a new department to use in positions and HR assignments.
+            </p>
+            <input
+              type="text"
+              className="dept-modal-input"
+              placeholder="Department name"
+              value={newDeptName}
+              onChange={(e) => setNewDeptName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !createDeptLoading) {
+                  handleCreateDepartment();
+                }
+              }}
+            />
+            {createDeptError && (
+              <p className="dept-modal-error">{createDeptError}</p>
+            )}
+            <div className="dept-modal-actions">
+              <button
+                type="button"
+                className="dept-modal-cancel"
+                onClick={() => {
+                  setShowCreateDept(false);
+                  setCreateDeptError("");
+                  setNewDeptName("");
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="dept-modal-submit"
+                onClick={handleCreateDepartment}
+                disabled={createDeptLoading}
+              >
+                {createDeptLoading ? "Creating..." : "Create Department"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

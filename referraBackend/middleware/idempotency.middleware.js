@@ -66,8 +66,23 @@ export const idempotencyMiddleware = async (req, res, next) => {
           });
         }
 
-        // Return cached response
-        return res.status(existingKey.ResponseStatus).json(existingKey.ResponseBody);
+        // Only return cached response if it was a success (2xx status codes)
+        // If the previous request failed, allow retry by proceeding with the request
+        const isSuccess = existingKey.ResponseStatus >= 200 && existingKey.ResponseStatus < 300;
+        if (isSuccess) {
+          return res.status(existingKey.ResponseStatus).json(existingKey.ResponseBody);
+        }
+        // If previous request was an error, delete the cached entry and allow retry
+        // This allows users to retry failed requests with the same idempotency key
+        await prisma.idempotencyKey.delete({
+          where: {
+            IdempotencyKeyId: existingKey.IdempotencyKeyId,
+          },
+        }).catch((err) => {
+          // Log but don't fail if deletion fails
+          console.error("Failed to delete error idempotency key:", err);
+        });
+        // Fall through to proceed with the request
       } else {
         // Same key used for different endpoint
         return res.status(409).json({
@@ -83,19 +98,24 @@ export const idempotencyMiddleware = async (req, res, next) => {
 
     // Override res.json to capture the response
     res.json = function (body) {
-      // Store the response in database (async, don't block response)
-      storeIdempotencyResponse(
-        idempotencyKey,
-        userId,
-        method,
-        path,
-        requestHash,
-        res.statusCode,
-        body,
-      ).catch((err) => {
-        // Log error but don't fail the request
-        console.error("Failed to store idempotency response:", err);
-      });
+      // Only store successful responses (2xx status codes) for idempotency
+      // Failed requests should not be cached, allowing retries with the same key
+      const isSuccess = res.statusCode >= 200 && res.statusCode < 300;
+      if (isSuccess) {
+        // Store the response in database (async, don't block response)
+        storeIdempotencyResponse(
+          idempotencyKey,
+          userId,
+          method,
+          path,
+          requestHash,
+          res.statusCode,
+          body,
+        ).catch((err) => {
+          // Log error but don't fail the request
+          console.error("Failed to store idempotency response:", err);
+        });
+      }
 
       // Send the response
       return originalJson(body);

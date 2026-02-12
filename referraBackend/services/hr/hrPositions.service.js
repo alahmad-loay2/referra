@@ -526,6 +526,28 @@ export const getDepartmentsByHr = async (hrId) => {
     error.statusCode = 400;
     throw error;
   }
+  
+  // Check if this HR user is an admin
+  const hr = await prisma.hr.findUnique({
+    where: { HrId: hrId },
+    select: { isAdmin: true },
+  });
+  
+  if (!hr) {
+    const error = new Error("HR not found");
+    error.statusCode = 404;
+    throw error;
+  }
+  
+  // If admin, return all departments
+  if (hr.isAdmin) {
+    const allDepartments = await prisma.department.findMany({
+      orderBy: { DepartmentName: "asc" },
+    });
+    return allDepartments;
+  }
+  
+  // Otherwise, return only departments assigned to this HR
   const departments = await prisma.hrDepartment.findMany({
     where: {
       HrId: hrId,

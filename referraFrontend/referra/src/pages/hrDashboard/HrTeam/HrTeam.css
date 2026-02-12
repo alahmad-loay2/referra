@@ -161,6 +161,29 @@
   gap: var(--gap-sm);
 }
 
+.tableHeaderActions {
+  display: flex;
+  gap: var(--gap-sm);
+  align-items: center;
+}
+
+.create-dept-btn {
+  background: transparent;
+  border: 1px solid var(--gray-light);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: var(--fs-small);
+  cursor: pointer;
+  color: var(--secondary-color);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.create-dept-btn:hover {
+  background: var(--secondary-color);
+  color: var(--white);
+  border-color: var(--secondary-color);
+}
+
 /* TITLE */
 .tableHeader .title {
   font-size: var(--fs-large);
@@ -368,5 +391,121 @@
   }
   100% {
     background-position: -100% 0;
+  }
+}
+
+/* Department Creation Modal */
+.dept-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.dept-modal {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 32px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.dept-modal h3 {
+  margin: 0 0 8px 0;
+  color: var(--secondary-color);
+  font-size: var(--fs-large);
+  font-weight: 600;
+}
+
+.dept-modal-subtitle {
+  margin: 0 0 24px 0;
+  font-size: var(--fs-small);
+  color: var(--gray-dark);
+  line-height: 1.5;
+}
+
+.dept-modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--gray-light);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-medium);
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.dept-modal-input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+}
+
+.dept-modal-error {
+  margin: 0 0 16px 0;
+  color: #dc2626;
+  font-size: var(--fs-small);
+}
+
+.dept-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--gap-md);
+}
+
+.dept-modal-cancel {
+  background: transparent;
+  border: 1px solid var(--gray-light);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--fs-medium);
+  color: var(--gray-dark);
+  transition: background 0.2s;
+}
+
+.dept-modal-cancel:hover {
+  background: var(--gray-light);
+}
+
+.dept-modal-submit {
+  background: var(--secondary-color);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--fs-medium);
+  transition: opacity 0.2s;
+}
+
+.dept-modal-submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.dept-modal-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .dept-modal {
+    max-width: calc(100% - 40px);
+    padding: 24px;
+  }
+
+  .dept-modal-actions {
+    flex-direction: column;
+  }
+
+  .dept-modal-actions button {
+    width: 100%;
+  }
+
+  .tableHeaderActions {
+    flex-wrap: wrap;
   }
 }

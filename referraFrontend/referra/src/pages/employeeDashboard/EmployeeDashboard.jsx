@@ -4,6 +4,7 @@ import Header from "../../components/header/Header.jsx";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import { Briefcase, LayoutDashboard, UserCog, Users } from "lucide-react";
 import "./EmployeeDashboard.css";
+import { clearUserStoreOnAuthFailure } from "../../utils/auth.utils.js";
 
 const EmployeeDashboard = () => {
   const location = useLocation();
@@ -16,6 +17,8 @@ const EmployeeDashboard = () => {
       const response = await originalFetch(...args);
       
       if ((response.status === 401 || response.status === 403) && window.location.pathname !== '/login') {
+        // Clear Zustand store on authentication failure
+        clearUserStoreOnAuthFailure();
         navigate('/login', { replace: true });
       }
       

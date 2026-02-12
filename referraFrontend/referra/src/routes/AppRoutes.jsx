@@ -25,7 +25,6 @@ import HrCreatePosition from "../pages/hrDashboard/HrCreatePosition/HrCreatePosi
 import HrReferralDetails from "../pages/hrDashboard/HrReferralDetails/HrReferralDetails.jsx";
 import EmployeeReferralHD from "../pages/employeeDashboard/EmployeeReferralHD/EmployeeReferralHD.jsx";
 import EmployeePositionDetails from "../pages/employeeDashboard/EmployeePositionDetails/EmployeePositionDetails.jsx";
-import HrDepartment from "../pages/hrDashboard/HrDepartments/HrDepartment.jsx";
 import Account from "../pages/Account/Account.jsx";
 import Docs from "../pages/docs/Docs.jsx";
 
@@ -67,7 +66,6 @@ const AppRoutes = () => {
             element={<HrCreatePosition />}
           />
           <Route path="team" element={<HrTeam />} />
-          <Route path="departments" element={<HrDepartment />} />
           <Route path="account" element={<Account />} />
         </Route>
       </Route>

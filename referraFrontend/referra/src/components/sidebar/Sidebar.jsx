@@ -3,6 +3,7 @@ import "./Sidebar.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getUserInfo } from "../../api/user.api.js";
 import { logout } from "../../api/auth.api.js";
+import { useUserStore } from "../../store/userStore.js";
 import { Menu, X } from "lucide-react";
 
 const Sidebar = (props) => {
@@ -109,12 +110,18 @@ const Sidebar = (props) => {
     navigate(`${basePath}/account`);
   };
 
+  const resetUserStore = useUserStore((state) => state.reset);
+
   const handleLogout = async (e) => {
     e.stopPropagation();
     try {
       await logout();
+      // Clear Zustand user store on logout
+      resetUserStore();
     } catch (error) {
       console.error(error);
+      // Still clear store even if logout API call fails
+      resetUserStore();
     } finally {
       navigate("/login");
     }

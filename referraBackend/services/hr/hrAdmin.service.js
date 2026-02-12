@@ -14,8 +14,27 @@ export const createDepartment = async (name) => {
             error.statusCode = 400;
             throw error;
         }
-        return await tx.department.create({
+        
+        const department = await tx.department.create({
             data: { DepartmentName: name },
         });
+        
+        // Automatically add all admin HR users to the new department
+        const adminHrs = await tx.hr.findMany({
+            where: { isAdmin: true },
+            select: { HrId: true },
+        });
+        
+        if (adminHrs.length > 0) {
+            await tx.hrDepartment.createMany({
+                data: adminHrs.map((hr) => ({
+                    HrId: hr.HrId,
+                    DepartmentId: department.DepartmentId,
+                })),
+                skipDuplicates: true, // In case admin is already in the department (shouldn't happen, but safe)
+            });
+        }
+        
+        return department;
     });
 }
