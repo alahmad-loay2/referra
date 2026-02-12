@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { resetPassword } from "../../../api/auth.api.js";
 import "./ResetPassword.css";
 
@@ -7,6 +8,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const hash = window.location.hash.startsWith("#")
@@ -64,6 +66,9 @@ const ResetPassword = () => {
       setStatus(result.message);
       setNewPassword("");
       setConfirmPassword("");
+
+      // On successful reset, redirect user to login page
+      navigate("/login");
     } catch (err) {
       setStatus(err.message);
     } finally {
