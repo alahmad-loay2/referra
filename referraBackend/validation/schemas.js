@@ -160,8 +160,12 @@ export const userBodySchemas = {
     phoneNumber: phonePattern.required(),
     gender: varcharSchema(32),
     email: emailPattern,
-    // match service: expects an array of departmentIds, and password is auto-generated
-    departmentIds: Joi.array().items(uuidPattern).min(1).required(),
+    // match service: expects an array of departmentIds (string IDs), and password is auto-generated
+    // we only enforce non-empty strings here; Prisma will enforce actual FK validity
+    departmentIds: Joi.array()
+      .items(Joi.string().trim().required())
+      .min(1)
+      .required(),
   }),
 };
 
