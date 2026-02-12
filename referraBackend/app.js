@@ -23,7 +23,7 @@ const getFrontendUrl = () => {
   const url =
     FRONTEND_URL ||
     process.env.FRONTEND_URL ||
-    "https://referra-five.vercel.app";
+    "https://referra.space";
   return url.replace(/\/$/, ""); // Remove trailing slash
 };
 
