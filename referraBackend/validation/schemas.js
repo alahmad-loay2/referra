@@ -160,8 +160,8 @@ export const userBodySchemas = {
     phoneNumber: phonePattern.required(),
     gender: varcharSchema(32),
     email: emailPattern,
-    password: Joi.string().min(6).max(128).required(),
-    departmentId: uuidPattern,
+    // match service: expects an array of departmentIds, and password is auto-generated
+    departmentIds: Joi.array().items(uuidPattern).min(1).required(),
   }),
 };
 
