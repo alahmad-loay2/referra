@@ -8,8 +8,8 @@ import {
   getHrPositions,
   getHrPositionDetails,
   getDepartmentsByHr,
-} from "../../services/hr/hrPositions.service.js";
-import { prisma } from "../../lib/prisma.js";
+} from "../../../services/hr/hrPositions.service.js";
+import { prisma } from "../../../lib/prisma.js";
 
 test("createPosition creates a position successfully", async () => {
   const payload = {
@@ -124,17 +124,15 @@ test("updatePositionState closes and opens a position correctly", async () => {
   let findManyArgs;
   let referralUpdateArgs = [];
 
-  const originalFindFirst = prisma.position.findFirst;
   const originalTransaction = prisma.$transaction;
-
-  prisma.position.findFirst = async (args) => {
-    findFirstArgs = args;
-    return existingPosition;
-  };
 
   prisma.$transaction = async (fn) => {
     const tx = {
       position: {
+        findFirst: async (args) => {
+          findFirstArgs = args;
+          return existingPosition;
+        },
         update: async (args) => {
           updateArgs = args;
           return { ...existingPosition, ...args.data };
@@ -205,7 +203,6 @@ test("updatePositionState closes and opens a position correctly", async () => {
     );
     assert.ok(deadlineDiff < 60000); // Within 1 minute tolerance
   } finally {
-    prisma.position.findFirst = originalFindFirst;
     prisma.$transaction = originalTransaction;
   }
 });
@@ -237,17 +234,22 @@ test("updatePositionDetails updates fields when HR owns the position", async () 
   let findFirstArgs;
   let updateArgs;
 
-  const originalFindFirst = prisma.position.findFirst;
-  const originalUpdate = prisma.position.update;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.position.findFirst = async (args) => {
-    findFirstArgs = args;
-    return existingPosition;
-  };
-
-  prisma.position.update = async (args) => {
-    updateArgs = args;
-    return { ...existingPosition, ...args.data };
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      position: {
+        findFirst: async (args) => {
+          findFirstArgs = args;
+          return existingPosition;
+        },
+        update: async (args) => {
+          updateArgs = args;
+          return { ...existingPosition, ...args.data };
+        },
+      },
+    };
+    return fn(tx);
   };
 
   try {
@@ -272,8 +274,7 @@ test("updatePositionDetails updates fields when HR owns the position", async () 
       hr.Departments.map((d) => d.DepartmentId),
     );
   } finally {
-    prisma.position.findFirst = originalFindFirst;
-    prisma.position.update = originalUpdate;
+    prisma.$transaction = originalTransaction;
   }
 });
 
@@ -293,9 +294,19 @@ test("updatePositionDetails throws when assigning to not-owned department", asyn
     departmentId: 2, // HR does not own this department
   };
 
-  const originalFindFirst = prisma.position.findFirst;
+  const originalTransaction = prisma.$transaction;
 
-  prisma.position.findFirst = async () => existingPosition;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      position: {
+        findFirst: async () => existingPosition,
+        update: async () => {
+          throw new Error("Should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -307,7 +318,7 @@ test("updatePositionDetails throws when assigning to not-owned department", asyn
       },
     );
   } finally {
-    prisma.position.findFirst = originalFindFirst;
+    prisma.$transaction = originalTransaction;
   }
 });
 

@@ -1,10 +1,16 @@
+import { generateIdempotencyKey } from './idempotency.utils.js';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5500/api'
 
 export const signup = async (payload) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/auth/signup`, {
+    const endpoint = `${API_BASE_URL}/auth/signup`;
+    const res = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Idempotency-Key': await generateIdempotencyKey('/auth/signup', payload),
+      },
       credentials: 'include',
       body: JSON.stringify(payload),
     })
@@ -33,11 +39,15 @@ export const signup = async (payload) => {
 
 export const signin = async (email, password) => {
   try {
+    const body = { email, password };
     const res = await fetch(`${API_BASE_URL}/auth/signin`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Idempotency-Key': await generateIdempotencyKey('/auth/signin', body),
+      },
       credentials: 'include',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(body),
     })
 
     if (!res.ok) {
@@ -71,41 +81,47 @@ export const logout = async () => {
 }
 
 export const verifyEmail = async (accessToken, refreshToken) => {
+  const body = { access_token: accessToken, refresh_token: refreshToken };
   const res = await fetch(`${API_BASE_URL}/auth/verify-email`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': await generateIdempotencyKey('/auth/verify-email', body),
     },
     credentials: 'include',
-    body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
+    body: JSON.stringify(body),
   })
   return res.json()
 }
 
 export const forgotPassword = async (email) => {
+  const body = { email };
   const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': await generateIdempotencyKey('/auth/forgot-password', body),
     },
     credentials: 'include',
-    body: JSON.stringify({ email }),
+    body: JSON.stringify(body),
   })
   return res.json()
 }
 
 export const resetPassword = async (accessToken, refreshToken, newPassword) => {
+  const body = {
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    new_password: newPassword,
+  };
   const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': await generateIdempotencyKey('/auth/reset-password', body),
     },
     credentials: 'include',
-    body: JSON.stringify({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      new_password: newPassword,
-    }),
+    body: JSON.stringify(body),
   })
   return res.json()
 }
@@ -128,6 +144,7 @@ export const createHr = async (payload) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': await generateIdempotencyKey('/auth/hr/create', payload),
     },
     credentials: 'include',
     body: JSON.stringify(payload),

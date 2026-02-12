@@ -1,0 +1,66 @@
+.emp-submit {
+  max-width: 900px;
+  padding: 20px;
+  line-height: 1.7;
+}
+
+.submit-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.submit-section {
+  margin-top: 30px;
+}
+
+.submit-section h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  border-left: 4px solid #4f46e5; /* consistent with HR pages */
+  padding-left: 10px;
+  color: #1e293b;
+}
+
+.submit-paragraph {
+  margin-bottom: 15px;
+  color: #444;
+}
+
+.emp-submit ul {
+  list-style-type: disc;
+  padding-left: 25px;
+  margin-bottom: 15px;
+}
+
+.emp-submit li {
+  margin-bottom: 10px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.emp-submit li:hover {
+  transform: translateX(4px);
+  color: #4f46e5;
+}
+
+.submit-images {
+  margin-top: 20px;
+}
+
+.submit-images img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.important-note {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #fff4e5;
+  border-left: 4px solid #f59e0b;
+  font-weight: 500;
+  color: #8a5a00;
+  border-radius: 6px;
+}

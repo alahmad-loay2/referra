@@ -2,7 +2,13 @@
 
 import { config } from "dotenv";
 
-config({ path: `.env.${process.env.NODE_ENV || "development"}.local` });
+// In production: load from plain `.env`
+// In development/other envs: load from `.env.development.local`
+if (process.env.NODE_ENV === "production") {
+  config({ path: ".env" });
+} else {
+  config({ path: ".env.development.local" });
+}
 
 export const {
   PORT,
@@ -11,5 +17,5 @@ export const {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
   RESEND_API_KEY,
-  PRISMA_LOG_QUERIES
+  PRISMA_LOG_QUERIES,
 } = process.env;

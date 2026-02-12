@@ -3,6 +3,8 @@ import { GetUserInfo, UpdateUserInfo, UpdateProfilePicture } from "../controller
 import { authenticate } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
 import { uploadProfileImage } from "../middleware/upload.middleware.js";
+import { validateBody } from "../middleware/validation.middleware.js";
+import { userBodySchemas } from "../validation/schemas.js";
 
 const userRoutes = Router();
 
@@ -19,6 +21,7 @@ userRoutes.put(
   "/me",
   generalLimiter,
   authenticate,
+  validateBody(userBodySchemas.updateUser),
   UpdateUserInfo,
 );
 

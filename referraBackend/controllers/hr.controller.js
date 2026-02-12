@@ -16,6 +16,7 @@ import {
 } from "../services/hr/hrReferrals.service.js";
 import { getHrTeam } from "../services/hr/hrTeam.service.js";
 import { getHrDashboard } from "../services/hr/hrDashboard.service.js";
+import { createDepartment } from "../services/hr/hrAdmin.service.js";
 
 /**
  * HR – Create Position
@@ -187,8 +188,18 @@ export const getConfirmedReferrals = async (req, res, next) => {
     if (!hrId) {
       return res.status(403).json({ message: "HR access only" });
     }
-    const { page = "1", pageSize = "10", search, status, createdAt, createdAfter, positionId } = req.query;
-    const referrals = await getAllConfirmedReferrals({ hrId, page: parseInt(page, 10), pageSize: parseInt(pageSize, 10) ,search, status, createdAt, createdAfter, positionId });
+    const { page = "1", pageSize = "10", search, status, createdAt, createdAfter, positionId, onlyInProgress } = req.query;
+    const referrals = await getAllConfirmedReferrals({
+      hrId,
+      page: parseInt(page, 10),
+      pageSize: parseInt(pageSize, 10),
+      search,
+      status,
+      createdAt,
+      createdAfter,
+      positionId,
+      onlyInProgress: onlyInProgress === "true",
+    });
 
     res.status(200).json(referrals);
   } catch (err) {
@@ -320,3 +331,20 @@ export const getHrDashboardController = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const createDepartmentController = async (req, res, next) => {
+  try {
+    const hr = req.user?.Hr;
+    if (!hr) {
+      const error = new Error("HR profile not found");
+      error.statusCode = 403;
+      throw error;
+    }
+    const { name } = req.body;
+    const department = await createDepartment(name);
+    res.status(201).json(department);
+  } catch (error) {
+    next(error);
+  }
+}

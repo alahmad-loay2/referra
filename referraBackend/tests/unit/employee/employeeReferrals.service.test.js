@@ -8,9 +8,9 @@ import {
   getEmployeeReferrals,
   editCandidate,
   getEmployeeReferralDetails,
-} from "../../services/employee/employeeReferrals.service.js";
-import { prisma } from "../../lib/prisma.js";
-import { supabase } from "../../lib/supabase.js";
+} from "../../../services/employee/employeeReferrals.service.js";
+import { prisma } from "../../../lib/prisma.js";
+import { supabase } from "../../../lib/supabase.js";
 import { createClient } from "@supabase/supabase-js";
 
 test("createReferral creates candidate, referral and application for open position", async () => {
@@ -57,7 +57,18 @@ test("createReferral creates candidate, referral and application for open positi
 
   prisma.$transaction = async (fn) => {
     const tx = {
+      position: {
+        findUnique: async () => position,
+        update: async () => position, // For auto-closing expired positions
+      },
+      employee: {
+        findUnique: async () => employee,
+      },
       candidate: {
+        findUnique: async ({ where, include }) => {
+          // Return null for new candidate (email doesn't exist)
+          return null;
+        },
         create: async ({ data }) => {
           createdCandidate = { CandidateId: 1, ...data };
           return createdCandidate;
@@ -117,19 +128,37 @@ test("confirmReferral updates referral from Pending to Confirmed within time win
     CreatedAt: now.toISOString(),
     Application: {
       Candidate: {},
-      Position: {},
+      Position: {
+        PositionState: "OPEN",
+      },
     },
   };
 
-  const originalFind = prisma.referral.findUnique;
-  const originalUpdate = prisma.referral.update;
+  const originalTx = prisma.$transaction;
 
   let updateArgs;
 
-  prisma.referral.findUnique = async () => pendingReferral;
-  prisma.referral.update = async (args) => {
-    updateArgs = args;
-    return { ...pendingReferral, Status: "Confirmed" };
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => pendingReferral,
+        update: async (args) => {
+          updateArgs = args;
+          return {
+            ...pendingReferral,
+            Status: "Confirmed",
+            Application: {
+              Candidate: {},
+              Position: {},
+              Employee: {
+                User: {},
+              },
+            },
+          };
+        },
+      },
+    };
+    return fn(tx);
   };
 
   try {
@@ -139,8 +168,7 @@ test("confirmReferral updates referral from Pending to Confirmed within time win
     assert.equal(updateArgs.data.Status, "Confirmed");
     assert.equal(result.Status, "Confirmed");
   } finally {
-    prisma.referral.findUnique = originalFind;
-    prisma.referral.update = originalUpdate;
+    prisma.$transaction = originalTx;
   }
 });
 
@@ -162,9 +190,19 @@ test("confirmReferral fails when position is closed", async () => {
     },
   };
 
-  const originalFind = prisma.referral.findUnique;
+  const originalTx = prisma.$transaction;
 
-  prisma.referral.findUnique = async () => pendingReferralWithClosedPosition;
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      referral: {
+        findUnique: async () => pendingReferralWithClosedPosition,
+        update: async () => {
+          throw new Error("should not be called");
+        },
+      },
+    };
+    return fn(tx);
+  };
 
   try {
     await assert.rejects(
@@ -179,7 +217,7 @@ test("confirmReferral fails when position is closed", async () => {
       },
     );
   } finally {
-    prisma.referral.findUnique = originalFind;
+    prisma.$transaction = originalTx;
   }
 });
 
@@ -209,7 +247,6 @@ test("deleteCandidate removes application and referral but keeps candidate when 
     Candidate: candidate,
   };
 
-  const originalFindFirst = prisma.application.findFirst;
   const originalTx = prisma.$transaction;
 
   const deleted = {
@@ -218,11 +255,10 @@ test("deleteCandidate removes application and referral but keeps candidate when 
     candidate: false,
   };
 
-  prisma.application.findFirst = async () => application;
-
   prisma.$transaction = async (fn) => {
     const tx = {
       application: {
+        findFirst: async () => application,
         delete: async ({ where }) => {
           if (where.ReferralId === referralId) deleted.application = true;
         },
@@ -253,7 +289,6 @@ test("deleteCandidate removes application and referral but keeps candidate when 
     );
     assert.equal(result.deletedCandidate, false);
   } finally {
-    prisma.application.findFirst = originalFindFirst;
     prisma.$transaction = originalTx;
   }
 });
@@ -280,7 +315,6 @@ test("deleteCandidate also removes candidate when this is their only application
     Candidate: candidate,
   };
 
-  const originalFindFirst = prisma.application.findFirst;
   const originalTx = prisma.$transaction;
 
   const deleted = {
@@ -289,11 +323,10 @@ test("deleteCandidate also removes candidate when this is their only application
     candidate: false,
   };
 
-  prisma.application.findFirst = async () => application;
-
   prisma.$transaction = async (fn) => {
     const tx = {
       application: {
+        findFirst: async () => application,
         delete: async ({ where }) => {
           if (where.ReferralId === referralId) deleted.application = true;
         },
@@ -322,7 +355,6 @@ test("deleteCandidate also removes candidate when this is their only application
     assert.equal(result.message, "Candidate deleted successfully");
     assert.equal(result.deletedCandidate, true);
   } finally {
-    prisma.application.findFirst = originalFindFirst;
     prisma.$transaction = originalTx;
   }
 });
@@ -398,6 +430,7 @@ test("editCandidate updates candidate fields when only pending referrals exist",
   prisma.$transaction = async (fn) => {
     const tx = {
       candidate: {
+        findUnique: async () => null, // Email uniqueness check - no existing candidate with new email
         update: async (args) => {
           updateArgs = args;
           return { ...candidate, ...args.data };

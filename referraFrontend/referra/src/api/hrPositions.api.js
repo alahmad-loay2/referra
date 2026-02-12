@@ -1,3 +1,5 @@
+import { generateIdempotencyKey } from './idempotency.utils.js';
+
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
 
@@ -87,6 +89,7 @@ export const createPosition = async (positionData) => {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        'Idempotency-Key': await generateIdempotencyKey('/hr/positions', positionData),
       },
       body: JSON.stringify(positionData),
     });

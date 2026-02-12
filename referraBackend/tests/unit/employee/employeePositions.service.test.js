@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import {
   getVisiblePositions,
   getPositionDetails,
-} from "../../services/employee/employeePositions.service.js";
-import { prisma } from "../../lib/prisma.js";
+} from "../../../services/employee/employeePositions.service.js";
+import { prisma } from "../../../lib/prisma.js";
 
 test("getVisiblePositions returns paginated open positions for employee", async () => {
   const user = { Role: "Employee" };

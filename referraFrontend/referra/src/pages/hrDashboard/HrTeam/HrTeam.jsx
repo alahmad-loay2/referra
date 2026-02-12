@@ -316,7 +316,7 @@ const HrTeam = () => {
                     <td>
                       <div className="icon-text">
                         <Phone size={14} />
-                        {hr.User.PhoneNumber || "—"}
+                        <span className="phone-text">{hr.User.PhoneNumber || "—"}</span>
                       </div>
                     </td>
 

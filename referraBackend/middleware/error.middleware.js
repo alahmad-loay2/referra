@@ -1,18 +1,84 @@
-// middleware for handling errors in the application
+// Centralized error handling middleware
+
+import { Prisma } from "../generated/prisma/client.js";
 
 const errorMiddleware = (err, req, res, next) => {
-    try {
-        let error = { ...err };
-        error.message = err.message;
-        // console.error(err);
+    const isDev = process.env.NODE_ENV === "development";
 
-        res.status(error.statusCode || 500).json({
-            success: false,
-            message: error.message || "Internal Server Error",
-        });
-    } catch (error) {
-        next(error);
+    // Handle Prisma validation errors
+    if (err instanceof Prisma.PrismaClientValidationError) {
+        err.statusCode = 400;
+        err.message = "Invalid input data.";
     }
-}
+
+    // Handle Prisma errors
+    if (err.code === "P2002") {
+        // Unique constraint violation
+        const fieldName = err.meta?.target?.[0] || "field";
+        err.statusCode = 409;
+        err.message = `A record with this ${fieldName} already exists.`;
+    } else if (err.code === "P2025") {
+        // Record not found
+        err.statusCode = 404;
+        err.message = err.meta?.cause || "The requested record was not found.";
+    } else if (err.code === "P2003") {
+        // Foreign key constraint violation
+        err.statusCode = 400;
+        err.message = "Invalid reference: the related record does not exist.";
+    }
+
+    // Fallbacks so we always have sane values
+    const statusCode = err.statusCode && Number.isInteger(err.statusCode)
+        ? err.statusCode
+        : 500;
+
+    const message = err.message || "Internal Server Error";
+
+    // Detect rate limit style errors so we can surface a clearer message even in production
+    const isRateLimitError =
+        statusCode === 429 ||
+        (typeof message === "string" &&
+            (message.toLowerCase().includes("rate limit") ||
+                message.toLowerCase().includes("too many")));
+
+    // In dev: log full error details to the console
+    if (isDev) {
+        // eslint-disable-next-line no-console
+        console.error("Error middleware caught an error:", {
+            message: err.message,
+            stack: err.stack,
+            name: err.name,
+            statusCode,
+            path: req.originalUrl,
+            method: req.method,
+        });
+    }
+
+    // If headers are already sent, delegate to Express' default handler
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    // Shape of error response differs in dev vs prod
+    const responseBody = {
+        success: false,
+        // In dev: always show the real message.
+        // In prod: show specific message for rate limit errors, generic for everything else.
+        message: isDev
+            ? message
+            : isRateLimitError
+                ? message
+                : "Something went wrong. Please try again later.",
+    };
+
+    if (isDev) {
+        responseBody.error = {
+            message,
+            stack: err.stack,
+        };
+    }
+
+    res.status(statusCode).json(responseBody);
+};
 
 export default errorMiddleware;

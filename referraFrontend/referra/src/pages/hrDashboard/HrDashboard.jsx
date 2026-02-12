@@ -1,13 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "./HrDashboard.css";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
-import { LayoutDashboard, Users, Briefcase, UserCog } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, UserCog, Building2 } from "lucide-react";
 import Header from "../../components/header/Header.jsx";
+import { getUserInfo } from "../../api/user.api.js";
 
 const HrDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const originalFetch = window.fetch;
@@ -26,6 +28,21 @@ const HrDashboard = () => {
       window.fetch = originalFetch;
     };
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const data = await getUserInfo();
+        if (data?.Role === "HR" && data?.Hr?.isAdmin) {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user info in HrDashboard:", error);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
 
   const pages = [
     {
@@ -48,6 +65,15 @@ const HrDashboard = () => {
       link: "/dashboard/hr/team",
       icon: <UserCog size={18} />,
     },
+    ...(isAdmin
+      ? [
+          {
+            name: "Departments",
+            link: "/dashboard/hr/departments",
+            icon: <Building2 size={18} />,
+          },
+        ]
+      : []),
   ];
 
   const hideHeader =

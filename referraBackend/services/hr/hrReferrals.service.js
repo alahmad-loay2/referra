@@ -25,6 +25,7 @@ export const getAllConfirmedReferrals = async ({
   createdAt,
   createdAfter,
   positionId,
+  onlyInProgress,
 }) => {
   if (!hrId) {
     throw new Error("HR ID is required");
@@ -91,21 +92,32 @@ export const getAllConfirmedReferrals = async ({
     throw error;
   }
 
-  if (status) {
-    andFilters.push({
-      Referral: {
-        Status: status,
+  let referralFilter;
+
+  if (onlyInProgress) {
+    // In-progress referrals: not hired, not prospects, not accepted in other position
+    referralFilter = {
+      Status: {
+        in: ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"],
       },
-    });
+      Prospect: false,
+      AcceptedInOtherPosition: false,
+    };
+  } else if (status) {
+    referralFilter = {
+      Status: status,
+    };
   } else {
-    andFilters.push({
-      Referral: {
-        Status: {
-          not: "Pending",
-        },
+    referralFilter = {
+      Status: {
+        not: "Pending",
       },
-    });
+    };
   }
+
+  andFilters.push({
+    Referral: referralFilter,
+  });
 
   if (createdAt) {
     const startOfDay = new Date(createdAt);
@@ -231,19 +243,21 @@ const workflow = ["Confirmed", "InterviewOne", "InterviewTwo", "Acceptance"];
 export const advanceReferralStage = async (referralId, hrUser) => {
   if (!referralId) throw new Error("Referral ID is required");
 
-  const referral = await prisma.referral.findUnique({
-    where: { ReferralId: referralId },
-    include: {
-      Application: {
-        include: {
-          Candidate: true,
-          Position: {
-            include: {
-              Department: {
-                include: {
-                  Hrs: {
-                    include: {
-                      Hr: true,
+  const updatedReferral = await prisma.$transaction(async (tx) => {
+    const referral = await tx.referral.findUnique({
+      where: { ReferralId: referralId },
+      include: {
+        Application: {
+          include: {
+            Candidate: true,
+            Position: {
+              include: {
+                Department: {
+                  include: {
+                    Hrs: {
+                      include: {
+                        Hr: true,
+                      },
                     },
                   },
                 },
@@ -252,52 +266,50 @@ export const advanceReferralStage = async (referralId, hrUser) => {
           },
         },
       },
-    },
-  });
+    });
 
-  if (!referral) throw new Error("Referral not found");
+    if (!referral) throw new Error("Referral not found");
 
-  const belongsToHrDept = referral.Application.Position.Department.Hrs.some(
-    (hrDept) => hrDept.HrId === hrUser.HrId,
-  );
+    const belongsToHrDept = referral.Application.Position.Department.Hrs.some(
+      (hrDept) => hrDept.HrId === hrUser.HrId,
+    );
 
-  if (!belongsToHrDept)
-    throw new Error("HR not allowed to update this referral");
+    if (!belongsToHrDept)
+      throw new Error("HR not allowed to update this referral");
 
-  // Cannot advance if the position is closed
-  if (referral.Application.Position.PositionState === "CLOSED") {
-    throw new Error("Cannot advance referral for a closed position");
-  }
+    if (referral.Application.Position.PositionState === "CLOSED") {
+      throw new Error("Cannot advance referral for a closed position");
+    }
 
-  // Check if Prospect is true - cannot advance if it is
-  if (referral.Prospect) {
-    throw new Error("Cannot advance referral stage when Prospect is true");
-  }
+    if (referral.Prospect) {
+      throw new Error("Cannot advance referral stage when Prospect is true");
+    }
 
-  // Check if AcceptedInOtherPosition is true - cannot advance if it is
-  if (referral.AcceptedInOtherPosition) {
-    throw new Error("Cannot advance referral stage when AcceptedInOtherPosition is true");
-  }
+    if (referral.AcceptedInOtherPosition) {
+      throw new Error("Cannot advance referral stage when AcceptedInOtherPosition is true");
+    }
 
-  const currentIndex = workflow.indexOf(referral.Status);
+    const currentIndex = workflow.indexOf(referral.Status);
 
-  if (currentIndex === -1 || currentIndex === workflow.length - 1)
-    throw new Error("Cannot advance referral further");
+    if (currentIndex === -1 || currentIndex === workflow.length - 1)
+      throw new Error("Cannot advance referral further");
 
-  const nextState = workflow[currentIndex + 1];
+    const nextState = workflow[currentIndex + 1];
 
-  // Update and return in one query - more efficient
-  const updatedReferral = await prisma.referral.update({
-    where: { ReferralId: referralId },
-    data: { Status: nextState },
-    include: {
-      Application: {
-        include: {
-          Candidate: true,
-          Referral: true,
+    const updated = await tx.referral.update({
+      where: { ReferralId: referralId },
+      data: { Status: nextState },
+      include: {
+        Application: {
+          include: {
+            Candidate: true,
+            Referral: true,
+          },
         },
       },
-    },
+    });
+
+    return updated;
   });
 
   return updatedReferral.Application;
@@ -325,20 +337,22 @@ export const finalizeReferral = async (
     throw err;
   }
 
-  const referral = await prisma.referral.findUnique({
-    where: { ReferralId: referralId },
-    include: {
-      Application: {
-        include: {
-          Candidate: true,
-          Employee: true,
-          Position: {
-            include: {
-              Department: {
-                include: {
-                  Hrs: {
-                    include: {
-                      Hr: true,
+  const updatedApplication = await prisma.$transaction(async (tx) => {
+    const referral = await tx.referral.findUnique({
+      where: { ReferralId: referralId },
+      include: {
+        Application: {
+          include: {
+            Candidate: true,
+            Employee: true,
+            Position: {
+              include: {
+                Department: {
+                  include: {
+                    Hrs: {
+                      include: {
+                        Hr: true,
+                      },
                     },
                   },
                 },
@@ -347,128 +361,118 @@ export const finalizeReferral = async (
           },
         },
       },
-    },
-  });
-
-  if (!referral) throw new Error("Referral not found");
-
-  const belongsToHrDept = referral.Application.Position.Department.Hrs.some(
-    (hrDept) => hrDept.HrId === hrUser.HrId,
-  );
-
-  if (!belongsToHrDept) {
-    throw new Error("HR not allowed to update this referral");
-  }
-
-  if (action === "Accept") {
-    // Position must be OPEN to hire
-    if (referral.Application.Position.PositionState === "CLOSED") {
-      throw new Error("Cannot accept candidate for a closed position");
-    }
-
-    if (referral.Status !== "Acceptance") {
-      throw new Error("Can only accept candidate in Acceptance stage");
-    }
-
-    // Cannot accept if Prospect is true
-    if (referral.Prospect) {
-      throw new Error("Cannot accept candidate who is a prospect");
-    }
-
-    // Cannot accept if AcceptedInOtherPosition is true
-    if (referral.AcceptedInOtherPosition) {
-      throw new Error("Cannot accept candidate who is accepted in other position");
-    }
-
-    const candidateId = referral.Application.Candidate.CandidateId;
-    const employeeId = referral.Application.Employee.EmployeeId;
-    const positionId = referral.Application.PositionId;
-
-    // Find all other referral IDs for this candidate
-    const otherApplications = await prisma.application.findMany({
-      where: {
-        CandidateId: candidateId,
-        ReferralId: { not: referralId },
-      },
-      select: {
-        ReferralId: true,
-      },
     });
 
-    const otherReferralIds = otherApplications.map((app) => app.ReferralId);
+    if (!referral) throw new Error("Referral not found");
 
-    const transactionOperations = [
+    const belongsToHrDept = referral.Application.Position.Department.Hrs.some(
+      (hrDept) => hrDept.HrId === hrUser.HrId,
+    );
+
+    if (!belongsToHrDept) {
+      throw new Error("HR not allowed to update this referral");
+    }
+
+    if (action === "Accept") {
+      if (referral.Application.Position.PositionState === "CLOSED") {
+        throw new Error("Cannot accept candidate for a closed position");
+      }
+
+      if (referral.Status !== "Acceptance") {
+        throw new Error("Can only accept candidate in Acceptance stage");
+      }
+
+      if (referral.Prospect) {
+        throw new Error("Cannot accept candidate who is a prospect");
+      }
+
+      if (referral.AcceptedInOtherPosition) {
+        throw new Error("Cannot accept candidate who is accepted in other position");
+      }
+
+      const candidateId = referral.Application.Candidate.CandidateId;
+      const employeeId = referral.Application.Employee.EmployeeId;
+      const positionId = referral.Application.PositionId;
+
+      const otherApplications = await tx.application.findMany({
+        where: {
+          CandidateId: candidateId,
+          ReferralId: { not: referralId },
+        },
+        select: {
+          ReferralId: true,
+        },
+      });
+
+      const otherReferralIds = otherApplications.map((app) => app.ReferralId);
+
       // Update the referral to Hired
-      prisma.referral.update({
+      await tx.referral.update({
         where: { ReferralId: referralId },
         data: { Status: "Hired" },
-      }),
+      });
+
       // Set candidate acceptance to true
-      prisma.candidate.update({
+      await tx.candidate.update({
         where: { CandidateId: candidateId },
         data: { Acceptance: true },
-      }),
+      });
+
       // Compensate the employee
-      prisma.compensation.create({
+      await tx.compensation.create({
         data: {
           HrId: hrUser.HrId,
           EmployeeId: employeeId,
           Amount: compensation,
         },
-      }),
-      prisma.employee.update({
+      });
+
+      await tx.employee.update({
         where: { EmployeeId: employeeId },
         data: {
           TotalCompensation: {
             increment: compensation,
           },
         },
-      }),
-    ];
+      });
 
-    // Mark all other referrals for this candidate as AcceptedInOtherPosition (but keep their status)
-    if (otherReferralIds.length > 0) {
-      transactionOperations.push(
-        prisma.referral.updateMany({
+      // Mark all other referrals for this candidate as AcceptedInOtherPosition
+      if (otherReferralIds.length > 0) {
+        await tx.referral.updateMany({
           where: {
             ReferralId: { in: otherReferralIds },
           },
           data: {
             AcceptedInOtherPosition: true,
           },
-        }),
-      );
+        });
+      }
     }
 
-    await prisma.$transaction(transactionOperations);
-  }
+    if (action === "Prospect") {
+      if (referral.Status === "Hired") {
+        throw new Error("Cannot prospect candidate who is already hired");
+      }
 
-  if (action === "Prospect") {
-    // Cannot prospect if already Hired
-    if (referral.Status === "Hired") {
-      throw new Error("Cannot prospect candidate who is already hired");
+      if (referral.AcceptedInOtherPosition) {
+        throw new Error("Cannot prospect candidate who is accepted in other position");
+      }
+
+      await tx.referral.update({
+        where: { ReferralId: referralId },
+        data: { Prospect: true },
+      });
     }
 
-    // Cannot prospect if AcceptedInOtherPosition is true
-    if (referral.AcceptedInOtherPosition) {
-      throw new Error("Cannot prospect candidate who is accepted in other position");
-    }
-
-    // Just set Prospect to true, don't change status
-    await prisma.referral.update({
+    return await tx.application.findUnique({
       where: { ReferralId: referralId },
-      data: { Prospect: true },
+      include: {
+        Candidate: true,
+        Referral: true,
+      },
     });
-  }
-
-  // Return updated application data
-  const updatedApplication = await prisma.application.findUnique({
-    where: { ReferralId: referralId },
-    include: {
-      Candidate: true,
-      Referral: true,
-    },
   });
+
   return updatedApplication;
 };
 
@@ -478,67 +482,69 @@ export const unprospectReferral = async (referralId, hrUser) => {
     throw new Error("Referral ID is required");
   }
 
-  const referral = await prisma.referral.findUnique({
-    where: { ReferralId: referralId },
-    include: {
-      Application: {
-        include: {
-          Position: {
-            include: {
-              Department: {
-                include: {
-                  Hrs: { include: { Hr: true } },
+  // ✅ ATOMIC: Move all validations and updates into transaction
+  const updatedApplication = await prisma.$transaction(async (tx) => {
+    // ✅ ATOMIC: Fetch referral with all necessary relations within transaction
+    const referral = await tx.referral.findUnique({
+      where: { ReferralId: referralId },
+      include: {
+        Application: {
+          include: {
+            Position: {
+              include: {
+                Department: {
+                  include: {
+                    Hrs: { include: { Hr: true } },
+                  },
                 },
               },
             },
           },
         },
       },
-    },
-  });
+    });
 
-  if (!referral) {
-    throw new Error("Referral not found");
-  }
+    if (!referral) {
+      throw new Error("Referral not found");
+    }
 
-  const belongsToHrDept = referral.Application.Position.Department.Hrs.some(
-    (hrDept) => hrDept.HrId === hrUser.HrId,
-  );
+    const belongsToHrDept = referral.Application.Position.Department.Hrs.some(
+      (hrDept) => hrDept.HrId === hrUser.HrId,
+    );
 
-  if (!belongsToHrDept) {
-    throw new Error("HR not allowed to update this referral");
-  }
+    if (!belongsToHrDept) {
+      throw new Error("HR not allowed to update this referral");
+    }
 
-  if (!referral.Prospect) {
-    throw new Error("Referral is not a prospect");
-  }
+    if (!referral.Prospect) {
+      throw new Error("Referral is not a prospect");
+    }
 
-  // Cannot unprospect if already Hired
-  if (referral.Status === "Hired") {
-    throw new Error("Cannot unprospect candidate who is already hired");
-  }
+    if (referral.Status === "Hired") {
+      throw new Error("Cannot unprospect candidate who is already hired");
+    }
 
-  // Cannot unprospect if AcceptedInOtherPosition is true
-  if (referral.AcceptedInOtherPosition) {
-    throw new Error("Cannot unprospect candidate who is accepted in other position");
-  }
+    if (referral.AcceptedInOtherPosition) {
+      throw new Error("Cannot unprospect candidate who is accepted in other position");
+    }
 
-  // Cannot unprospect if position is closed
-  if (referral.Application.Position.PositionState === "CLOSED") {
-    throw new Error("Cannot unprospect candidate for a closed position");
-  }
+    // ✅ ATOMIC: Validate position state within transaction
+    if (referral.Application.Position.PositionState === "CLOSED") {
+      throw new Error("Cannot unprospect candidate for a closed position");
+    }
 
-  await prisma.referral.update({
-    where: { ReferralId: referralId },
-    data: { Prospect: false },
-  });
+    await tx.referral.update({
+      where: { ReferralId: referralId },
+      data: { Prospect: false },
+    });
 
-  const updatedApplication = await prisma.application.findUnique({
-    where: { ReferralId: referralId },
-    include: {
-      Candidate: true,
-      Referral: true,
-    },
+    return await tx.application.findUnique({
+      where: { ReferralId: referralId },
+      include: {
+        Candidate: true,
+        Referral: true,
+      },
+    });
   });
 
   return updatedApplication;

@@ -2,15 +2,19 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
+import { validateParams } from "../middleware/validation.middleware.js";
+import Joi from "joi";
 
 const router = Router();
+
+// used this to test the timing on all the code with middlewares etc
 
 /**
  * Direct API endpoint with authentication and rate limiting
  * GET /api/direct/department/:id
  * Returns department with all relations included
  */
-router.get("/department/:id",generalLimiter, authenticate, async (req, res, next) => {
+router.get("/department/:id", generalLimiter, authenticate, validateParams(Joi.object({ id: Joi.string().uuid().required() })), async (req, res, next) => {
   const startTime = performance.now();
   
   try {

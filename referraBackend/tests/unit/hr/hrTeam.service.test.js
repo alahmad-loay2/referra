@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { getHrTeam } from "../../services/hr/hrTeam.service.js";
-import { prisma } from "../../lib/prisma.js";
+import { getHrTeam } from "../../../services/hr/hrTeam.service.js";
+import { prisma } from "../../../lib/prisma.js";
 
 test("getHrTeam returns paginated HR members with departments and stats (happy path)", async () => {
   const query = {

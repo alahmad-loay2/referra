@@ -91,6 +91,13 @@ const attachUser = async (req, supabaseUser, next) => {
   next();
 };
 
+export const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.Role !== "HR" || !req.user.Hr || !req.user.Hr.isAdmin) {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+  return next();
+}
+
 export const requireHr = (req, res, next) => {
   if (!req.user || req.user.Role !== "HR") {
     return res.status(403).json({ message: "HR access required" });
