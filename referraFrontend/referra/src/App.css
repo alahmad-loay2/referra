@@ -65,7 +65,23 @@ select {
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 12px;
+  background-color: var(--white);
+  color: black;
 }
+
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  font-size: var(--fs-small);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-light);
+  background-color: var(--white);
+  color: black;
+}
+
 
 
 @media (max-width: 768px) {
