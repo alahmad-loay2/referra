@@ -283,7 +283,7 @@ const HrReferrals = () => {
           <p>No referrals found</p>
         ) : (
           hrReferrals.map((ref) => (
-            <div className="candidate" key={ref.id}>
+            <div className="candidate" key={ref.ApplicationId}>
               <div className="cardLeft">
                 <div className="hr-referrals-avatar-name">
                   <div className="hr-referrals-avatar">

@@ -75,9 +75,6 @@ export const signin = async (email, password) => {
 export const logout = async () => {
   const res = await fetch(`${API_BASE_URL}/auth/logout`, {
     method: 'POST',
-    headers: {
-      'Idempotency-Key': await generateIdempotencyKey('/auth/logout', null),
-    },
     credentials: 'include',
   })
   return res.json()

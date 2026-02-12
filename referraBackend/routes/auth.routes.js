@@ -11,7 +11,8 @@ const authRoutes = Router();
 authRoutes.post("/signup", authLimiter, idempotencyMiddleware, validateBody(userBodySchemas.signup), signup);
 authRoutes.post("/signin", authLimiter, idempotencyMiddleware, validateBody(userBodySchemas.signin), signin);
 authRoutes.post("/verify-email", authLimiter, idempotencyMiddleware, validateBody(userBodySchemas.verifyEmail), verifyEmail);
-authRoutes.post("/logout", authenticate, idempotencyMiddleware, logout);
+// Logout should always execute immediately; no idempotency needed here
+authRoutes.post("/logout", authenticate, logout);
 authRoutes.post("/forgot-password", authLimiter, idempotencyMiddleware, validateBody(userBodySchemas.forgotPassword), forgotPasswordController);
 authRoutes.post("/reset-password", authLimiter, idempotencyMiddleware, validateBody(userBodySchemas.resetPassword), resetPasswordController);
 

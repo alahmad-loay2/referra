@@ -255,6 +255,11 @@
 
   font-size: var(--fs-small);
 }
+
+/* Prevent phone number from wrapping in Team Members table */
+.phone-text {
+  white-space: nowrap;
+}
 /* =======================
    SKELETON LOADING
 ======================= */
