@@ -1,10 +1,9 @@
 import { prisma } from "../../lib/prisma.js";
 
-
 // Get all HR members with their user data and departments
 // Returns total HR members count and total departments count
- 
-export const getHrTeam = async (query) => {
+
+export const getHrTeam = async (query, loggedInHrId) => {
   const page = Math.max(Number(query.page) || 1, 1);
   const limit = Math.min(Number(query.limit) || 10, 50);
   const skip = (page - 1) * limit;
@@ -12,6 +11,9 @@ export const getHrTeam = async (query) => {
   const { search, departmentId } = query;
 
   const whereClause = {};
+  if (!loggedInHrId) {
+    throw new Error("HR ID is required");
+  }
 
   if (search && search.trim() !== "") {
     whereClause.User = {
@@ -32,11 +34,11 @@ export const getHrTeam = async (query) => {
   }
 
   // Run all three queries in parallel for maximum performance
-  const [totalHrMembers, totalDepartments, hrMembers] = await Promise.all([
+  const [totalHrMembers, hrMembers, totalDepartments] = await Promise.all([
     prisma.hr.count({
       where: whereClause,
     }),
-    prisma.department.count(),
+
     prisma.hr.findMany({
       where: whereClause,
       include: {
@@ -51,13 +53,19 @@ export const getHrTeam = async (query) => {
       skip,
       take: limit,
     }),
+
+    // 🔥 This counts departments for the logged-in HR only
+    prisma.hrDepartment.count({
+      where: {
+        HrId: loggedInHrId,
+      },
+    }),
   ]);
 
   const formattedHrMembers = hrMembers.map((hr) => ({
     ...hr,
     departments: hr.Departments.map((hrDept) => hrDept.Department),
   }));
-
   return {
     page,
     pageSize: limit,
@@ -70,5 +78,3 @@ export const getHrTeam = async (query) => {
     },
   };
 };
-
-
