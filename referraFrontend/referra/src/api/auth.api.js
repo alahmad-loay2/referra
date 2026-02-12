@@ -1,3 +1,5 @@
+import { generateIdempotencyKey } from './idempotency.utils.js';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5500/api'
 
 export const signup = async (payload) => {
@@ -7,6 +9,7 @@ export const signup = async (payload) => {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
+        'Idempotency-Key': await generateIdempotencyKey('/auth/signup', payload),
       },
       credentials: 'include',
       body: JSON.stringify(payload),
@@ -41,6 +44,7 @@ export const signin = async (email, password) => {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
+        'Idempotency-Key': await generateIdempotencyKey('/auth/signin', body),
       },
       credentials: 'include',
       body: JSON.stringify(body),
@@ -82,6 +86,7 @@ export const verifyEmail = async (accessToken, refreshToken) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': await generateIdempotencyKey('/auth/verify-email', body),
     },
     credentials: 'include',
     body: JSON.stringify(body),
@@ -95,6 +100,7 @@ export const forgotPassword = async (email) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': await generateIdempotencyKey('/auth/forgot-password', body),
     },
     credentials: 'include',
     body: JSON.stringify(body),
@@ -112,6 +118,7 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': await generateIdempotencyKey('/auth/reset-password', body),
     },
     credentials: 'include',
     body: JSON.stringify(body),
@@ -137,6 +144,7 @@ export const createHr = async (payload) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': await generateIdempotencyKey('/auth/hr/create', payload),
     },
     credentials: 'include',
     body: JSON.stringify(payload),
