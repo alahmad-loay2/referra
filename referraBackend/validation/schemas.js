@@ -204,7 +204,8 @@ export const positionBodySchemas = {
     deadline: dateTimePattern.required(),
     positionLocation: varcharSchema(100),
     positionState: Joi.string().valid("OPEN", "CLOSED").default("OPEN"),
-    departmentId: uuidPattern,
+    // DepartmentId is stored as a string in Prisma; enforce non-empty string
+    departmentId: Joi.string().trim().required(),
     employmentType: Joi.string().valid("FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "TEMPORARY").required(),
   }),
   
@@ -221,7 +222,8 @@ export const positionBodySchemas = {
     deadline: dateTimePattern.optional(),
     positionLocation: optionalVarcharSchema(100),
     positionState: Joi.string().valid("OPEN", "CLOSED").optional(),
-    departmentId: uuidPattern.optional(),
+    // Optional department change, still just a string ID
+    departmentId: Joi.string().trim().optional(),
     employmentType: Joi.string().valid("FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "TEMPORARY").optional(),
   }),
   
