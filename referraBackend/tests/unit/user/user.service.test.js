@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import {
   getUserInfo,
   updateUserInfo,
-} from "../../services/user/user.service.js";
-import { prisma } from "../../lib/prisma.js";
+} from "../../../services/user/user.service.js";
+import { prisma } from "../../../lib/prisma.js";
 
 test("getUserInfo returns user with role-specific relations", async () => {
   const userId = 1;

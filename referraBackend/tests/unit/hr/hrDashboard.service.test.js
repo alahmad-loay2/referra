@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { getHrDashboard } from "../../services/hr/hrDashboard.service.js";
-import { prisma } from "../../lib/prisma.js";
+import { getHrDashboard } from "../../../services/hr/hrDashboard.service.js";
+import { prisma } from "../../../lib/prisma.js";
 
 test("getHrDashboard returns aggregated stats for HR departments", async () => {
   const hr = {

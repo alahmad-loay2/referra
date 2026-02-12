@@ -243,7 +243,7 @@ export const bootstrapFirstHr = async (payload) => {
     age,
     phoneNumber,
     gender,
-    departmentId,
+    departmentName,
     admin = true, // default to true for the first HR
   } = payload || {};
 
@@ -255,23 +255,23 @@ export const bootstrapFirstHr = async (payload) => {
     !age ||
     !phoneNumber ||
     !gender ||
-    !departmentId
+    !departmentName
   ) {
     const error = new Error(
-      "email, password, firstName, lastName, age, phoneNumber, gender, departmentId are required",
+      "email, password, firstName, lastName, age, phoneNumber, gender, departmentName are required",
     );
     error.statusCode = 400;
     throw error;
   }
-  const department = await prisma.department.findUnique({
-    where: { DepartmentId: departmentId },
-  });
 
-  if (!department) {
-    const error = new Error("Department not found");
-    error.statusCode = 404;
-    throw error;
-  }
+  // Create or reuse a department for the first HR by name
+  const department = await prisma.department.upsert({
+    where: { DepartmentName: departmentName },
+    update: {},
+    create: {
+      DepartmentName: departmentName,
+    },
+  });
 
   const existingHr = await prisma.hr.findFirst();
   if (existingHr) {
@@ -300,7 +300,7 @@ export const bootstrapFirstHr = async (payload) => {
         phoneNumber,
         gender,
         role: "HR",
-        departmentId,
+        departmentId: department.DepartmentId,
         isAdmin: admin,
       },
     },
@@ -343,7 +343,7 @@ export const bootstrapFirstHr = async (payload) => {
   await prisma.hrDepartment.create({
     data: {
       HrId: user.Hr.HrId,
-      DepartmentId: departmentId,
+      DepartmentId: department.DepartmentId,
     },
   });
 

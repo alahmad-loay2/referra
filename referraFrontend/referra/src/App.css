@@ -52,6 +52,14 @@ body {
   min-width: 320px;
 }
 
+select {
+  font-size: var(--fs-small);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-light);
+  position: relative;
+}
+
 
 @media (max-width: 768px) {
   :root {

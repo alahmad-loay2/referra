@@ -8,9 +8,9 @@ import {
   getEmployeeReferrals,
   editCandidate,
   getEmployeeReferralDetails,
-} from "../../services/employee/employeeReferrals.service.js";
-import { prisma } from "../../lib/prisma.js";
-import { supabase } from "../../lib/supabase.js";
+} from "../../../services/employee/employeeReferrals.service.js";
+import { prisma } from "../../../lib/prisma.js";
+import { supabase } from "../../../lib/supabase.js";
 import { createClient } from "@supabase/supabase-js";
 
 test("createReferral creates candidate, referral and application for open position", async () => {

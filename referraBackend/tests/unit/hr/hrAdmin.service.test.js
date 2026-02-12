@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { createDepartment } from "../../services/hr/hrAdmin.service.js";
-import { prisma } from "../../lib/prisma.js";
+import { createDepartment } from "../../../services/hr/hrAdmin.service.js";
+import { prisma } from "../../../lib/prisma.js";
 
 test("createDepartment creates a new department successfully", async () => {
   const departmentName = "Engineering";

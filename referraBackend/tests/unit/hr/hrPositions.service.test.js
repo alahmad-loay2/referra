@@ -8,8 +8,8 @@ import {
   getHrPositions,
   getHrPositionDetails,
   getDepartmentsByHr,
-} from "../../services/hr/hrPositions.service.js";
-import { prisma } from "../../lib/prisma.js";
+} from "../../../services/hr/hrPositions.service.js";
+import { prisma } from "../../../lib/prisma.js";
 
 test("createPosition creates a position successfully", async () => {
   const payload = {

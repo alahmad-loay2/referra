@@ -58,7 +58,7 @@ export const idempotencyMiddleware = async (req, res, next) => {
     if (existingKey && new Date(existingKey.ExpiresAt) > new Date()) {
       // Verify it's for the same endpoint
       if (existingKey.Method === method && existingKey.Path === path) {
-        // Optional: verify request hash matches (for extra safety)
+        //  verify request hash matches (for extra safety)
         if (existingKey.RequestHash && existingKey.RequestHash !== requestHash) {
           return res.status(409).json({
             success: false,

@@ -7,8 +7,8 @@ import {
   advanceReferralStage,
   finalizeReferral,
   unprospectReferral,
-} from "../../services/hr/hrReferrals.service.js";
-import { prisma } from "../../lib/prisma.js";
+ } from "../../../services/hr/hrReferrals.service.js";
+import { prisma } from "../../../lib/prisma.js";
 
 test("getAllConfirmedReferrals returns paginated referrals for HR", async () => {
   const params = {
