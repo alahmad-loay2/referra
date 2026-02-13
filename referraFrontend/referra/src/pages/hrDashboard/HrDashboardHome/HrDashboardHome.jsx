@@ -99,18 +99,16 @@ const HrDashboardHome = () => {
             <>
               {[...Array(3)].map((_, index) => (
                 <div key={`skeleton-${index}`} className="hr-dashboard-home-candidate-skeleton">
-                  <div className="hr-dashboard-home-skeleton-card-left">
-                    <div className="hr-dashboard-home-recent-avatar-name-skeleton">
-                      <div className="hr-dashboard-home-recent-avatar-skeleton"></div>
-                      <div className="hr-dashboard-home-skeleton-name"></div>
-                    </div>
-                    <div className="hr-dashboard-home-skeleton-email"></div>
+                  <div className="hr-dashboard-home-skeleton-button"></div>
+                  <div className="hr-dashboard-home-recent-avatar-name-skeleton">
+                    <div className="hr-dashboard-home-recent-avatar-skeleton"></div>
+                    <div className="hr-dashboard-home-skeleton-name"></div>
                   </div>
-                  <div className="hr-dashboard-home-skeleton-card-right">
+                  <div className="hr-dashboard-home-skeleton-meta-row">
                     <div className="hr-dashboard-home-skeleton-text-small"></div>
                     <div className="hr-dashboard-home-skeleton-text-small"></div>
                     <div className="hr-dashboard-home-skeleton-text-small"></div>
-                    <div className="hr-dashboard-home-skeleton-button"></div>
+                    <div className="hr-dashboard-home-skeleton-text-small"></div>
                   </div>
                 </div>
               ))}
@@ -124,36 +122,32 @@ const HrDashboardHome = () => {
                   className="candidate"
                   key={referral.ApplicationId}
                 >
-                  <div className="cardLeft">
-                    <div className="hr-dashboard-home-recent-avatar-name">
-                      <div className="hr-dashboard-home-recent-avatar">
-                        {referral.Candidate.FirstName?.[0]}
-                        {referral.Candidate.LastName?.[0]}
-                      </div>
-                      <p>{fullName}</p>
+                  <div className="hr-dashboard-home-recent-avatar-name">
+                    <div className="hr-dashboard-home-recent-avatar">
+                      {referral.Candidate.FirstName?.[0]}
+                      {referral.Candidate.LastName?.[0]}
                     </div>
-                    <div className="candidate-meta">
-                      <span className="iconText candidate-meta-item">
-                        <Mail size={14} />
-                        <span className="iconTextLabel">{referral.Candidate.Email}</span>
-                      </span>
-                      {referral.Position?.PositionTitle && (
-                        <span className="iconText candidate-meta-item">
-                          <Briefcase size={14} />
-                          <span className="iconTextLabel">{referral.Position.PositionTitle}</span>
-                        </span>
-                      )}
-                    </div>
+                    <p>{fullName}</p>
                   </div>
-                  <div className="cardRight">
+                  <div className="candidate-meta-row">
+                    <span className="iconText candidate-meta-item">
+                      <Mail size={14} />
+                      <span className="iconTextLabel">{referral.Candidate.Email}</span>
+                    </span>
+                    {referral.Position?.PositionTitle && (
+                      <span className="iconText candidate-meta-item">
+                        <Briefcase size={14} />
+                        <span className="iconTextLabel">{referral.Position.PositionTitle}</span>
+                      </span>
+                    )}
                     {referral.Referral?.Status && (
-                      <span className="iconText">
+                      <span className="iconText candidate-meta-item">
                         <Clock size={14} />
                         <span className="iconTextLabel">{referral.Referral.Status}</span>
                       </span>
                     )}
                     {referral.Referral?.CreatedAt && (
-                      <span className="iconText">
+                      <span className="iconText candidate-meta-item">
                         <Calendar size={14} />
                         <span className="iconTextLabel">
                           {new Date(referral.Referral.CreatedAt).toLocaleDateString("en-CA", {
@@ -164,14 +158,14 @@ const HrDashboardHome = () => {
                         </span>
                       </span>
                     )}
-                    <button
-                      type="button"
-                      className="referral-details-btn"
-                      onClick={() => handleOpenReferralDetails(referralId)}
-                    >
-                      Referral Details
-                    </button>
                   </div>
+                  <button
+                    type="button"
+                    className="referral-details-btn"
+                    onClick={() => handleOpenReferralDetails(referralId)}
+                  >
+                    Referral Details
+                  </button>
                 </div>
               );
             })

@@ -332,7 +332,7 @@ const HrCreatePosition = () => {
             </div>
           </div>
 
-          <div className="formGroup">
+          <div className="formGroup description">
             <div className="labelInput">
               <label>Description*</label>
               <textarea

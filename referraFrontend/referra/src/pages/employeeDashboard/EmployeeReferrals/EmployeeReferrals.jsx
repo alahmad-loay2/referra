@@ -3,6 +3,7 @@ import { Search, Mail, Calendar, Briefcase, Check, X } from "lucide-react";
 import { fetchEmployeeApplications } from "../../../api/employeeReferrals.api";
 import Button from "../../../components/button/Button";
 import { getPaginationPages } from "../../../utils/pagination";
+import NormalSelect from "../../../components/normalSelect/NormalSelect";
 
 import "./EmployeeReferrals.css";
 const STATUS_ORDER = [
@@ -98,18 +99,20 @@ const EmployeeReferrals = () => {
           </div>
 
           <div className="selectCon">
-            <select
+            <NormalSelect
               value={statusInput}
-              onChange={(e) => setStatusInput(e.target.value)}
-            >
-              <option value="">All status</option>
-              <option value="Pending">Pending</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="InterviewOne">Interview 1</option>
-              <option value="InterviewTwo">Interview 2</option>
-              <option value="Acceptance">Acceptance</option>
-              <option value="Hired">Hired</option>
-            </select>
+              onChange={setStatusInput}
+              options={[
+                { value: "", label: "All status" },
+                { value: "Pending", label: "Pending" },
+                { value: "Confirmed", label: "Confirmed" },
+                { value: "InterviewOne", label: "Interview 1" },
+                { value: "InterviewTwo", label: "Interview 2" },
+                { value: "Acceptance", label: "Acceptance" },
+                { value: "Hired", label: "Hired" },
+              ]}
+              placeholder="All status"
+            />
 
             <input
               type="date"

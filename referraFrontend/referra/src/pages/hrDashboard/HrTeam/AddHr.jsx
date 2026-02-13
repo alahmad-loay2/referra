@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { createHr } from "../../../api/auth.api";
 import { getHrDepartments } from "../../../api/hrPositions.api";
+import NormalSelect from "../../../components/normalSelect/NormalSelect";
 import "./AddHr.css";
 
 const AddHr = ({ onClose, onSuccess }) => {
@@ -170,6 +171,22 @@ const AddHr = ({ onClose, onSuccess }) => {
               />
             </div>
 
+            {/* GENDER */}
+            <div className="form-group">
+              <label>Gender *</label>
+              <NormalSelect
+                name="hr-gender"
+                value={gender}
+                onChange={(val) => setGender(val)}
+                options={[
+                  { value: "Male", label: "Male" },
+                  { value: "Female", label: "Female" },
+                  { value: "Other", label: "Other" },
+                ]}
+                placeholder="Select gender"
+              />
+            </div>
+
             {/* AGE */}
             <div className="form-group">
               <label>Age *</label>
@@ -188,16 +205,6 @@ const AddHr = ({ onClose, onSuccess }) => {
                 name="hr-phone"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-              />
-            </div>
-
-            {/* GENDER */}
-            <div className="form-group">
-              <label>Gender *</label>
-              <input
-                name="hr-gender"
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
               />
             </div>
           </form>

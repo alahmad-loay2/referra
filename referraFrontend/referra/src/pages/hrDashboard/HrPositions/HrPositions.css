@@ -166,6 +166,25 @@
   background-color: var(--gray-light);
 }
 
+.positionsTable th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.positionsTable th.sortable:hover {
+  background-color: #e0e0e0;
+}
+
+.positionsTable th.sortable .sort-icon {
+  margin-left: 6px;
+  display: inline-block;
+  vertical-align: middle;
+  color: var(--gray-dark);
+}
+
 .positionsTable td button {
   border: none;
   background: none;
@@ -488,4 +507,55 @@
   .position-confirm-modal-actions button {
     width: 100%;
   }
+}
+
+/* Delete Action Button */
+.actions-dropdown .delete-action-button {
+  color: #dc3545;
+}
+
+.actions-dropdown .delete-action-button:hover {
+  background-color: #fee !important;
+  color: #c82333 !important;
+}
+
+/* Delete Confirmation Input */
+.delete-confirm-input-wrapper {
+  margin-bottom: 24px;
+}
+
+.delete-confirm-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  font-size: var(--fs-medium);
+  color: var(--gray-dark);
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.delete-confirm-input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+}
+
+.delete-confirm-input::placeholder {
+  color: var(--gray-dark);
+  opacity: 0.5;
+}
+
+/* Delete Submit Button */
+.delete-submit-button {
+  background: #dc3545 !important;
+}
+
+.delete-submit-button:hover:not(:disabled) {
+  background: #c82333 !important;
+  opacity: 1;
+}
+
+.delete-submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

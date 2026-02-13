@@ -26,6 +26,7 @@ import {
   finalizeReferral,
   unprospectReferral,
 } from "../../../api/hrReferralActions.api";
+import Loading from "../../../components/loading/Loading";
 import "./HrReferralDetails.css";
 
 const STATUS_ORDER = [
@@ -221,9 +222,11 @@ const HrReferralDetails = () => {
   if (loading || !referralData) {
     return (
       <div className="hr-referral-hd-container">
-        <div className="hr-referral-hd-loading">
-          {error || "Loading referral details…"}
-        </div>
+        {error ? (
+          <div className="hr-referral-hd-loading">{error}</div>
+        ) : (
+          <Loading />
+        )}
       </div>
     );
   }

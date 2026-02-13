@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./HrPositions.css";
-import { Briefcase, Users, Layers, Search, MoreVertical } from "lucide-react";
+import { Briefcase, Users, Layers, Search, MoreVertical, ArrowUp, ArrowDown } from "lucide-react";
 import Button from "../../../components/button/Button";
 import {
   getHrPositions,
   updatePositionState,
   getHrDepartments,
+  deletePosition,
 } from "../../../api/hrPositions.api.js";
 import Loading from "../../../components/loading/Loading.jsx";
 import { useNavigate } from "react-router-dom";
 import { getPaginationPages } from "../../../utils/pagination";
+import NormalSelect from "../../../components/normalSelect/NormalSelect";
 
 const HrPositions = () => {
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ const HrPositions = () => {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
   const [searchInput, setSearchInput] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("OPEN");
   const [departmentId, setDepartmentId] = useState("");
   const [error, setError] = useState(false);
   const [positionsLoading, setPositionsLoading] = useState(false);
@@ -33,12 +35,17 @@ const HrPositions = () => {
   const [departments, setDepartments] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   const [filters, setFilters] = useState({
     search: "",
-    status: "",
+    status: "OPEN",
     departmentId: "",
   });
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
 
   const handleToggleState = (positionId, currentState) => {
     const newState = currentState === "OPEN" ? "CLOSED" : "OPEN";
@@ -108,6 +115,9 @@ const HrPositions = () => {
           search: filters.search,
           status: filters.status,
           departmentId: filters.departmentId,
+          // Only send sortBy/sortOrder if they're set (not empty)
+          sortBy: sortBy && sortBy !== "Applicants" ? sortBy : "", 
+          sortOrder: sortBy && sortBy !== "Applicants" ? sortOrder : "",
         });
 
         if (!data || !data.positions) {
@@ -116,8 +126,21 @@ const HrPositions = () => {
           setError(true);
           return;
         }
+        
+        let positions = data.positions || [];
+        
+        // Client-side sort for applicants count
+        if (sortBy === "Applicants") {
+          positions = [...positions].sort((a, b) => {
+            const aCount = a.applicantsCount || 0;
+            const bCount = b.applicantsCount || 0;
+            return sortOrder === "asc" 
+              ? aCount - bCount 
+              : bCount - aCount;
+          });
+        }
 
-        setHrPositions(data.positions);
+        setHrPositions(positions);
         setTotalPages(data.totalPages);
 
         // Set stats from the merged response
@@ -136,7 +159,7 @@ const HrPositions = () => {
     };
 
     fetchHrPositions();
-  }, [page, filters]);
+  }, [page, filters, sortBy, sortOrder]);
 
   const handleApplyFilters = () => {
     setPage(1);
@@ -145,6 +168,61 @@ const HrPositions = () => {
       status,
       departmentId,
     });
+  };
+
+  const handleSort = (column) => {
+    // Map column names to sortBy values
+    const columnMap = {
+      Position: "PositionTitle",
+      Company: "CompanyName",
+      Department: "DepartmentId",
+      Location: "PositionLocation",
+      Deadline: "Deadline",
+      Applicants: "Applicants",
+    };
+
+    const newSortBy = columnMap[column] || column;
+    
+    // Three-state cycle: desc -> asc -> default (no sort)
+    if (sortBy === newSortBy) {
+      if (sortOrder === "desc") {
+        // Second click: change to asc
+        setSortOrder("asc");
+      } else if (sortOrder === "asc") {
+        // Third click: reset to default (no sort)
+        setSortBy("");
+        setSortOrder("");
+      }
+    } else {
+      // First click on new column: default to desc
+      setSortBy(newSortBy);
+      setSortOrder("desc");
+    }
+    setPage(1); // Reset to first page when sorting changes
+  };
+
+  const getSortIcon = (column) => {
+    const columnMap = {
+      Position: "PositionTitle",
+      Company: "CompanyName",
+      Department: "DepartmentId",
+      Location: "PositionLocation",
+      Deadline: "Deadline",
+      Applicants: "Applicants",
+    };
+    
+    const currentSortBy = columnMap[column] || column;
+    
+    // No icon if not the active sort column or if sorting is reset
+    if (sortBy !== currentSortBy || !sortBy) {
+      return null;
+    }
+    
+    return sortOrder === "asc" ? (
+      <ArrowUp size={14} className="sort-icon" />
+    ) : (
+      <ArrowDown size={14} className="sort-icon" />
+    );
   };
 
   const goToPage = (newPage) => {
@@ -176,6 +254,54 @@ const HrPositions = () => {
   const handleViewDetails = (positionId) => {
     setOpenDropdown(null);
     navigate(`/dashboard/hr/referrals?positionId=${positionId}`);
+  };
+
+  const handleDeletePosition = (position) => {
+    setOpenDropdown(null);
+    setPendingDelete(position);
+    setDeleteConfirmText("");
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeletePosition = async () => {
+    if (!pendingDelete) return;
+
+    // Check if the typed name matches the position title
+    if (deleteConfirmText.trim() !== pendingDelete.PositionTitle) {
+      alert("Position name does not match. Please type the exact position name.");
+      return;
+    }
+
+    const positionToDelete = pendingDelete;
+    setShowDeleteModal(false);
+    setPendingDelete(null);
+    setDeleteConfirmText("");
+
+    try {
+      await deletePosition(positionToDelete.PositionId);
+      
+      // Remove the position from the list
+      setHrPositions((prev) =>
+        prev.filter((p) => p.PositionId !== positionToDelete.PositionId)
+      );
+      
+      // Update stats
+      setStats((prev) => ({
+        ...prev,
+        totalPositions: Math.max(0, prev.totalPositions - 1),
+        openPositions: positionToDelete.PositionState === "OPEN" 
+          ? Math.max(0, prev.openPositions - 1)
+          : prev.openPositions,
+      }));
+    } catch (err) {
+      alert(err.message || "Failed to delete position");
+    }
+  };
+
+  const cancelDeletePosition = () => {
+    setShowDeleteModal(false);
+    setPendingDelete(null);
+    setDeleteConfirmText("");
   };
 
   useEffect(() => {
@@ -239,27 +365,30 @@ const HrPositions = () => {
           <Search className="searchIcon" size={16} />
         </div>
         <div className="selectContainer">
-          <select
+          <NormalSelect
             name="departments"
             value={departmentId}
-            onChange={(e) => setDepartmentId(e.target.value)}
-          >
-            <option value="">All Departments</option>
-            {departments.map((dept) => (
-              <option key={dept.DepartmentId} value={dept.DepartmentId}>
-                {dept.DepartmentName}
-              </option>
-            ))}
-          </select>
-          <select
+            onChange={setDepartmentId}
+            options={[
+              { value: "", label: "All Departments" },
+              ...departments.map((dept) => ({
+                value: dept.DepartmentId,
+                label: dept.DepartmentName,
+              })),
+            ]}
+            placeholder="All Departments"
+          />
+          <NormalSelect
             name="status"
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            <option value="">All Status</option>
-            <option value="OPEN">Open</option>
-            <option value="CLOSED">Closed</option>
-          </select>
+            onChange={setStatus}
+            options={[
+              { value: "", label: "All Status" },
+              { value: "OPEN", label: "Open" },
+              { value: "CLOSED", label: "Closed" },
+            ]}
+            placeholder="All Status"
+          />
           <button className="apply-btn" onClick={handleApplyFilters}>
             Apply
           </button>
@@ -276,12 +405,24 @@ const HrPositions = () => {
           <table className="positionsTable">
             <thead>
               <tr>
-                <th>Position</th>
-                <th>Company</th>
-                <th>Department</th>
-                <th>Location</th>
-                <th>Applicants</th>
-                <th>Posted</th>
+                <th className="sortable" onClick={() => handleSort("Position")}>
+                  Position {getSortIcon("Position")}
+                </th>
+                <th className="sortable" onClick={() => handleSort("Company")}>
+                  Company {getSortIcon("Company")}
+                </th>
+                <th className="sortable" onClick={() => handleSort("Department")}>
+                  Department {getSortIcon("Department")}
+                </th>
+                <th className="sortable" onClick={() => handleSort("Location")}>
+                  Location {getSortIcon("Location")}
+                </th>
+                <th className="sortable" onClick={() => handleSort("Applicants")}>
+                  Applicants {getSortIcon("Applicants")}
+                </th>
+                <th className="sortable" onClick={() => handleSort("Deadline")}>
+                  Deadline {getSortIcon("Deadline")}
+                </th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -326,7 +467,7 @@ const HrPositions = () => {
                     <td>{p.Department?.DepartmentName || "-"}</td>
                     <td>{p.PositionLocation}</td>
                     <td>{p.applicantsCount}</td>
-                    <td>{new Date(p.CreatedAt).toLocaleDateString()}</td>
+                    <td>{p.Deadline ? new Date(p.Deadline).toLocaleDateString() : "-"}</td>
                     <td>
                       <div className="statusWrapper">
                         <label className="switch">
@@ -368,6 +509,12 @@ const HrPositions = () => {
                               onClick={() => handleViewDetails(p.PositionId)}
                             >
                               View Details
+                            </button>
+                            <button
+                              onClick={() => handleDeletePosition(p)}
+                              className="delete-action-button"
+                            >
+                              Delete Position
                             </button>
                           </div>
                         )}
@@ -470,6 +617,55 @@ const HrPositions = () => {
                 onClick={confirmToggleState}
               >
                 {pendingAction.newState === "CLOSED" ? "Close" : "Open"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && pendingDelete && (
+        <div className="position-confirm-modal-overlay">
+          <div className="position-confirm-modal">
+            <h3>Delete Position?</h3>
+            <p>
+              This action cannot be undone. This will permanently delete:
+              <br />
+              <br />
+              <strong>• The position "{pendingDelete.PositionTitle}"</strong>
+              <br />
+              • All referrals associated with this position
+              <br />
+              • All applications for this position
+              <br />
+              • Candidates that have no other referrals
+              <br />
+              <br />
+              To confirm, please type the position name below:
+            </p>
+            <div className="delete-confirm-input-wrapper">
+              <input
+                type="text"
+                className="delete-confirm-input"
+                placeholder={pendingDelete.PositionTitle}
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="position-confirm-modal-actions">
+              <button
+                className="position-confirm-cancel"
+                onClick={cancelDeletePosition}
+              >
+                Cancel
+              </button>
+              <button
+                className="position-confirm-submit delete-submit-button"
+                onClick={confirmDeletePosition}
+                disabled={deleteConfirmText.trim() !== pendingDelete.PositionTitle}
+              >
+                Delete Position
               </button>
             </div>
           </div>

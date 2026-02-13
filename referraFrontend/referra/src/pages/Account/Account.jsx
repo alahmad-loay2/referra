@@ -4,6 +4,7 @@ import "./Account.css";
 import { getUserInfo, updateUserInfo, updateProfilePicture } from "../../api/user.api.js";
 import Loading from "../../components/loading/Loading.jsx";
 import { useUserStore } from "../../store/userStore.js";
+import NormalSelect from "../../components/normalSelect/NormalSelect";
 
 const Account = () => {
   const [profileData, setProfileData] = useState(null);
@@ -113,7 +114,14 @@ const Account = () => {
       setIsSaving(true);
       setUpdateError("");
       setUpdateSuccess("");
-      const updatedData = await updateUserInfo(formData);
+      // Remove department and position for HR users only - they're not allowed in the schema
+      const payloadToSend = profileData?.Role === "HR" 
+        ? (() => {
+            const { department, position, ...rest } = formData;
+            return rest;
+          })()
+        : formData;
+      const updatedData = await updateUserInfo(payloadToSend);
       setProfileData(updatedData);
       // Update Zustand store with new firstName if it was changed
       if (updatedData?.FirstName) {
@@ -505,15 +513,21 @@ const Account = () => {
                     <p>{profileData.PhoneNumber}</p>
                   )}
                 </div>
-                <div className="personalInformationContentItem">
+                <div className="personalInformationContentItem personalInformationContentItemGender">
                   <h4>Gender</h4>
                   {isEditMode ? (
-                    <input
-                      type="text"
+                    <NormalSelect
                       name="gender"
                       value={formData.gender || ""}
-                      onChange={handleInputChange}
-                      className="accountInput"
+                      onChange={(val) =>
+                        setFormData((prev) => ({ ...prev, gender: val }))
+                      }
+                      options={[
+                        { value: "Male", label: "Male" },
+                        { value: "Female", label: "Female" },
+                        { value: "Other", label: "Other" },
+                      ]}
+                      placeholder="Select gender"
                     />
                   ) : (
                     <p>{profileData.Gender}</p>

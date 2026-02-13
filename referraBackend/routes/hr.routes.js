@@ -7,7 +7,7 @@ import {
   FinalizeReferral,
   AdvanceReferralStage,
   getConfirmedReferralDetails,
-  // DeletePosition,
+  DeletePosition,
   getHrPositionsController,
   getHrPositionDetailsController,
   getHrDepartmentsController,
@@ -67,13 +67,14 @@ router.get(
 );
 
 //  DELETE POSITION
-/*router.delete(
+router.delete(
   "/positions/:positionId",
   generalLimiter,
   authenticate,
   requireHr,
+  validateParams(paramsSchemas.positionId),
   DeletePosition,
-);*/
+);
 
 router.get(
   "/referrals",

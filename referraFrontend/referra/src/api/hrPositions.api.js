@@ -31,6 +31,8 @@ export const getHrPositions = async ({
   search = "",
   status = "",
   departmentId = "",
+  sortBy = "",
+  sortOrder = "",
 } = {}) => {
   const params = new URLSearchParams();
 
@@ -40,6 +42,8 @@ export const getHrPositions = async ({
   if (search) params.append("search", search);
   if (status) params.append("status", status);
   if (departmentId) params.append("departmentId", departmentId);
+  if (sortBy) params.append("sortBy", sortBy);
+  if (sortOrder) params.append("sortOrder", sortOrder);
 
   try {
     const res = await fetch(
@@ -172,6 +176,28 @@ export const getHrDepartments = async () => {
     return await res.json();
   } catch (error) {
     console.error("getHrDepartments error:", error);
+    throw error;
+  }
+};
+
+export const deletePosition = async (positionId) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/hr/positions/${positionId}`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to delete position");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("deletePosition error:", error);
     throw error;
   }
 };

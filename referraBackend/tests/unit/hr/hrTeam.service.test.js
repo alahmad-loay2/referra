@@ -29,11 +29,11 @@ test("getHrTeam returns paginated HR members with departments and stats (happy p
   ];
 
   const originalHrCount = prisma.hr?.count;
-  const originalDeptCount = prisma.department?.count;
+  const originalHrDeptCount = prisma.hrDepartment?.count;
   const originalHrFindMany = prisma.hr?.findMany;
 
   prisma.hr.count = async () => 1;
-  prisma.department.count = async () => 5;
+  prisma.hrDepartment.count = async () => 5;
   prisma.hr.findMany = async (args) => {
     // basic sanity: where clause should respect search/department filters
     assert.ok(args.where);
@@ -41,7 +41,8 @@ test("getHrTeam returns paginated HR members with departments and stats (happy p
   };
 
   try {
-    const result = await getHrTeam(query);
+    const loggedInHrId = 1;
+    const result = await getHrTeam(query, loggedInHrId);
 
     assert.equal(result.page, 1);
     assert.equal(result.pageSize, 10);
@@ -57,7 +58,7 @@ test("getHrTeam returns paginated HR members with departments and stats (happy p
     assert.equal(result.stats.totalDepartments, 5);
   } finally {
     prisma.hr.count = originalHrCount;
-    prisma.department.count = originalDeptCount;
+    prisma.hrDepartment.count = originalHrDeptCount;
     prisma.hr.findMany = originalHrFindMany;
   }
 });

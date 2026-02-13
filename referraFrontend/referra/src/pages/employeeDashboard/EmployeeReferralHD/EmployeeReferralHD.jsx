@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Mail, Calendar, Briefcase, Check, ArrowLeft, Edit, Trash2, User, Award, Download, FileText, Clock, MapPin, Circle, Upload, X, Building2, Users, Phone } from "lucide-react";
 import { fetchEmployeeReferralDetails, editCandidate, deleteCandidate } from "../../../api/employeeReferrals.api";
+import Loading from "../../../components/loading/Loading";
 import "./EmployeeReferralHD.css";
 
 const STATUS_ORDER = [
@@ -171,7 +172,7 @@ const EmployeeReferralHD = () => {
   if (loading) {
     return (
       <div className="referral-hd-container">
-        <div className="referral-hd-loading">Loading referral details…</div>
+        <Loading />
       </div>
     );
   }

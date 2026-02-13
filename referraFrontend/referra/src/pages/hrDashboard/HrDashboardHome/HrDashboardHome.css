@@ -125,23 +125,21 @@
     padding: 20px;
     border-radius: var(--radius-md);
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    flex-direction: column;
     width: 100%;
     max-width: 100%;
-    gap: var(--gap-lg);
-}
-
-.candidate .cardLeft {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
+    gap: var(--gap-md);
+    position: relative;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .hr-dashboard-home-recent-avatar-name {
     display: flex;
     align-items: center;
     gap: var(--gap-md);
+    width: calc(100% - 150px);
 }
 
 .hr-dashboard-home-recent-avatar {
@@ -164,48 +162,54 @@
     gap: var(--gap-md);
 }
 
-.candidate .cardRight {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-}
-
 .candidate p {
     font-size: var(--fs-large);
     margin: 0;
+    font-weight: 500;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .candidate span {
     font-size: var(--fs-medium);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
-.candidate .cardRight span {
-    opacity: .9;
-}
-
-.candidate-meta {
+.candidate-meta-row {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-left: 52px; /* avatar width (36px) + gap (16px) = 52px to align under name */
+    flex-wrap: wrap;
+    gap: var(--gap-lg);
+    align-items: center;
+    margin-left: 58px; /* avatar width (42px) + gap (16px) = 58px to align under name */
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .candidate-meta-item {
     opacity: 0.7;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .iconText {
     display: flex;
     align-items: center;
     gap: var(--gap-sm);
+    flex-wrap: wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .iconTextLabel {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .candidate .referral-details-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
     padding: 8px 14px;
     border-radius: var(--radius-md);
     border: none;
@@ -213,7 +217,6 @@
     color: var(--white);
     font-size: var(--fs-small);
     cursor: pointer;
-    margin-top: 8px;
     width: fit-content;
 }
 
@@ -227,27 +230,18 @@
     padding: 20px;
     border-radius: var(--radius-md);
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    flex-direction: column;
     width: 100%;
-    gap: var(--gap-lg);
+    gap: var(--gap-md);
     animation: hr-dashboard-home-skeleton-pulse 1.5s ease-in-out infinite;
     overflow: hidden;
-}
-
-.hr-dashboard-home-skeleton-card-left {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-    width: 60%;
-    min-width: 0;
-    flex: 1;
+    position: relative;
 }
 
 .hr-dashboard-home-recent-avatar-skeleton {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
     border-radius: 50%;
     background: linear-gradient(
         90deg,
@@ -260,18 +254,9 @@
     flex-shrink: 0;
 }
 
-.hr-dashboard-home-skeleton-card-right {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-    min-width: 0;
-    flex: 1;
-    align-items: flex-end;
-}
-
 .hr-dashboard-home-skeleton-name {
     height: 24px;
-    width: 70%;
+    width: 200px;
     max-width: 100%;
     background: linear-gradient(
         90deg,
@@ -284,19 +269,12 @@
     animation: hr-dashboard-home-skeleton-shimmer 1.5s infinite;
 }
 
-.hr-dashboard-home-skeleton-email {
-    height: 16px;
-    width: 85%;
-    max-width: 100%;
-    background: linear-gradient(
-        90deg,
-        #e8e8e8 25%,
-        #f0f0f0 50%,
-        #e8e8e8 75%
-    );
-    background-size: 200% 100%;
-    border-radius: var(--radius-sm);
-    animation: hr-dashboard-home-skeleton-shimmer 1.5s infinite;
+.hr-dashboard-home-skeleton-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-md);
+    align-items: center;
+    margin-left: 58px;
 }
 
 .hr-dashboard-home-skeleton-text-small {
@@ -315,10 +293,11 @@
 }
 
 .hr-dashboard-home-skeleton-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
     height: 28px;
     width: 120px;
-    max-width: 100%;
-    margin-top: 8px;
     background: linear-gradient(
         90deg,
         #e8e8e8 25%,
@@ -349,38 +328,51 @@
 }
 
 @media (max-width: 768px) {
+    .hr-dashboard-home-recent-avatar-name {
+        width: 100%;
+    }
+    
     .hr-dashboard-home-recent-avatar {
-        display: none;
+        width: 36px;
+        height: 36px;
+        font-size: var(--fs-small);
     }
 
-    .candidate-meta {
+    .candidate-meta-row {
         margin-left: 0;
+        margin-top: var(--gap-sm);
     }
 
-    .hr-dashboard-home-candidate-skeleton {
-        flex-direction: column;
-    }
-
-    .hr-dashboard-home-skeleton-card-left {
-        width: 100%;
-    }
-
-    .hr-dashboard-home-skeleton-card-right {
-        width: 100%;
+    .candidate .referral-details-btn {
+        position: static;
+        align-self: flex-start;
+        margin-top: var(--gap-md);
     }
 
     .hr-dashboard-home-recent-avatar-skeleton {
-        display: none;
+        width: 36px;
+        height: 36px;
     }
 
-    .hr-dashboard-home-skeleton-name,
-    .hr-dashboard-home-skeleton-email {
-        width: 100%;
+    .hr-dashboard-home-skeleton-meta-row {
+        margin-left: 0;
+        margin-top: var(--gap-sm);
     }
 
-    .hr-dashboard-home-skeleton-text-small,
+    .hr-dashboard-home-skeleton-name {
+        width: 150px;
+    }
+
+    .hr-dashboard-home-skeleton-text-small {
+        width: 100px;
+        min-width: 80px;
+    }
+
     .hr-dashboard-home-skeleton-button {
+        position: static;
+        align-self: flex-start;
+        margin-top: var(--gap-md);
         width: 100%;
-        max-width: 100%;
+        max-width: 200px;
     }
 }

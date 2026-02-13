@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Briefcase } from "lucide-react";
 import { getPositionDetails } from "../../../api/positions.api";
 import Button from "../../../components/button/Button";
+import Loading from "../../../components/loading/Loading";
 
 import "./EmployeePositionDetails.css";
 
@@ -30,7 +31,11 @@ const EmployeePositionDetails = () => {
   }, [positionId]);
 
   if (loading) {
-    return <div className="position-details-container">Loading...</div>;
+    return (
+      <div className="position-details-container">
+        <Loading />
+      </div>
+    );
   }
 
   if (!position) {

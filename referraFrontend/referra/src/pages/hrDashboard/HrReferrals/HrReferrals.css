@@ -132,41 +132,43 @@
   opacity: 0.9;
 }
 
-.allCandidates {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+.referralHr .allCandidates {
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--gap-lg);
   margin-top: 20px;
-  justify-content: start;
+  align-items: stretch; /* Make all cards equal height */
 }
 
-.candidate {
+.referralHr .candidate {
   background-color: white;
-  padding: 20px;
-  border-radius: var(--radius-md);
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 100%;
-  gap: var(--gap-lg);
-  overflow: hidden;
-}
-
-.candidate .cardLeft {
+  padding: 24px;
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--gap-sm);
-  width: 60%;
-  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  border: 1px solid #f0f0f0;
 }
 
-.hr-referrals-avatar-name {
+.referralHr .candidate:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.referralHr .candidate-header {
   display: flex;
   align-items: flex-start;
   gap: var(--gap-md);
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.hr-referrals-avatar {
+.referralHr .hr-referrals-avatar {
   width: 42px;
   height: 42px;
   border-radius: 50%;
@@ -176,64 +178,107 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  font-size: var(--fs-large);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.referralHr .candidate-info {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: var(--gap-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+.referralHr .candidate-name {
+  font-size: var(--fs-large);
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.referralHr .candidate-email {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: var(--fs-medium);
+  color: var(--gray-dark);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.referralHr .candidate-email span {
+  flex: 1;
+  min-width: 0;
+}
+
+.referralHr .candidate-body {
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.referralHr .candidate-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+
+.referralHr .detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-medium);
+}
+
+.referralHr .detail-item svg {
+  color: var(--primary-color);
   flex-shrink: 0;
 }
 
-.hr-referrals-name-content {
+.referralHr .detail-label {
+  font-weight: 500;
+  color: var(--gray-dark);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.referralHr .detail-value {
+  color: var(--gray-dark);
+  flex: 1;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.referralHr .candidate-footer {
   display: flex;
-  flex-direction: column;
-  gap: var(--gap-sm);
-  margin-left: 8px;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.candidate .cardRight {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-sm);
-  min-width: 0;
-}
-
-.candidate p {
-  font-size: var(--fs-large);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.candidate span {
-  font-size: var(--fs-medium);
-}
-
-.candidate .cardRight span {
-  opacity: 0.9;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.iconText {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: var(--gap-sm);
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  gap: var(--gap-md);
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  margin-top: auto; 
 }
 
-.iconTextLabel {
-  overflow: hidden;
-  text-overflow: ellipsis;
+@media (min-width: 768px) {
+  .referralHr .allCandidates {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  }
 }
 
 .statusBadge {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
   font-size: var(--fs-small);
   font-weight: 500;
   width: fit-content;
+  white-space: nowrap;
 }
 
 .status-confirmed {
@@ -259,12 +304,12 @@
 
 .statusBadgeSecondary {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
   font-size: var(--fs-small);
   font-weight: 500;
   width: fit-content;
-  margin-top: 4px;
+  white-space: nowrap;
 }
 
 .status-badge-accepted {
@@ -287,37 +332,31 @@
   color: #383d41;
 }
 
-.iconText {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-sm);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .referral-details-btn {
-  margin-top: 8px;
-  padding: 6px 12px;
-  background: var(--secondary-color);
+  padding: 10px 20px;
+  background: var(--primary-color);
   color: white;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   text-decoration: none;
   font-size: var(--fs-small);
+  font-weight: 500;
   text-align: center;
   cursor: pointer;
   display: inline-block;
   width: fit-content;
-  transition: opacity 0.2s;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .referral-details-btn:hover {
-  opacity: 0.9;
+  background: var(--secondary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Pagination */
 .pagination {
-  margin-top: auto; /* pushes it to bottom */
+  margin-top: auto; 
   padding: 1.5rem 0;
   display: flex;
   align-items: center;
@@ -361,31 +400,36 @@
 }
 
 /* Skeleton Loader */
-.candidate-skeleton {
+.referralHr .candidate-skeleton {
   background-color: white;
-  padding: 20px;
-  border-radius: var(--radius-md);
+  padding: 24px;
+  border-radius: var(--radius-lg);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   width: 100%;
-  gap: var(--gap-lg);
+  min-height: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
   animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
-.skeleton-card-left {
+.referralHr .skeleton-card-left {
   display: flex;
   flex-direction: column;
   gap: var(--gap-sm);
-  width: 60%;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.skeleton-card-right {
+.referralHr .skeleton-card-right {
   display: flex;
   flex-direction: column;
-  gap: var(--gap-sm);
+  gap: var(--gap-md);
+  flex: 1;
 }
 
-.skeleton-name {
+.referralHr .skeleton-name {
   height: 24px;
   width: 70%;
   background: linear-gradient(
@@ -399,7 +443,7 @@
   animation: skeleton-shimmer 1.5s infinite;
 }
 
-.skeleton-email {
+.referralHr .skeleton-email {
   height: 16px;
   width: 85%;
   background: linear-gradient(
@@ -413,7 +457,7 @@
   animation: skeleton-shimmer 1.5s infinite;
 }
 
-.skeleton-badge {
+.referralHr .skeleton-badge {
   height: 24px;
   width: 100px;
   background: linear-gradient(
@@ -427,7 +471,7 @@
   animation: skeleton-shimmer 1.5s infinite;
 }
 
-.skeleton-text-small {
+.referralHr .skeleton-text-small {
   height: 16px;
   width: 120px;
   background: linear-gradient(
@@ -441,7 +485,7 @@
   animation: skeleton-shimmer 1.5s infinite;
 }
 
-.skeleton-button {
+.referralHr .skeleton-button {
   height: 28px;
   width: 120px;
   margin-top: 8px;
@@ -476,29 +520,59 @@
 }
 
 @media (max-width: 768px) {
-  .hr-referrals-avatar {
+  .allCandidates {
+    grid-template-columns: 1fr;
+  }
+
+  .referralHr .hr-referrals-avatar {
     display: none;
   }
 
-  .hr-referrals-name-content {
-    margin-left: 0;
+  .referralHr .candidate-name {
+    align-self: flex-start;
   }
 
-  .allCandidates {
-    grid-template-columns: 1fr;
+  .referralHr .candidate-details {
+    gap: 16px;
+  }
+
+  .referralHr .detail-item {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .referralHr .detail-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .candidate-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .referral-details-btn {
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .candidate {
+    padding: 16px;
+  }
+
+  .candidate-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .detail-item {
     flex-wrap: wrap;
   }
 
-  .candidate .cardLeft {
-    width: 100%;
-  }
-
-  .candidate .cardRight {
+  .detail-label {
+    min-width: auto;
     width: 100%;
   }
 }

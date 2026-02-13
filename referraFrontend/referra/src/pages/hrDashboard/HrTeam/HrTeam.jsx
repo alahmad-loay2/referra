@@ -15,6 +15,7 @@ import { getHrDepartments } from "../../../api/hrPositions.api.js";
 import { createDepartment } from "../../../api/hrDepartments.api.js";
 import { getPaginationPages } from "../../../utils/pagination";
 import { useUserStore } from "../../../store/userStore.js";
+import NormalSelect from "../../../components/normalSelect/NormalSelect";
 
 import AddHr from "./AddHr";
 import "./HrTeam.css";
@@ -228,17 +229,18 @@ const HrTeam = () => {
         </div>
 
         <div className="selectContainer">
-          <select
+          <NormalSelect
             value={departmentId}
-            onChange={(e) => setDepartmentId(e.target.value)}
-          >
-            <option value="">All Departments</option>
-            {departments.map((dept) => (
-              <option key={dept.DepartmentId} value={dept.DepartmentId}>
-                {dept.DepartmentName}
-              </option>
-            ))}
-          </select>
+            onChange={setDepartmentId}
+            options={[
+              { value: "", label: "All Departments" },
+              ...departments.map((dept) => ({
+                value: dept.DepartmentId,
+                label: dept.DepartmentName,
+              })),
+            ]}
+            placeholder="All Departments"
+          />
 
           <button className="apply-btn" onClick={handleApplyFilters}>
             Apply

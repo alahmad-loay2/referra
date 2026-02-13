@@ -2,7 +2,7 @@ import {
   createPosition,
   updatePositionState,
   updatePositionDetails,
-  //deletePosition,
+  deletePosition,
   getHrPositions,
   getHrPositionDetails,
   getDepartmentsByHr,
@@ -158,7 +158,7 @@ export const getHrTeamController = async (req, res, next) => {
     next(error);
   }
 };
-/*export const DeletePosition = async (req, res, next) => {
+export const DeletePosition = async (req, res, next) => {
   try {
     const hr = req.user?.Hr;
 
@@ -180,7 +180,6 @@ export const getHrTeamController = async (req, res, next) => {
     next(error);
   }
 };
-*/
 
 export const getConfirmedReferrals = async (req, res, next) => {
   try {

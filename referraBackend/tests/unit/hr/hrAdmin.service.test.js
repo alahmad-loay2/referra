@@ -22,6 +22,12 @@ test("createDepartment creates a new department successfully", async () => {
           return { DepartmentId: 1, ...data };
         },
       },
+      hr: {
+        findMany: async () => [], // No admin HRs in this happy-path test
+      },
+      hrDepartment: {
+        createMany: async () => ({ count: 0 }), // Should be callable but side-effects aren't asserted here
+      },
     };
     return fn(tx);
   };

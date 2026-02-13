@@ -8,6 +8,7 @@ import { Mail, Briefcase, MapPin } from "lucide-react";
 import Loading from "../../../components/loading/Loading.jsx";
 import { getPaginationPages } from "../../../utils/pagination";
 import SearchableSelect from "../../../components/searchableSelect/SearchableSelect";
+import NormalSelect from "../../../components/normalSelect/NormalSelect";
 
 const HrReferrals = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,15 +39,6 @@ const HrReferrals = () => {
   const [status, setStatus] = useState("");
   const [date, setDate] = useState("");
   const [onlyInProgress, setOnlyInProgress] = useState(false);
-
-  const statusOptions = [
-    { value: "", label: "All Status" },
-    { value: "Confirmed", label: "Confirmed" },
-    { value: "InterviewOne", label: "Interview One" },
-    { value: "InterviewTwo", label: "Interview Two" },
-    { value: "Acceptance", label: "Acceptance" },
-    { value: "Hired", label: "Hired" },
-  ];
 
   // Read positionId and search from URL params and apply filters automatically
   useEffect(() => {
@@ -190,19 +182,14 @@ const HrReferrals = () => {
       };
     }
 
-    // If status is Hired, show Accepted
-    if (status === "Hired") {
+    // If status is Hired or candidate is accepted, show Accepted
+    if (status === "Hired" || candidateAcceptance) {
       return { text: "Accepted", className: "status-badge-accepted" };
     }
 
     // If Prospect is true, show Prospect badge
     if (prospect) {
       return { text: "Prospect", className: "status-badge-prospect" };
-    }
-
-    // If candidate is accepted but not in Hired status (shouldn't happen but handle it)
-    if (candidateAcceptance && status !== "Hired") {
-      return { text: "Accepted", className: "status-badge-accepted" };
     }
 
     // Default: In Progress
@@ -239,13 +226,18 @@ const HrReferrals = () => {
             loading={loading}
           />
 
-          <SearchableSelect
-            options={statusOptions}
+          <NormalSelect
             value={status}
             onChange={setStatus}
+            options={[
+              { value: "", label: "All Status" },
+              { value: "Confirmed", label: "Confirmed" },
+              { value: "InterviewOne", label: "Interview One" },
+              { value: "InterviewTwo", label: "Interview Two" },
+              { value: "Acceptance", label: "Acceptance" },
+              { value: "Hired", label: "Hired" },
+            ]}
             placeholder="All Status"
-            searchPlaceholder="Search status..."
-            noResultsText="No status found"
           />
 
           <input
@@ -269,7 +261,7 @@ const HrReferrals = () => {
 
       <span className="candidateStats">
         {loading
-          ? "Loading..."
+          ? ""
           : `Showing ${hrReferrals.length} out of ${total} candidates`}
       </span>
 
@@ -296,67 +288,67 @@ const HrReferrals = () => {
         ) : hrReferrals.length === 0 ? (
           <p>No referrals found</p>
         ) : (
-          hrReferrals.map((ref) => (
-            <div className="candidate" key={ref.ApplicationId}>
-              <div className="cardLeft">
-                <div className="hr-referrals-avatar-name">
+          hrReferrals.map((ref) => {
+            const badge = getStatusBadge(ref);
+            return (
+              <div className="candidate" key={ref.ApplicationId}>
+                <div className="candidate-header">
                   <div className="hr-referrals-avatar">
                     {ref.Candidate?.FirstName?.[0]}
                     {ref.Candidate?.LastName?.[0]}
                   </div>
-                  <div className="hr-referrals-name-content">
-                    <p>
+                  <div className="candidate-info">
+                    <h4 className="candidate-name">
                       {ref.Candidate?.FirstName} {ref.Candidate?.LastName}
-                    </p>
-
-                    <span className="iconText">
-                      <Mail size={14} />
-                      <span className="iconTextLabel">
-                        {ref.Candidate?.Email}
-                      </span>
-                    </span>
-                    {(() => {
-                      const badge = getStatusBadge(ref);
-                      return (
-                        <span
-                          className={`statusBadgeSecondary ${badge.className}`}
-                        >
-                          {badge.text}
-                        </span>
-                      );
-                    })()}
+                    </h4>
+                    <div className="candidate-email">
+                      <Mail size={16} />
+                      <span>{ref.Candidate?.Email}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="cardRight">
-                <span
-                  className={`statusBadge status-${ref.Referral?.Status?.toLowerCase()}`}
-                >
-                  {ref.Referral?.Status}
-                </span>
-                <span className="iconText">
-                  <Briefcase size={14} />
-                  <span className="iconTextLabel">
-                    {ref.Position?.PositionTitle}
-                  </span>
-                </span>
+                <div className="candidate-body">
+                  <div className="candidate-details">
+                    <div className="detail-item">
+                      <Briefcase size={16} />
+                      <span className="detail-label">Position</span>
+                      <span className="detail-value">
+                        {ref.Position?.PositionTitle}
+                      </span>
+                    </div>
+                    <div className="detail-item">
+                      <MapPin size={16} />
+                      <span className="detail-label">Location</span>
+                      <span className="detail-value">
+                        {ref.Position?.Timezone}
+                      </span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">Status</span>
+                      <span
+                        className={`statusBadge status-${ref.Referral?.Status?.toLowerCase()}`}
+                      >
+                        {ref.Referral?.Status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-                <span className="iconText">
-                  <MapPin size={14} />
-                  <span className="iconTextLabel">
-                    {ref.Position?.Timezone}
+                <div className="candidate-footer">
+                  <span className={`statusBadgeSecondary ${badge.className}`}>
+                    {badge.text}
                   </span>
-                </span>
-                <Link
-                  to={`/dashboard/hr/referrals/${ref.id || ref.Referral?.ReferralId}`}
-                  className="referral-details-btn"
-                >
-                  Referral Details
-                </Link>
+                  <Link
+                    to={`/dashboard/hr/referrals/${ref.id || ref.Referral?.ReferralId}`}
+                    className="referral-details-btn"
+                  >
+                    View Details
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

@@ -1,5 +1,7 @@
 .HrCreatePosition {
     padding: var(--page-padding-x) var(--page-padding-y);
+    min-height: 100%;
+    display: flex;
 }
 
 .CreatePositionContainer {
@@ -8,6 +10,8 @@
     padding: 30px;
     background-color: white;
     border-radius: 20px;
+    min-height: 100%;
+    flex: 1;
 }
 
 .createPositionHeader {
@@ -29,6 +33,10 @@
     font-size: var(--fs-small);
     color: var(--gray-dark);
     margin: 10px 0 20px;
+}
+
+.formContainer {
+    flex: 1;
 }
 
 .formGroup {
@@ -87,8 +95,12 @@
     color: var(--secondary-color);
     resize: vertical;
     min-height: 100px;
+    height: 100%;
 }
 
+.formGroup.description {
+    flex: 1;
+}
 
 .buttonGroup {
     display: flex;

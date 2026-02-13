@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CheckCircle, Mail, Lock, Eye, EyeOff, Briefcase } from "lucide-react";
+import { CheckCircle, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { signup } from "../../../api/auth.api.js";
+import NormalSelect from "../../../components/normalSelect/NormalSelect";
 import "./Register.css";
 
 const Register = () => {
@@ -137,11 +138,18 @@ const Register = () => {
             <div className="row">
               <div className="field">
                 <label>Gender *</label>
-                <input
+                <NormalSelect
                   name="gender"
-                  placeholder="Male/Female/Other"
                   value={form.gender}
-                  onChange={handleChange}
+                  onChange={(val) =>
+                    setForm((prev) => ({ ...prev, gender: val }))
+                  }
+                  options={[
+                    { value: "Male", label: "Male" },
+                    { value: "Female", label: "Female" },
+                    { value: "Other", label: "Other" },
+                  ]}
+                  placeholder="Select gender"
                   required
                 />
               </div>
@@ -171,22 +179,19 @@ const Register = () => {
 
               <div className="field">
                 <label>Department *</label>
-                <div className="input-icon">
-                  <Briefcase size={16} />
-                  <select
-                    name="department"
-                    value={form.department}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select department</option>
-                    {departments.map((dep) => (
-                      <option key={dep.id} value={dep.id}>
-                        {dep.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <NormalSelect
+                  name="department"
+                  value={form.department}
+                  onChange={(val) =>
+                    setForm((prev) => ({ ...prev, department: val }))
+                  }
+                  options={departments.map((dep) => ({
+                    value: dep.id,
+                    label: dep.name,
+                  }))}
+                  placeholder="Select department"
+                  required
+                />
               </div>
             </div>
             {/* EMAIL */}
@@ -246,7 +251,7 @@ const Register = () => {
               </div>
             </div>
 
-            <button type="submit" disabled={loading}>
+            <button type="submit" className="register-btn" disabled={loading}>
               {loading ? "Registering..." : "Register"}
             </button>
           </form>

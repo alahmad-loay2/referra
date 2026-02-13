@@ -385,6 +385,32 @@ export const getHrPositions = async (hr, query) => {
 
   //  Sorting
   let orderBy = { CreatedAt: "desc" }; // default
+  
+  if (sortBy) {
+    const validSortFields = [
+      "PositionTitle",
+      "CompanyName",
+      "DepartmentId",
+      "PositionLocation",
+      "CreatedAt",
+      "Deadline",
+    ];
+    
+    if (validSortFields.includes(sortBy)) {
+      const order = sortOrder === "asc" ? "asc" : "desc";
+      
+      // Handle special cases
+      if (sortBy === "DepartmentId") {
+        // Sort by department name through relation
+        orderBy = { Department: { DepartmentName: order } };
+      } else if (sortBy === "CompanyName") {
+        // CompanyName is a field on Position
+        orderBy = { CompanyName: order };
+      } else {
+        orderBy = { [sortBy]: order };
+      }
+    }
+  }
 
   // Run all queries in parallel for maximum performance
   const [total, positions, totalPositions, openPositions, totalApplicants] =
@@ -561,7 +587,7 @@ export const getDepartmentsByHr = async (hrId) => {
   return departments.map((d) => d.Department);
 };
 
-/*
+// Delete a position and all related data (applications, referrals, and candidates if they have no other referrals)
 export const deletePosition = async (positionId, hrUser) => {
   if (!positionId) {
     const error = new Error("PositionId is required");
@@ -577,29 +603,101 @@ export const deletePosition = async (positionId, hrUser) => {
 
   const allowedDepartmentIds = hrUser.Departments.map((d) => d.DepartmentId);
 
-  //  Check ownership
-  const position = await prisma.position.findFirst({
-    where: {
-      PositionId: positionId,
-      DepartmentId: { in: allowedDepartmentIds },
-    },
+  return await prisma.$transaction(async (tx) => {
+    // Check ownership within transaction to prevent TOCTOU
+    const position = await tx.position.findFirst({
+      where: {
+        PositionId: positionId,
+        DepartmentId: { in: allowedDepartmentIds },
+      },
+    });
+
+    if (!position) {
+      const error = new Error("Position not found or access denied");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // Get all applications for this position with their referrals and candidates
+    const applications = await tx.application.findMany({
+      where: {
+        PositionId: positionId,
+      },
+      include: {
+        Referral: true,
+        Candidate: {
+          include: {
+            Application: {
+              include: {
+                Referral: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Track candidates to delete (those with no other applications)
+    const candidatesToDelete = new Set();
+    const referralIds = [];
+
+    // Process each application to collect referral IDs and determine candidates to delete
+    for (const application of applications) {
+      const referralId = application.ReferralId;
+      const candidateId = application.CandidateId;
+      const candidate = application.Candidate;
+
+      referralIds.push(referralId);
+
+      // Check if candidate has other applications (excluding this one)
+      const otherApplications = candidate.Application.filter(
+        (app) => app.PositionId !== positionId,
+      );
+
+      // If candidate has no other applications, mark for deletion
+      if (otherApplications.length === 0) {
+        candidatesToDelete.add(candidateId);
+      }
+    }
+
+    // Delete all applications for this position first (before referrals due to FK constraint)
+    await tx.application.deleteMany({
+      where: {
+        PositionId: positionId,
+      },
+    });
+
+    // Delete all referrals for this position
+    for (const referralId of referralIds) {
+      await tx.referral.delete({
+        where: {
+          ReferralId: referralId,
+        },
+      });
+    }
+
+    // Delete candidates that have no other applications
+    if (candidatesToDelete.size > 0) {
+      await tx.candidate.deleteMany({
+        where: {
+          CandidateId: {
+            in: Array.from(candidatesToDelete),
+          },
+        },
+      });
+    }
+
+    // Finally, delete the position
+    await tx.position.delete({
+      where: {
+        PositionId: positionId,
+      },
+    });
+
+    return {
+      success: true,
+      deletedReferrals: applications.length,
+      deletedCandidates: candidatesToDelete.size,
+    };
   });
-
-  if (!position) {
-    const error = new Error("Position not found or access denied");
-    error.statusCode = 403;
-    throw error;
-  }
-
-  //  Manual cascade delete
-  await prisma.$transaction([
-    prisma.application.deleteMany({
-      where: { PositionId: positionId },
-    }),
-    prisma.position.delete({
-      where: { PositionId: positionId },
-    }),
-  ]);
-
-  return { success: true };
-};*/
+};

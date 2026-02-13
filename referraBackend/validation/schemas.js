@@ -105,7 +105,7 @@ export const userBodySchemas = {
     lastName: varcharSchema(50),
     age: Joi.number().integer().min(1).max(150).required(),
     phoneNumber: phonePattern.required(),
-    gender: varcharSchema(32),
+    gender: Joi.string().valid("Male", "Female", "Other").required(),
     email: emailPattern,
     password: Joi.string().min(6).max(128).required(),
     role: Joi.string().valid("HR", "Employee").default("Employee"),
@@ -122,9 +122,9 @@ export const userBodySchemas = {
     lastName: optionalVarcharSchema(50),
     age: Joi.number().integer().min(1).max(150).optional(),
     phoneNumber: phonePattern.optional(),
-    gender: optionalVarcharSchema(32),
-    department: Joi.string().optional(), // For employees
-    position: Joi.string().optional(), // For employees
+    gender: Joi.string().valid("Male", "Female", "Other").optional(),
+    department: Joi.string().optional().allow("", null), // For employees
+    position: Joi.string().optional().allow("", null), // For employees
   }),
   
   forgotPassword: Joi.object({
@@ -158,7 +158,7 @@ export const userBodySchemas = {
     lastName: varcharSchema(50),
     age: Joi.number().integer().min(1).max(150).required(),
     phoneNumber: phonePattern.required(),
-    gender: varcharSchema(32),
+    gender: Joi.string().valid("Male", "Female", "Other").required(),
     email: emailPattern,
     // match service: expects an array of departmentIds (string IDs), and password is auto-generated
     // we only enforce non-empty strings here; Prisma will enforce actual FK validity
@@ -199,7 +199,7 @@ export const positionBodySchemas = {
       if (typeof value !== "string") return value;
       const sanitized = sanitizeString(value);
       return validateNoSqlInjection(sanitized, helpers);
-    }).required(), // Text field, no max length in Prisma
+    }).required().allow(""), // No length limit - TEXT field in Prisma
     timeZone: varcharSchema(64),
     deadline: dateTimePattern.required(),
     positionLocation: varcharSchema(100),
@@ -217,7 +217,7 @@ export const positionBodySchemas = {
       if (typeof value !== "string") return value;
       const sanitized = sanitizeString(value);
       return validateNoSqlInjection(sanitized, helpers);
-    }).optional(),
+    }).optional().allow(""), // No length limit - TEXT field in Prisma
     timeZone: optionalVarcharSchema(64),
     deadline: dateTimePattern.optional(),
     positionLocation: optionalVarcharSchema(100),

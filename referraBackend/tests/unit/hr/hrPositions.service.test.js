@@ -8,6 +8,7 @@ import {
   getHrPositions,
   getHrPositionDetails,
   getDepartmentsByHr,
+  deletePosition,
 } from "../../../services/hr/hrPositions.service.js";
 import { prisma } from "../../../lib/prisma.js";
 
@@ -411,8 +412,13 @@ test("getDepartmentsByHr returns mapped departments", async () => {
     { Department: { DepartmentId: 2, Name: "Sales" } },
   ];
 
-  const originalFindMany = prisma.hrDepartment.findMany;
+  const originalHrFindUnique = prisma.hr.findUnique;
+  const originalHrDeptFindMany = prisma.hrDepartment.findMany;
 
+  // Mock prisma.hr.findUnique to return a non-admin HR (so it uses hrDepartment.findMany path)
+  prisma.hr.findUnique = async () => ({ isAdmin: false });
+
+  // Mock prisma.hrDepartment.findMany for non-admin path
   prisma.hrDepartment.findMany = async () => fakeHrDepartments;
 
   try {
@@ -422,7 +428,374 @@ test("getDepartmentsByHr returns mapped departments", async () => {
     assert.equal(result[0].Name, "Engineering");
     assert.equal(result[1].Name, "Sales");
   } finally {
-    prisma.hrDepartment.findMany = originalFindMany;
+    if (originalHrFindUnique) {
+      prisma.hr.findUnique = originalHrFindUnique;
+    } else {
+      delete prisma.hr.findUnique;
+    }
+    if (originalHrDeptFindMany) {
+      prisma.hrDepartment.findMany = originalHrDeptFindMany;
+    } else {
+      delete prisma.hrDepartment.findMany;
+    }
   }
 });
 
+test("deletePosition deletes position with applications, referrals, and candidates with no other applications", async () => {
+  const positionId = "pos-123";
+  const hrUser = {
+    Departments: [{ DepartmentId: "dept-1" }],
+  };
+
+  const position = {
+    PositionId: positionId,
+    DepartmentId: "dept-1",
+  };
+
+  const applications = [
+    {
+      ReferralId: "ref-1",
+      CandidateId: "cand-1",
+      PositionId: positionId,
+      Referral: {
+        ReferralId: "ref-1",
+        Status: "Pending",
+      },
+      Candidate: {
+        CandidateId: "cand-1",
+        Application: [
+          {
+            PositionId: positionId,
+            ReferralId: "ref-1",
+            Referral: { ReferralId: "ref-1", Status: "Pending" },
+          },
+        ],
+      },
+    },
+    {
+      ReferralId: "ref-2",
+      CandidateId: "cand-2",
+      PositionId: positionId,
+      Referral: {
+        ReferralId: "ref-2",
+        Status: "Confirmed",
+      },
+      Candidate: {
+        CandidateId: "cand-2",
+        Application: [
+          {
+            PositionId: positionId,
+            ReferralId: "ref-2",
+            Referral: { ReferralId: "ref-2", Status: "Confirmed" },
+          },
+        ],
+      },
+    },
+  ];
+
+  let findFirstArgs;
+  let findManyArgs;
+  let referralDeleteArgs = [];
+  let applicationDeleteManyArgs;
+  let candidateDeleteManyArgs;
+  let positionDeleteArgs;
+
+  const originalTransaction = prisma.$transaction;
+
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      position: {
+        findFirst: async (args) => {
+          findFirstArgs = args;
+          return position;
+        },
+        delete: async (args) => {
+          positionDeleteArgs = args;
+          return position;
+        },
+      },
+      application: {
+        findMany: async (args) => {
+          findManyArgs = args;
+          return applications;
+        },
+        deleteMany: async (args) => {
+          applicationDeleteManyArgs = args;
+          return { count: applications.length };
+        },
+      },
+      referral: {
+        delete: async (args) => {
+          referralDeleteArgs.push(args);
+          return { ReferralId: args.where.ReferralId };
+        },
+      },
+      candidate: {
+        deleteMany: async (args) => {
+          candidateDeleteManyArgs = args;
+          return { count: 2 };
+        },
+      },
+    };
+    return fn(tx);
+  };
+
+  try {
+    const result = await deletePosition(positionId, hrUser);
+
+    assert.equal(result.success, true);
+    assert.equal(result.deletedReferrals, 2);
+    assert.equal(result.deletedCandidates, 2);
+
+    // Verify position ownership check
+    assert.deepEqual(findFirstArgs.where.PositionId, positionId);
+    assert.deepEqual(
+      findFirstArgs.where.DepartmentId.in,
+      hrUser.Departments.map((d) => d.DepartmentId),
+    );
+
+    // Verify applications were fetched
+    assert.deepEqual(findManyArgs.where.PositionId, positionId);
+
+    // Verify referrals were deleted
+    assert.equal(referralDeleteArgs.length, 2);
+    assert.equal(referralDeleteArgs[0].where.ReferralId, "ref-1");
+    assert.equal(referralDeleteArgs[1].where.ReferralId, "ref-2");
+
+    // Verify applications were deleted
+    assert.deepEqual(applicationDeleteManyArgs.where.PositionId, positionId);
+
+    // Verify candidates were deleted (both have no other applications)
+    assert.deepEqual(candidateDeleteManyArgs.where.CandidateId.in, [
+      "cand-1",
+      "cand-2",
+    ]);
+
+    // Verify position was deleted
+    assert.deepEqual(positionDeleteArgs.where.PositionId, positionId);
+  } finally {
+    prisma.$transaction = originalTransaction;
+  }
+});
+
+test("deletePosition does not delete candidates with other applications", async () => {
+  const positionId = "pos-123";
+  const hrUser = {
+    Departments: [{ DepartmentId: "dept-1" }],
+  };
+
+  const position = {
+    PositionId: positionId,
+    DepartmentId: "dept-1",
+  };
+
+  const applications = [
+    {
+      ReferralId: "ref-1",
+      CandidateId: "cand-1",
+      PositionId: positionId,
+      Referral: {
+        ReferralId: "ref-1",
+        Status: "Pending",
+      },
+      Candidate: {
+        CandidateId: "cand-1",
+        Application: [
+          {
+            PositionId: positionId,
+            ReferralId: "ref-1",
+            Referral: { ReferralId: "ref-1", Status: "Pending" },
+          },
+          {
+            PositionId: "pos-other",
+            ReferralId: "ref-other",
+            Referral: { ReferralId: "ref-other", Status: "Confirmed" },
+          },
+        ],
+      },
+    },
+  ];
+
+  let candidateDeleteManyCalled = false;
+
+  const originalTransaction = prisma.$transaction;
+
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      position: {
+        findFirst: async () => position,
+        delete: async () => position,
+      },
+      application: {
+        findMany: async () => applications,
+        deleteMany: async () => ({ count: 1 }),
+      },
+      referral: {
+        delete: async () => ({}),
+      },
+      candidate: {
+        deleteMany: async () => {
+          candidateDeleteManyCalled = true;
+          return { count: 0 };
+        },
+      },
+    };
+    return fn(tx);
+  };
+
+  try {
+    const result = await deletePosition(positionId, hrUser);
+
+    assert.equal(result.success, true);
+    assert.equal(result.deletedReferrals, 1);
+    assert.equal(result.deletedCandidates, 0);
+
+    // Verify candidate was NOT deleted (has other application)
+    assert.equal(candidateDeleteManyCalled, false);
+  } finally {
+    prisma.$transaction = originalTransaction;
+  }
+});
+
+test("deletePosition throws error when position not found", async () => {
+  const positionId = "pos-123";
+  const hrUser = {
+    Departments: [{ DepartmentId: "dept-1" }],
+  };
+
+  const originalTransaction = prisma.$transaction;
+
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      position: {
+        findFirst: async () => null,
+      },
+    };
+    return fn(tx);
+  };
+
+  try {
+    await assert.rejects(
+      () => deletePosition(positionId, hrUser),
+      (err) => {
+        assert.equal(err.message, "Position not found or access denied");
+        assert.equal(err.statusCode, 403);
+        return true;
+      },
+    );
+  } finally {
+    prisma.$transaction = originalTransaction;
+  }
+});
+
+test("deletePosition throws error when HR does not have access to position", async () => {
+  const positionId = "pos-123";
+  const hrUser = {
+    Departments: [{ DepartmentId: "dept-1" }],
+  };
+
+  const originalTransaction = prisma.$transaction;
+
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      position: {
+        findFirst: async () => null, // Position in different department
+      },
+    };
+    return fn(tx);
+  };
+
+  try {
+    await assert.rejects(
+      () => deletePosition(positionId, hrUser),
+      (err) => {
+        assert.equal(err.message, "Position not found or access denied");
+        assert.equal(err.statusCode, 403);
+        return true;
+      },
+    );
+  } finally {
+    prisma.$transaction = originalTransaction;
+  }
+});
+
+test("deletePosition throws error when positionId is missing", async () => {
+  const hrUser = {
+    Departments: [{ DepartmentId: "dept-1" }],
+  };
+
+  await assert.rejects(
+    () => deletePosition(null, hrUser),
+    (err) => {
+      assert.equal(err.message, "PositionId is required");
+      assert.equal(err.statusCode, 400);
+      return true;
+    },
+  );
+});
+
+test("deletePosition throws error when HR has no departments", async () => {
+  const positionId = "pos-123";
+  const hrUser = {
+    Departments: [],
+  };
+
+  await assert.rejects(
+    () => deletePosition(positionId, hrUser),
+    (err) => {
+      assert.equal(err.message, "HR has no assigned departments");
+      assert.equal(err.statusCode, 403);
+      return true;
+    },
+  );
+});
+
+test("deletePosition handles position with no applications", async () => {
+  const positionId = "pos-123";
+  const hrUser = {
+    Departments: [{ DepartmentId: "dept-1" }],
+  };
+
+  const position = {
+    PositionId: positionId,
+    DepartmentId: "dept-1",
+  };
+
+  let candidateDeleteManyCalled = false;
+
+  const originalTransaction = prisma.$transaction;
+
+  prisma.$transaction = async (fn) => {
+    const tx = {
+      position: {
+        findFirst: async () => position,
+        delete: async () => position,
+      },
+      application: {
+        findMany: async () => [],
+        deleteMany: async () => ({ count: 0 }),
+      },
+      referral: {
+        delete: async () => ({}),
+      },
+      candidate: {
+        deleteMany: async () => {
+          candidateDeleteManyCalled = true;
+          return { count: 0 };
+        },
+      },
+    };
+    return fn(tx);
+  };
+
+  try {
+    const result = await deletePosition(positionId, hrUser);
+
+    assert.equal(result.success, true);
+    assert.equal(result.deletedReferrals, 0);
+    assert.equal(result.deletedCandidates, 0);
+    assert.equal(candidateDeleteManyCalled, false);
+  } finally {
+    prisma.$transaction = originalTransaction;
+  }
+});
