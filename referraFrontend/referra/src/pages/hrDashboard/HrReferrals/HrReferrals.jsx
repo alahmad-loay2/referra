@@ -39,6 +39,15 @@ const HrReferrals = () => {
   const [date, setDate] = useState("");
   const [onlyInProgress, setOnlyInProgress] = useState(false);
 
+  const statusOptions = [
+    { value: "", label: "All Status" },
+    { value: "Confirmed", label: "Confirmed" },
+    { value: "InterviewOne", label: "Interview One" },
+    { value: "InterviewTwo", label: "Interview Two" },
+    { value: "Acceptance", label: "Acceptance" },
+    { value: "Hired", label: "Hired" },
+  ];
+
   // Read positionId and search from URL params and apply filters automatically
   useEffect(() => {
     const urlPositionId = searchParams.get("positionId");
@@ -80,8 +89,7 @@ const HrReferrals = () => {
 
           // Check if there are more pages
           // Calculate hasNextPage from totalPages and current page
-          const hasNextPage =
-            data?.totalPages && currentPage < data.totalPages;
+          const hasNextPage = data?.totalPages && currentPage < data.totalPages;
           hasMorePages =
             hasNextPage === true &&
             data?.positions &&
@@ -176,7 +184,10 @@ const HrReferrals = () => {
 
     // If accepted in other position, show that badge
     if (acceptedInOtherPosition) {
-      return { text: "Accepted in Other Position", className: "status-badge-accepted-other" };
+      return {
+        text: "Accepted in Other Position",
+        className: "status-badge-accepted-other",
+      };
     }
 
     // If status is Hired, show Accepted
@@ -223,19 +234,20 @@ const HrReferrals = () => {
             value={positionId}
             onChange={(value) => setPositionId(value)}
             placeholder="All Positions"
+            searchPlaceholder="Search positions..."
+            noResultsText="No positions found"
+            loading={loading}
           />
-          <select
-            name="status"
+
+          <SearchableSelect
+            options={statusOptions}
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            <option value="">All Status</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="InterviewOne">Interview One</option>
-            <option value="InterviewTwo">Interview Two</option>
-            <option value="Acceptance">Acceptance</option>
-            <option value="Hired">Hired</option>
-          </select>
+            onChange={setStatus}
+            placeholder="All Status"
+            searchPlaceholder="Search status..."
+            noResultsText="No status found"
+          />
+
           <input
             type="date"
             value={date}
@@ -249,7 +261,9 @@ const HrReferrals = () => {
             />
             <span>Only in-progress</span>
           </label>
-          <button className="apply-btn" onClick={handleApplyFilters}>Apply</button>
+          <button className="apply-btn" onClick={handleApplyFilters}>
+            Apply
+          </button>
         </div>
       </div>
 
@@ -297,12 +311,16 @@ const HrReferrals = () => {
 
                     <span className="iconText">
                       <Mail size={14} />
-                      <span className="iconTextLabel">{ref.Candidate?.Email}</span>
+                      <span className="iconTextLabel">
+                        {ref.Candidate?.Email}
+                      </span>
                     </span>
                     {(() => {
                       const badge = getStatusBadge(ref);
                       return (
-                        <span className={`statusBadgeSecondary ${badge.className}`}>
+                        <span
+                          className={`statusBadgeSecondary ${badge.className}`}
+                        >
                           {badge.text}
                         </span>
                       );

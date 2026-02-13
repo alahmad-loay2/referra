@@ -7,6 +7,8 @@ const SearchableSelect = ({
   value = "",
   onChange,
   placeholder = "Select an option...",
+  searchPlaceholder = "Search...",
+  noResultsText = "No results found",
   disabled = false,
   loading = false,
   className = "",
@@ -24,7 +26,7 @@ const SearchableSelect = ({
 
   // Filter options based on search term
   const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+    option.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Close dropdown when clicking outside
@@ -52,7 +54,7 @@ const SearchableSelect = ({
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev < filteredOptions.length - 1 ? prev + 1 : prev
+          prev < filteredOptions.length - 1 ? prev + 1 : prev,
         );
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -153,7 +155,7 @@ const SearchableSelect = ({
               type="text"
               value={searchTerm}
               onChange={handleSearchChange}
-              placeholder="Search positions..."
+              placeholder={searchPlaceholder}
               className="searchable-select-input"
             />
           </div>
@@ -163,7 +165,7 @@ const SearchableSelect = ({
               <div className="searchable-select-loading">Loading...</div>
             ) : filteredOptions.length === 0 ? (
               <div className="searchable-select-no-results">
-                No positions found
+                {noResultsText}
               </div>
             ) : (
               filteredOptions.map((option, index) => (

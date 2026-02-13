@@ -1,24 +1,24 @@
 .referralHr {
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100svh - 120px); /* header height */
-    padding: var(--page-padding-x) var(--page-padding-y);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - 120px); /* header height */
+  padding: var(--page-padding-x) var(--page-padding-y);
 }
 
 .referralHr h3 {
-    font-size: var(--fs-xlarge);
+  font-size: var(--fs-xlarge);
 }
 
 .referralSearchContainer {
-    background-color: var(--gray-light);
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--gap-xl);
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: var(--radius-xl);
+  background-color: var(--gray-light);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--gap-xl);
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: var(--radius-xl);
 }
 
 .selectContainer {
@@ -27,7 +27,6 @@
   position: relative;
   flex-wrap: wrap;
 }
-
 
 /* Make SearchableSelect bigger in HR Referrals */
 .referralSearchContainer .selectContainer .searchable-select {
@@ -67,13 +66,13 @@
 }
 
 .referralSearchContainer input {
-    padding: 10px;
-    border: none;
-    border-radius: var(--radius-md);
-    width: 100%;
-    min-width: 200px;
-    font-size: var(--fs-small);
-    height: 40px;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-md);
+  width: 100%;
+  min-width: 200px;
+  font-size: var(--fs-small);
+  height: 40px;
 }
 
 .searchIcon {
@@ -86,17 +85,17 @@
 }
 
 .referralSearchContainer select {
-    padding: 10px;
-    border: none;
-    border-radius: var(--radius-md);
-    min-width: 150px;
-    font-size: var(--fs-small);
-    height: 40px;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-md);
+  min-width: 150px;
+  font-size: var(--fs-small);
+  height: 40px;
 }
 
 .referralSearchContainer input[type="date"] {
-    height: 40px;
-    width: auto;
+  height: 40px;
+  width: auto;
 }
 
 .in-progress-filter {
@@ -115,7 +114,7 @@
 
 .referralSearchContainer input:focus,
 .referralSearchContainer select:focus {
-    outline: none;
+  outline: none;
 }
 
 .apply-btn {
@@ -142,75 +141,75 @@
 }
 
 .candidate {
-    background-color: white;
-    padding: 20px;
-    border-radius: var(--radius-md);
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 100%;
-    gap: var(--gap-lg);
-    overflow: hidden;
+  background-color: white;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  gap: var(--gap-lg);
+  overflow: hidden;
 }
 
 .candidate .cardLeft {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-    width: 60%;
-    min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  width: 60%;
+  min-width: 0;
 }
 
 .hr-referrals-avatar-name {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--gap-md);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap-md);
 }
 
 .hr-referrals-avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: var(--fs-medium);
-    flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: var(--fs-medium);
+  flex-shrink: 0;
 }
 
 .hr-referrals-name-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-    margin-left: 8px;
-    min-width: 0;
-    max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  margin-left: 8px;
+  min-width: 0;
+  max-width: 100%;
 }
 
-.candidate .cardRight{
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-    min-width: 0;
+.candidate .cardRight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  min-width: 0;
 }
 
 .candidate p {
-    font-size: var(--fs-large);
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: var(--fs-large);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .candidate span {
-    font-size: var(--fs-medium);
+  font-size: var(--fs-medium);
 }
 
 .candidate .cardRight span {
-    opacity: .9;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .iconText {
@@ -227,7 +226,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 
 .statusBadge {
   display: inline-block;
@@ -468,7 +466,8 @@
 }
 
 @keyframes skeleton-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -484,7 +483,7 @@
   .hr-referrals-name-content {
     margin-left: 0;
   }
-   
+
   .allCandidates {
     grid-template-columns: 1fr;
   }

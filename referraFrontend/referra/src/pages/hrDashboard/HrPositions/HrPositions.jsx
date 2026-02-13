@@ -119,7 +119,7 @@ const HrPositions = () => {
 
         setHrPositions(data.positions);
         setTotalPages(data.totalPages);
-        
+
         // Set stats from the merged response
         if (data.stats) {
           setStats(data.stats);
@@ -274,97 +274,119 @@ const HrPositions = () => {
 
         <div className="positionsTableWrapper">
           <table className="positionsTable">
-          <thead>
-            <tr>
-              <th>Position</th>
-              <th>Company</th>
-              <th>Department</th>
-              <th>Location</th>
-              <th>Applicants</th>
-              <th>Posted</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {positionsLoading ? (
-              <>
-                {[...Array(10)].map((_, index) => (
-                  <tr key={`skeleton-${index}`} className="skeleton-row">
-                    <td><div className="skeleton-text"></div></td>
-                    <td><div className="skeleton-text"></div></td>
-                    <td><div className="skeleton-text"></div></td>
-                    <td><div className="skeleton-text"></div></td>
-                    <td><div className="skeleton-text"></div></td>
-                    <td><div className="skeleton-text"></div></td>
-                    <td><div className="skeleton-status"></div></td>
-                    <td><div className="skeleton-text"></div></td>
-                  </tr>
-                ))}
-              </>
-            ) : !error ? (
-              hrPositions.map((p) => (
-                <tr key={p.PositionId}>
-                  <td>{p.PositionTitle}</td>
-                  <td>{p.CompanyName || "-"}</td>
-                  <td>{p.Department?.DepartmentName || "-"}</td>
-                  <td>{p.PositionLocation}</td>
-                  <td>{p.applicantsCount}</td>
-                  <td>{new Date(p.CreatedAt).toLocaleDateString()}</td>
-                  <td>
-                    <div className="statusWrapper">
-                      <label className="switch">
-                        <input
-                          type="checkbox"
-                          checked={p.PositionState === "OPEN"}
-                          onChange={() =>
-                            handleToggleState(p.PositionId, p.PositionState)
-                          }
-                        />
-                        <span className="slider" />
-                      </label>
-                      <span className="statusText">
-                        {p.PositionState === "OPEN" ? "Open" : "Closed"}
-                      </span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="actions-cell">
-                      <button
-                        className="actions-button"
-                        onClick={() => toggleDropdown(p.PositionId)}
-                      >
-                        <MoreVertical size={18} />
-                      </button>
-                      {openDropdown === p.PositionId && (
-                        <div
-                          className="actions-dropdown"
-                          ref={(el) => (dropdownRefs.current[p.PositionId] = el)}
+            <thead>
+              <tr>
+                <th>Position</th>
+                <th>Company</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th>Applicants</th>
+                <th>Posted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {positionsLoading ? (
+                <>
+                  {[...Array(10)].map((_, index) => (
+                    <tr key={`skeleton-${index}`} className="skeleton-row">
+                      <td>
+                        <div className="skeleton-text"></div>
+                      </td>
+                      <td>
+                        <div className="skeleton-text"></div>
+                      </td>
+                      <td>
+                        <div className="skeleton-text"></div>
+                      </td>
+                      <td>
+                        <div className="skeleton-text"></div>
+                      </td>
+                      <td>
+                        <div className="skeleton-text"></div>
+                      </td>
+                      <td>
+                        <div className="skeleton-text"></div>
+                      </td>
+                      <td>
+                        <div className="skeleton-status"></div>
+                      </td>
+                      <td>
+                        <div className="skeleton-text"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : !error ? (
+                hrPositions.map((p) => (
+                  <tr key={p.PositionId}>
+                    <td>{p.PositionTitle}</td>
+                    <td>{p.CompanyName || "-"}</td>
+                    <td>{p.Department?.DepartmentName || "-"}</td>
+                    <td>{p.PositionLocation}</td>
+                    <td>{p.applicantsCount}</td>
+                    <td>{new Date(p.CreatedAt).toLocaleDateString()}</td>
+                    <td>
+                      <div className="statusWrapper">
+                        <label className="switch">
+                          <input
+                            type="checkbox"
+                            checked={p.PositionState === "OPEN"}
+                            onChange={() =>
+                              handleToggleState(p.PositionId, p.PositionState)
+                            }
+                          />
+                          <span className="slider" />
+                        </label>
+                        <span className="statusText">
+                          {p.PositionState === "OPEN" ? "Open" : "Closed"}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="actions-cell">
+                        <button
+                          className="actions-button"
+                          onClick={() => toggleDropdown(p.PositionId)}
                         >
-                          <button onClick={() => handleEditPosition(p.PositionId)}>
-                            Edit Position
-                          </button>
-                          <button onClick={() => handleViewDetails(p.PositionId)}>
-                            View Details
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                          <MoreVertical size={18} />
+                        </button>
+                        {openDropdown === p.PositionId && (
+                          <div
+                            className="actions-dropdown"
+                            ref={(el) =>
+                              (dropdownRefs.current[p.PositionId] = el)
+                            }
+                          >
+                            <button
+                              onClick={() => handleEditPosition(p.PositionId)}
+                            >
+                              Edit Position
+                            </button>
+                            <button
+                              onClick={() => handleViewDetails(p.PositionId)}
+                            >
+                              View Details
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={8}
+                    style={{ textAlign: "center", padding: "20px" }}
+                  >
+                    {"No positions found"}
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={8}
-                  style={{ textAlign: "center", padding: "20px" }}
-                >
-                  {"No positions found"}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
         </div>
         <div className="pagination">
           <button className="nav" onClick={goPrev} disabled={page === 1}>
@@ -390,7 +412,11 @@ const HrPositions = () => {
             );
           })}
 
-          <button className="nav" onClick={goNext} disabled={page === totalPages}>
+          <button
+            className="nav"
+            onClick={goNext}
+            disabled={page === totalPages}
+          >
             Next →
           </button>
         </div>
@@ -415,8 +441,7 @@ const HrPositions = () => {
                   <br />
                   • Mark all referrals that are not hired and not accepted in
                   other positions as prospects
-                  <br />
-                  • Prevent further referrals for this position
+                  <br />• Prevent further referrals for this position
                 </>
               ) : (
                 <>
@@ -429,8 +454,7 @@ const HrPositions = () => {
                   closed
                   <br />
                   • Extend the deadline by 10 days from today
-                  <br />
-                  • Allow new referrals for this position
+                  <br />• Allow new referrals for this position
                 </>
               )}
             </p>

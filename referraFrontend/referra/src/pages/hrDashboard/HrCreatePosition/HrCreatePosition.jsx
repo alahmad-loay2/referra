@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./HrCreatePosition.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { createPosition, updatePosition, getPositionDetails, getHrDepartments } from "../../../api/hrPositions.api";
+import {
+  createPosition,
+  updatePosition,
+  getPositionDetails,
+  getHrDepartments,
+} from "../../../api/hrPositions.api";
+import SearchableSelect from "../../../components/searchableSelect/SearchableSelect";
 
 const HrCreatePosition = () => {
   const navigate = useNavigate();
@@ -46,10 +52,10 @@ const HrCreatePosition = () => {
         try {
           setLoadingData(true);
           const position = await getPositionDetails(positionId);
-          
+
           // Format deadline date for input
-          const deadlineDate = position.Deadline 
-            ? new Date(position.Deadline).toISOString().split('T')[0]
+          const deadlineDate = position.Deadline
+            ? new Date(position.Deadline).toISOString().split("T")[0]
             : "";
 
           setFormData({
@@ -84,6 +90,33 @@ const HrCreatePosition = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
+    const deadlineDate = new Date(formData.deadline);
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    if (deadlineDate < tomorrow) {
+      setError("Deadline must be at least tomorrow.");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.departmentId) {
+      setError("Department is required.");
+      setLoading(false);
+      return;
+    }
+    if (!formData.employmentType) {
+      setError("Employment type is required.");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.timeZone) {
+      setError("Time zone is required.");
+      setLoading(false);
+      return;
+    }
 
     try {
       if (isEditMode) {
@@ -95,7 +128,9 @@ const HrCreatePosition = () => {
       navigate("/dashboard/hr/positions");
     } catch (err) {
       setLoading(false);
-      setError(isEditMode ? "Failed to update position" : "Failed to create position");
+      setError(
+        isEditMode ? "Failed to update position" : "Failed to create position",
+      );
     }
   };
 
@@ -127,19 +162,58 @@ const HrCreatePosition = () => {
       formData.departmentId
     );
   };
+  const getTomorrowDate = () => {
+    const today = new Date();
+    today.setDate(today.getDate() + 1);
+    return today.toISOString().split("T")[0];
+  };
+
+  const departmentOptions = departments.map((dept) => ({
+    value: dept.DepartmentId,
+    label: dept.DepartmentName,
+  }));
+  const employmentTypeOptions = [
+    { value: "FULL_TIME", label: "Full Time" },
+    { value: "PART_TIME", label: "Part Time" },
+    { value: "CONTRACT", label: "Contract" },
+    { value: "INTERNSHIP", label: "Internship" },
+    { value: "TEMPORARY", label: "Temporary" },
+  ];
+  const [timeZones, setTimeZones] = useState([]);
+  useEffect(() => {
+    const zones = Intl.supportedValuesOf("timeZone");
+    const formatted = zones.map((zone) => ({
+      value: zone,
+      label: zone.replace("_", " "),
+    }));
+    setTimeZones(formatted);
+  }, []);
 
   return (
     <div className="HrCreatePosition">
       <div className="CreatePositionContainer">
         <div className="createPositionHeader">
-          <Link to="/dashboard/hr/positions" onClick={handleBack}>&lt;-</Link>
+          <Link to="/dashboard/hr/positions" onClick={handleBack}>
+            &lt;-
+          </Link>
           <h3>{isEditMode ? "Edit Position" : "Create New Position"}</h3>
         </div>
-        <p>{isEditMode ? "Update the job opening details" : "Add a new job opening for your department"}</p>
+        <p>
+          {isEditMode
+            ? "Update the job opening details"
+            : "Add a new job opening for your department"}
+        </p>
         {error && <p style={{ color: "red" }}>{error}</p>}
         {loadingData && <p>Loading position data...</p>}
 
-        <form className="formContainer" onSubmit={handleSubmit} style={{ opacity: loadingData ? 0.5 : 1, pointerEvents: loadingData ? 'none' : 'auto' }}>
+        <form
+          className="formContainer"
+          onSubmit={handleSubmit}
+          style={{
+            opacity: loadingData ? 0.5 : 1,
+            pointerEvents: loadingData ? "none" : "auto",
+          }}
+        >
           <div className="formGroup">
             <div className="labelInput">
               <label>Job Title*</label>
@@ -168,20 +242,21 @@ const HrCreatePosition = () => {
           <div className="formGroup">
             <div className="labelInput">
               <label>Employment Type*</label>
-              <select
-                name="employmentType"
-                required
+              <SearchableSelect
+                options={employmentTypeOptions}
                 value={formData.employmentType}
-                onChange={handleChange}
-              >
-                <option value="">Select Employment Type</option>
-                <option value="FULL_TIME">Full Time</option>
-                <option value="PART_TIME">Part Time</option>
-                <option value="CONTRACT">Contract</option>
-                <option value="INTERNSHIP">Internship</option>
-                <option value="TEMPORARY">Temporary</option>
-              </select>
+                onChange={(val) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    employmentType: val,
+                  }))
+                }
+                placeholder="Select Employment Type"
+                searchPlaceholder="Search employment types..."
+                noResultsText="No employment types found"
+              />
             </div>
+
             <div className="labelInput">
               <label>Years Of Experience Needed*</label>
               <input
@@ -209,40 +284,48 @@ const HrCreatePosition = () => {
             </div>
             <div className="labelInput">
               <label>Department*</label>
-              <select
-                name="departmentId"
-                required
+              <SearchableSelect
+                options={departmentOptions}
                 value={formData.departmentId}
-                onChange={handleChange}
-              >
-                <option value="">Select Department</option>
-                {departments.map((dept) => (
-                  <option key={dept.DepartmentId} value={dept.DepartmentId}>
-                    {dept.DepartmentName}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    departmentId: val,
+                  }))
+                }
+                placeholder="Select Department"
+                searchPlaceholder="Search departments..."
+                noResultsText="No departments found"
+                loading={loadingData}
+              />
             </div>
           </div>
 
           <div className="formGroup">
             <div className="labelInput">
               <label>Time Zone*</label>
-              <input
-                type="text"
-                name="timeZone"
-                placeholder="e.g. GMT+2"
-                required
+              <SearchableSelect
+                options={timeZones}
                 value={formData.timeZone}
-                onChange={handleChange}
+                onChange={(val) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    timeZone: val,
+                  }))
+                }
+                placeholder="Select Time Zone"
+                searchPlaceholder="Search time zones..."
+                noResultsText="No time zones found"
               />
             </div>
+
             <div className="labelInput">
               <label>Deadline*</label>
               <input
                 type="date"
                 name="deadline"
                 required
+                min={getTomorrowDate()}
                 value={formData.deadline}
                 onChange={handleChange}
               />
@@ -266,10 +349,18 @@ const HrCreatePosition = () => {
             <button type="button" className="cancel" onClick={handleCancel}>
               Cancel
             </button>
-            <button type="submit" className="create" disabled={loading || loadingData}>
-              {loading 
-                ? (isEditMode ? "Updating..." : "Creating...") 
-                : (isEditMode ? "Update Position" : "Create Position")}
+            <button
+              type="submit"
+              className="create"
+              disabled={loading || loadingData}
+            >
+              {loading
+                ? isEditMode
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditMode
+                  ? "Update Position"
+                  : "Create Position"}
             </button>
           </div>
         </form>
@@ -291,7 +382,10 @@ const HrCreatePosition = () => {
                 Cancel
               </button>
 
-              <button className="createPosition-confirm" onClick={confirmCancel}>
+              <button
+                className="createPosition-confirm"
+                onClick={confirmCancel}
+              >
                 Yes
               </button>
             </div>

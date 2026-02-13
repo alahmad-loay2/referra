@@ -71,14 +71,17 @@ export const createPosition = async (payload, hr) => {
     throw error;
   }
 
-  const allowedDepartmentIds = hr.Departments.map((d) => d.DepartmentId);
+  // If not admin → enforce department restriction
+  if (!hr.isAdmin) {
+    const allowedDepartmentIds = hr.Departments.map((d) => d.DepartmentId);
 
-  if (!allowedDepartmentIds.includes(departmentId)) {
-    const error = new Error(
-      "You are not allowed to create positions in this department",
-    );
-    error.statusCode = 403;
-    throw error;
+    if (!allowedDepartmentIds.includes(departmentId)) {
+      const error = new Error(
+        "You are not allowed to create positions in this department",
+      );
+      error.statusCode = 403;
+      throw error;
+    }
   }
 
   const state = positionState?.toUpperCase() || "OPEN";
@@ -178,10 +181,7 @@ export const updatePositionState = async (positionId, newState, hrUser) => {
       for (const app of applications) {
         const referral = app.Referral;
         // Only mark as prospect if not Hired and not AcceptedInOtherPosition
-        if (
-          referral.Status !== "Hired" &&
-          !referral.AcceptedInOtherPosition
-        ) {
+        if (referral.Status !== "Hired" && !referral.AcceptedInOtherPosition) {
           await tx.referral.update({
             where: { ReferralId: referral.ReferralId },
             data: { Prospect: true },
@@ -387,47 +387,48 @@ export const getHrPositions = async (hr, query) => {
   let orderBy = { CreatedAt: "desc" }; // default
 
   // Run all queries in parallel for maximum performance
-  const [total, positions, totalPositions, openPositions, totalApplicants] = await Promise.all([
-    prisma.position.count({
-      where: whereClause,
-    }),
-    prisma.position.findMany({
-      where: whereClause,
-      include: {
-        Department: true,
-      },
-      orderBy,
-      skip,
-      take: limit,
-    }),
-    // Stats: total positions
-    prisma.position.count({
-      where: {
-        DepartmentId: { in: allowedDepartmentIds },
-      },
-    }),
-    // Stats: open positions
-    prisma.position.count({
-      where: {
-        DepartmentId: { in: allowedDepartmentIds },
-        PositionState: "OPEN",
-      },
-    }),
-    // Stats: total applicants
-    prisma.application.count({
-      where: {
-        Position: {
+  const [total, positions, totalPositions, openPositions, totalApplicants] =
+    await Promise.all([
+      prisma.position.count({
+        where: whereClause,
+      }),
+      prisma.position.findMany({
+        where: whereClause,
+        include: {
+          Department: true,
+        },
+        orderBy,
+        skip,
+        take: limit,
+      }),
+      // Stats: total positions
+      prisma.position.count({
+        where: {
           DepartmentId: { in: allowedDepartmentIds },
         },
-        Referral: {
-          Status: {
-            not: "Pending",
+      }),
+      // Stats: open positions
+      prisma.position.count({
+        where: {
+          DepartmentId: { in: allowedDepartmentIds },
+          PositionState: "OPEN",
+        },
+      }),
+      // Stats: total applicants
+      prisma.application.count({
+        where: {
+          Position: {
+            DepartmentId: { in: allowedDepartmentIds },
+          },
+          Referral: {
+            Status: {
+              not: "Pending",
+            },
           },
         },
-      },
-    }),
-  ]);
-  
+      }),
+    ]);
+
   // Count NON-pending applicants per position
   const positionIds = positions.map((p) => p.PositionId);
 
@@ -526,19 +527,19 @@ export const getDepartmentsByHr = async (hrId) => {
     error.statusCode = 400;
     throw error;
   }
-  
+
   // Check if this HR user is an admin
   const hr = await prisma.hr.findUnique({
     where: { HrId: hrId },
     select: { isAdmin: true },
   });
-  
+
   if (!hr) {
     const error = new Error("HR not found");
     error.statusCode = 404;
     throw error;
   }
-  
+
   // If admin, return all departments
   if (hr.isAdmin) {
     const allDepartments = await prisma.department.findMany({
@@ -546,7 +547,7 @@ export const getDepartmentsByHr = async (hrId) => {
     });
     return allDepartments;
   }
-  
+
   // Otherwise, return only departments assigned to this HR
   const departments = await prisma.hrDepartment.findMany({
     where: {
