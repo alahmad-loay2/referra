@@ -385,7 +385,7 @@ export const getHrPositions = async (hr, query) => {
 
   //  Sorting
   let orderBy = { CreatedAt: "desc" }; // default
-  
+
   if (sortBy) {
     const validSortFields = [
       "PositionTitle",
@@ -395,10 +395,10 @@ export const getHrPositions = async (hr, query) => {
       "CreatedAt",
       "Deadline",
     ];
-    
+
     if (validSortFields.includes(sortBy)) {
       const order = sortOrder === "asc" ? "asc" : "desc";
-      
+
       // Handle special cases
       if (sortBy === "DepartmentId") {
         // Sort by department name through relation

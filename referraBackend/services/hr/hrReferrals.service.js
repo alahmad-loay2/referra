@@ -1,11 +1,11 @@
 import { prisma } from "../../lib/prisma.js";
 
 // how it works:
-// candidates can have multiple referrals 
+// candidates can have multiple referrals
 // if referral is marked as prospect, its saved in referral that hes prospect and we can no longer advance this referral.
 // if referral is in acceptance stage, the hr has to pick between prospect or accept.
 // if referral is accepted, all other referrals are marked with acceptedinother position.
-// if referral is accepted, the candidate is also marked as accepted. 
+// if referral is accepted, the candidate is also marked as accepted.
 
 // get all confirmed referrals for an hr with filters on department and status and pagination and search
 // positionId is the id of the position to filter by
@@ -286,7 +286,9 @@ export const advanceReferralStage = async (referralId, hrUser) => {
     }
 
     if (referral.AcceptedInOtherPosition) {
-      throw new Error("Cannot advance referral stage when AcceptedInOtherPosition is true");
+      throw new Error(
+        "Cannot advance referral stage when AcceptedInOtherPosition is true",
+      );
     }
 
     const currentIndex = workflow.indexOf(referral.Status);
@@ -331,8 +333,13 @@ export const finalizeReferral = async (
     throw new Error("Referral ID and valid action are required");
   }
 
-  if (action === "Accept" && (compensation === undefined || compensation === null || compensation < 0)) {
-    const err = new Error("Compensation amount is required for acceptance (can be 0)");
+  if (
+    action === "Accept" &&
+    (compensation === undefined || compensation === null || compensation < 0)
+  ) {
+    const err = new Error(
+      "Compensation amount is required for acceptance (can be 0)",
+    );
     err.statusCode = 400;
     throw err;
   }
@@ -387,7 +394,9 @@ export const finalizeReferral = async (
       }
 
       if (referral.AcceptedInOtherPosition) {
-        throw new Error("Cannot accept candidate who is accepted in other position");
+        throw new Error(
+          "Cannot accept candidate who is accepted in other position",
+        );
       }
 
       const candidateId = referral.Application.Candidate.CandidateId;
@@ -455,7 +464,9 @@ export const finalizeReferral = async (
       }
 
       if (referral.AcceptedInOtherPosition) {
-        throw new Error("Cannot prospect candidate who is accepted in other position");
+        throw new Error(
+          "Cannot prospect candidate who is accepted in other position",
+        );
       }
 
       await tx.referral.update({
@@ -525,7 +536,9 @@ export const unprospectReferral = async (referralId, hrUser) => {
     }
 
     if (referral.AcceptedInOtherPosition) {
-      throw new Error("Cannot unprospect candidate who is accepted in other position");
+      throw new Error(
+        "Cannot unprospect candidate who is accepted in other position",
+      );
     }
 
     // ✅ ATOMIC: Validate position state within transaction

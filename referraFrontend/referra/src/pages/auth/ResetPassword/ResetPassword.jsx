@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { resetPassword } from "../../../api/auth.api.js";
 import "./ResetPassword.css";
-
+// simple page that allows users to reset their password after clicking the reset link in their email.
+// It extracts the access_token and refresh_token from the URL hash, and uses them to authenticate the password reset request to the backend API.
+//  It shows a loading state while processing, and displays success or error messages based on the API response.
+//  On successful reset, it redirects the user to the login page.
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import "../../pages/home/HomePage.css";
-
+// Card component for home page with animation and hover effects
 const HomeComponent = ({
   title,
   description,

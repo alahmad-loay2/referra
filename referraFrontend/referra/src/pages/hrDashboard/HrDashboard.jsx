@@ -5,23 +5,28 @@ import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import { LayoutDashboard, Users, Briefcase, UserCog } from "lucide-react";
 import Header from "../../components/header/Header.jsx";
 import { clearUserStoreOnAuthFailure } from "../../utils/auth.utils.js";
-
+// Hr Dashboard is the main layout component for the HR dashboard section of the application.
+// It includes a sidebar for navigation between different pages (dashboard home, referrals, positions, HR team) and a header that is shown on most pages except the referral details page.
+// The component also sets up a global fetch interceptor to handle authentication failures by clearing the user store and redirecting to the login page.
 const HrDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     const originalFetch = window.fetch;
-    
+
     window.fetch = async (...args) => {
       const response = await originalFetch(...args);
-      
-      if ((response.status === 401 || response.status === 403) && window.location.pathname !== '/login') {
+
+      if (
+        (response.status === 401 || response.status === 403) &&
+        window.location.pathname !== "/login"
+      ) {
         // Clear Zustand store on authentication failure
         clearUserStoreOnAuthFailure();
-        navigate('/login', { replace: true });
+        navigate("/login", { replace: true });
       }
-      
+
       return response;
     };
 

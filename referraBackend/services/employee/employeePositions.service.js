@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
-
+// returns the open positions to employees with pagination and search
+// Also returns position details for a specific position
 
 export const getVisiblePositions = async (user, query) => {
   if (user.Role !== "Employee") {

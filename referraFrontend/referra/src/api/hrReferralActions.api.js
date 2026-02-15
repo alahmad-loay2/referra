@@ -1,10 +1,7 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
 
-/**
- * Advance referral stage
- * PATCH /hr/referrals/:referralId/advance
- */
+//update referral stage to next stage
 export const advanceReferralStage = async (referralId) => {
   const res = await fetch(
     `${API_BASE_URL}/hr/referrals/${referralId}/advance`,
@@ -25,10 +22,7 @@ export const advanceReferralStage = async (referralId) => {
   return res.json();
 };
 
-/**
- * Finalize referral (Accept / Prospect)
- * PATCH /hr/referrals/:referralId/finalize
- */
+// finalize referral with action (hire/reject) and optional compensation amount for hire
 export const finalizeReferral = async (
   referralId,
   action,
@@ -54,10 +48,7 @@ export const finalizeReferral = async (
   return res.json();
 };
 
-/**
- * Unprospect referral
- * PATCH /hr/referrals/:referralId/unprospect
- */
+// unprospect a referral (move back to "Prospect" stage)
 export const unprospectReferral = async (referralId) => {
   const res = await fetch(
     `${API_BASE_URL}/hr/referrals/${referralId}/unprospect`,

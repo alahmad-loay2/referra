@@ -4,7 +4,10 @@ import { fetchEmployeeApplications } from "../../../api/employeeReferrals.api";
 import Button from "../../../components/button/Button";
 import { getPaginationPages } from "../../../utils/pagination";
 import NormalSelect from "../../../components/normalSelect/NormalSelect";
-
+// Employee Referrals page that displays a paginated list of the employee's referrals, with filters for search, status, and date.
+// Each referral card shows the candidate's name, email, position referred for, referral date, and a timeline of the referral status.
+// It also has a badge for prospects and a button to view more details about each referral.
+// The data is fetched from the backend API with the applied filters and pagination, and loading states are shown while the data is being fetched.
 import "./EmployeeReferrals.css";
 const STATUS_ORDER = [
   "Pending",

@@ -5,7 +5,8 @@ import Button from "../../../components/button/Button";
 import { getPaginationPages } from "../../../utils/pagination";
 
 import "./EmployeePositions.css";
-
+// Employee Positions page that displays a paginated list of open positions that employees can refer candidates for.
+// Each position card shows the job title, company name, department, employment type, and deadline, along with a button to view more details.
 const PAGE_SIZE = 5;
 
 const EmployeePositions = () => {
@@ -80,19 +81,27 @@ const EmployeePositions = () => {
                   <div className="meta">
                     <span>
                       <Building size={14} />
-                      <span className="meta-text">{pos.CompanyName || "-"}</span>
+                      <span className="meta-text">
+                        {pos.CompanyName || "-"}
+                      </span>
                     </span>
                     <span>
                       <Building2 size={14} />
-                      <span className="meta-text">{pos.Department.DepartmentName}</span>
+                      <span className="meta-text">
+                        {pos.Department.DepartmentName}
+                      </span>
                     </span>
                     <span>
                       <Briefcase size={14} />
-                      <span className="meta-text">{formatEmploymentType(pos.EmploymentType)}</span>
+                      <span className="meta-text">
+                        {formatEmploymentType(pos.EmploymentType)}
+                      </span>
                     </span>
                     <span>
                       <Calendar size={14} />
-                      <span className="meta-text">{new Date(pos.Deadline).toLocaleDateString()}</span>
+                      <span className="meta-text">
+                        {new Date(pos.Deadline).toLocaleDateString()}
+                      </span>
                     </span>
                   </div>
                 </div>

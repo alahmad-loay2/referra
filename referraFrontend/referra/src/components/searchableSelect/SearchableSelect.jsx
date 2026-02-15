@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
 import "./SearchableSelect.css";
-
+// searchable select component that allows users to search and select from a list of options.
+// It supports keyboard navigation, loading state, and no results state.
 const SearchableSelect = ({
   options = [],
   value = "",

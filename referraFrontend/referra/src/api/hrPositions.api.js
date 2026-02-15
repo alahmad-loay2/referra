@@ -1,5 +1,6 @@
-import { generateIdempotencyKey } from './idempotency.utils.js';
+import { generateIdempotencyKey } from "./idempotency.utils.js";
 
+// api for getting HR statistics , and all CRUD operations for positions and departments for HR users
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
 
@@ -54,7 +55,7 @@ export const getHrPositions = async ({
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     return await res.json();
@@ -62,8 +63,6 @@ export const getHrPositions = async ({
     throw error;
   }
 };
-
-
 
 export const updatePositionState = async (positionId, state) => {
   try {
@@ -76,7 +75,7 @@ export const updatePositionState = async (positionId, state) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ state }),
-      }
+      },
     );
 
     return await res.json();
@@ -85,7 +84,6 @@ export const updatePositionState = async (positionId, state) => {
   }
 };
 
-
 export const createPosition = async (positionData) => {
   try {
     const res = await fetch(`${API_BASE_URL}/hr/positions`, {
@@ -93,7 +91,10 @@ export const createPosition = async (positionData) => {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        'Idempotency-Key': await generateIdempotencyKey('/hr/positions', positionData),
+        "Idempotency-Key": await generateIdempotencyKey(
+          "/hr/positions",
+          positionData,
+        ),
       },
       body: JSON.stringify(positionData),
     });
@@ -135,16 +136,13 @@ export const updatePosition = async (positionId, positionData) => {
 
 export const getPositionDetails = async (positionId) => {
   try {
-    const res = await fetch(
-      `${API_BASE_URL}/hr/positions-hr/${positionId}`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const res = await fetch(`${API_BASE_URL}/hr/positions-hr/${positionId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if (!res.ok) {
       const errorData = await res.json();

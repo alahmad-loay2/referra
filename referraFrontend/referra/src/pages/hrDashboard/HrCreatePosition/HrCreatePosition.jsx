@@ -8,7 +8,10 @@ import {
   getHrDepartments,
 } from "../../../api/hrPositions.api";
 import SearchableSelect from "../../../components/searchableSelect/SearchableSelect";
-
+// Hr Create Position page that allows HR users to create a new job position or edit an existing one.
+// The form includes fields for job title, company name, employment type, years of experience required, job description, time zone, deadline, location, and department.
+// The page fetches the list of departments for the department dropdown and the position details if in edit mode.
+// It also includes validation for required fields and deadline date.
 const HrCreatePosition = () => {
   const navigate = useNavigate();
   const { positionId } = useParams();

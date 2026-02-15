@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signin } from "../../../api/auth.api.js";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-
+// Login page that allows users to enter their email and password to sign in.
+//  It shows a loading state while the request is being processed and displays error messages based on the API response.
+// It also has a toggle to show/hide the password and a link to the forgot password page.
 import "./Login.css";
 const LoginPage = () => {
   const navigate = useNavigate();

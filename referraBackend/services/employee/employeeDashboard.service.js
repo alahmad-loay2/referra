@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
 
+// Get employee dashboard data: stats including total referrals,pending reviews,successful hires,compensation, recent referrals, and open positions
 export const getEmployeeDashboard = async (employeeId) => {
   if (!employeeId) {
     const error = new Error("Employee ID is required");
@@ -36,7 +37,7 @@ export const getEmployeeDashboard = async (employeeId) => {
       },
     }),
 
-    // Bonuses (example logic)
+    // Compensation total
     prisma.compensation.aggregate({
       where: { EmployeeId: employeeId },
       _sum: { Amount: true },

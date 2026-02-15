@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, X } from "lucide-react";
 import "./NormalSelect.css";
-
 const NormalSelect = ({
   options = [],
   value = "",
@@ -130,7 +129,9 @@ const NormalSelect = ({
         <div className="normal-select-dropdown" ref={dropdownRef}>
           <div className="normal-select-options">
             {options.length === 0 ? (
-              <div className="normal-select-no-results">No options available</div>
+              <div className="normal-select-no-results">
+                No options available
+              </div>
             ) : (
               options.map((option, index) => (
                 <div
@@ -149,12 +150,7 @@ const NormalSelect = ({
         </div>
       )}
       {name && (
-        <input
-          type="hidden"
-          name={name}
-          value={value}
-          required={required}
-        />
+        <input type="hidden" name={name} value={value} required={required} />
       )}
     </div>
   );

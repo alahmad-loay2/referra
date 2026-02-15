@@ -1,6 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./HrPositions.css";
-import { Briefcase, Users, Layers, Search, MoreVertical, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Briefcase,
+  Users,
+  Layers,
+  Search,
+  MoreVertical,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import Button from "../../../components/button/Button";
 import {
   getHrPositions,
@@ -12,7 +20,7 @@ import Loading from "../../../components/loading/Loading.jsx";
 import { useNavigate } from "react-router-dom";
 import { getPaginationPages } from "../../../utils/pagination";
 import NormalSelect from "../../../components/normalSelect/NormalSelect";
-
+// Hr Positions page that allows HR users to view and manage job positions.
 const HrPositions = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
@@ -116,7 +124,7 @@ const HrPositions = () => {
           status: filters.status,
           departmentId: filters.departmentId,
           // Only send sortBy/sortOrder if they're set (not empty)
-          sortBy: sortBy && sortBy !== "Applicants" ? sortBy : "", 
+          sortBy: sortBy && sortBy !== "Applicants" ? sortBy : "",
           sortOrder: sortBy && sortBy !== "Applicants" ? sortOrder : "",
         });
 
@@ -126,17 +134,15 @@ const HrPositions = () => {
           setError(true);
           return;
         }
-        
+
         let positions = data.positions || [];
-        
+
         // Client-side sort for applicants count
         if (sortBy === "Applicants") {
           positions = [...positions].sort((a, b) => {
             const aCount = a.applicantsCount || 0;
             const bCount = b.applicantsCount || 0;
-            return sortOrder === "asc" 
-              ? aCount - bCount 
-              : bCount - aCount;
+            return sortOrder === "asc" ? aCount - bCount : bCount - aCount;
           });
         }
 
@@ -182,7 +188,7 @@ const HrPositions = () => {
     };
 
     const newSortBy = columnMap[column] || column;
-    
+
     // Three-state cycle: desc -> asc -> default (no sort)
     if (sortBy === newSortBy) {
       if (sortOrder === "desc") {
@@ -210,14 +216,14 @@ const HrPositions = () => {
       Deadline: "Deadline",
       Applicants: "Applicants",
     };
-    
+
     const currentSortBy = columnMap[column] || column;
-    
+
     // No icon if not the active sort column or if sorting is reset
     if (sortBy !== currentSortBy || !sortBy) {
       return null;
     }
-    
+
     return sortOrder === "asc" ? (
       <ArrowUp size={14} className="sort-icon" />
     ) : (
@@ -268,7 +274,9 @@ const HrPositions = () => {
 
     // Check if the typed name matches the position title
     if (deleteConfirmText.trim() !== pendingDelete.PositionTitle) {
-      alert("Position name does not match. Please type the exact position name.");
+      alert(
+        "Position name does not match. Please type the exact position name.",
+      );
       return;
     }
 
@@ -279,19 +287,20 @@ const HrPositions = () => {
 
     try {
       await deletePosition(positionToDelete.PositionId);
-      
+
       // Remove the position from the list
       setHrPositions((prev) =>
-        prev.filter((p) => p.PositionId !== positionToDelete.PositionId)
+        prev.filter((p) => p.PositionId !== positionToDelete.PositionId),
       );
-      
+
       // Update stats
       setStats((prev) => ({
         ...prev,
         totalPositions: Math.max(0, prev.totalPositions - 1),
-        openPositions: positionToDelete.PositionState === "OPEN" 
-          ? Math.max(0, prev.openPositions - 1)
-          : prev.openPositions,
+        openPositions:
+          positionToDelete.PositionState === "OPEN"
+            ? Math.max(0, prev.openPositions - 1)
+            : prev.openPositions,
       }));
     } catch (err) {
       alert(err.message || "Failed to delete position");
@@ -411,13 +420,19 @@ const HrPositions = () => {
                 <th className="sortable" onClick={() => handleSort("Company")}>
                   Company {getSortIcon("Company")}
                 </th>
-                <th className="sortable" onClick={() => handleSort("Department")}>
+                <th
+                  className="sortable"
+                  onClick={() => handleSort("Department")}
+                >
                   Department {getSortIcon("Department")}
                 </th>
                 <th className="sortable" onClick={() => handleSort("Location")}>
                   Location {getSortIcon("Location")}
                 </th>
-                <th className="sortable" onClick={() => handleSort("Applicants")}>
+                <th
+                  className="sortable"
+                  onClick={() => handleSort("Applicants")}
+                >
                   Applicants {getSortIcon("Applicants")}
                 </th>
                 <th className="sortable" onClick={() => handleSort("Deadline")}>
@@ -467,7 +482,11 @@ const HrPositions = () => {
                     <td>{p.Department?.DepartmentName || "-"}</td>
                     <td>{p.PositionLocation}</td>
                     <td>{p.applicantsCount}</td>
-                    <td>{p.Deadline ? new Date(p.Deadline).toLocaleDateString() : "-"}</td>
+                    <td>
+                      {p.Deadline
+                        ? new Date(p.Deadline).toLocaleDateString()
+                        : "-"}
+                    </td>
                     <td>
                       <div className="statusWrapper">
                         <label className="switch">
@@ -663,7 +682,9 @@ const HrPositions = () => {
               <button
                 className="position-confirm-submit delete-submit-button"
                 onClick={confirmDeletePosition}
-                disabled={deleteConfirmText.trim() !== pendingDelete.PositionTitle}
+                disabled={
+                  deleteConfirmText.trim() !== pendingDelete.PositionTitle
+                }
               >
                 Delete Position
               </button>

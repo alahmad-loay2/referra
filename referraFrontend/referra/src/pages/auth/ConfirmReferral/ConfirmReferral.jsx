@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./ConfirmReferral.css";
 import Loading from "../../../components/loading/Loading.jsx";
-
+// simple page that confirms a referral when an employee clicks the referral confirmation link in their email.
+// It shows a loading spinner while confirming, and displays a message if the link is expired or if the confirmation is successful.
+//  It uses the referralId from the URL to confirm the referral with the backend API.
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
 const ConfirmReferral = () => {

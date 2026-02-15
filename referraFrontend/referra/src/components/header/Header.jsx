@@ -3,7 +3,7 @@ import "./Header.css";
 import Button from "../button/Button";
 import { getUserInfo } from "../../api/user.api.js";
 import { useUserStore } from "../../store/userStore.js";
-
+// Header component that displays a greeting with the user's first name and a button for navigation. It fetches user info on mount to get the first name and admin status.
 const Header = (props) => {
   const firstName = useUserStore((state) => state.firstName);
   const setFirstName = useUserStore((state) => state.setFirstName);
@@ -36,9 +36,7 @@ const Header = (props) => {
   return (
     <div className="headerContainer">
       <div>
-        <h3>
-          Hello {firstName || "..."}
-        </h3>
+        <h3>Hello {firstName || "..."}</h3>
         <p>{props.text}</p>
       </div>
       <Button text={props.buttonText} to={props.to} />

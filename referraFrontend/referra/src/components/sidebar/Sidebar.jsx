@@ -5,7 +5,9 @@ import { getUserInfo } from "../../api/user.api.js";
 import { logout } from "../../api/auth.api.js";
 import { useUserStore } from "../../store/userStore.js";
 import { Menu, X } from "lucide-react";
-
+// Sidebar component that displays navigation links and user account info.
+//  It fetches user info on mount to display the user's name and role, and provides a dropdown for account actions like going to account page and logging out and going to home page.
+//  It also has a responsive burger menu for smaller screens.
 const Sidebar = (props) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,9 +41,15 @@ const Sidebar = (props) => {
       fetchUser();
     };
 
-    window.addEventListener('profilePictureUpdated', handleProfilePictureUpdate);
+    window.addEventListener(
+      "profilePictureUpdated",
+      handleProfilePictureUpdate,
+    );
     return () => {
-      window.removeEventListener('profilePictureUpdated', handleProfilePictureUpdate);
+      window.removeEventListener(
+        "profilePictureUpdated",
+        handleProfilePictureUpdate,
+      );
     };
   }, []);
 
@@ -91,9 +99,7 @@ const Sidebar = (props) => {
     if (!user || !user.Role) return null;
     const role = user.Role;
     return (
-      <span className={`sidebarRoleBadge ${role.toLowerCase()}`}>
-        {role}
-      </span>
+      <span className={`sidebarRoleBadge ${role.toLowerCase()}`}>{role}</span>
     );
   };
 
@@ -156,7 +162,7 @@ const Sidebar = (props) => {
           ))}
         </nav>
 
-        <button 
+        <button
           ref={burgerButtonRef}
           className="sidebarBurgerButton"
           onClick={handleMenuToggle}
@@ -196,9 +202,9 @@ const Sidebar = (props) => {
               {loading ? (
                 <span>...</span>
               ) : user?.ProfileUrl ? (
-                <img 
-                  src={user.ProfileUrl} 
-                  alt="Profile" 
+                <img
+                  src={user.ProfileUrl}
+                  alt="Profile"
                   className="sidebarAccountAvatarImage"
                 />
               ) : (

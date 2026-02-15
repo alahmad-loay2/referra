@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { forgotPassword } from "../../../api/auth.api.js";
 import { Mail } from "lucide-react";
 import "./ForgotPassword.css";
-
+// Forgot Password page that allows users to enter their email address to receive a password reset link.
+// It shows a loading state while the request is being processed and displays success or error messages based on the API response.
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");

@@ -12,7 +12,9 @@ import { getEmployeeDashboard } from "../../../api/employeeDashboard.api.js";
 import Loading from "../../../components/loading/Loading.jsx";
 
 import "./EmployeeDashboardHome.css";
-
+// Employee Dashboard Home page that displays an overview of the employee's referral activity, including stats on total referrals, successful hires, pending reviews, and bonuses earned.
+// It also shows recent referrals and open positions with links to view more details.
+//  The data is fetched from the backend API when the component mounts, and loading states are shown while the data is being fetched.
 const EmployeeDashboardHome = () => {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);

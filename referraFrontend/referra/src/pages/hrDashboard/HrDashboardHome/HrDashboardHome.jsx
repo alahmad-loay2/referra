@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getHrDashboard } from "../../../api/hrPositions.api.js";
-import { Users, Briefcase, Clock, CheckCircle, Mail, Calendar } from "lucide-react";
+import {
+  Users,
+  Briefcase,
+  Clock,
+  CheckCircle,
+  Mail,
+  Calendar,
+} from "lucide-react";
 import "./HrDashboardHome.css";
 import Loading from "../../../components/loading/Loading.jsx";
+// Hr Dashboard Home page that displays an overview of the HR user's referral activity, including stats on total referrals, open positions, pending reviews, and successful hires.
+// It also shows recent referrals with links to view more details.
+//  The data is fetched from the backend API when the component mounts, and loading states are shown while the data is being fetched.
 
 const HrDashboardHome = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -43,7 +53,12 @@ const HrDashboardHome = () => {
           {loading ? (
             <Loading />
           ) : (
-            <span>{dashboardData?.totalReferrals ?? 0} <span className="hr-dashboard-home-header-item-extra">Total Referrals</span></span>
+            <span>
+              {dashboardData?.totalReferrals ?? 0}{" "}
+              <span className="hr-dashboard-home-header-item-extra">
+                Total Referrals
+              </span>
+            </span>
           )}
         </div>
         <div className="hr-dashboard-home-header-item">
@@ -56,7 +71,12 @@ const HrDashboardHome = () => {
           {loading ? (
             <Loading />
           ) : (
-            <span>{dashboardData?.openPositions ?? 0} <span className="hr-dashboard-home-header-item-extra">In your departments</span></span>
+            <span>
+              {dashboardData?.openPositions ?? 0}{" "}
+              <span className="hr-dashboard-home-header-item-extra">
+                In your departments
+              </span>
+            </span>
           )}
         </div>
         <div className="hr-dashboard-home-header-item">
@@ -69,7 +89,12 @@ const HrDashboardHome = () => {
           {loading ? (
             <Loading />
           ) : (
-            <span>{dashboardData?.pendingReviews ?? 0} <span className="hr-dashboard-home-header-item-extra">Pending Referrals</span></span>
+            <span>
+              {dashboardData?.pendingReviews ?? 0}{" "}
+              <span className="hr-dashboard-home-header-item-extra">
+                Pending Referrals
+              </span>
+            </span>
           )}
         </div>
         <div className="hr-dashboard-home-header-item">
@@ -82,7 +107,10 @@ const HrDashboardHome = () => {
           {loading ? (
             <Loading />
           ) : (
-            <span>{dashboardData?.successfulHires ?? 0} <span className="hr-dashboard-home-header-item-extra">Hired</span></span>
+            <span>
+              {dashboardData?.successfulHires ?? 0}{" "}
+              <span className="hr-dashboard-home-header-item-extra">Hired</span>
+            </span>
           )}
         </div>
       </div>
@@ -91,14 +119,20 @@ const HrDashboardHome = () => {
         <div className="hr-dashboard-home-recent-referrals">
           <div className="hr-dashboard-home-recent-header">
             <h2>Recent Referrals</h2>
-            <Link to="/dashboard/hr/referrals" className="hr-dashboard-home-view-all">
+            <Link
+              to="/dashboard/hr/referrals"
+              className="hr-dashboard-home-view-all"
+            >
               View all
             </Link>
           </div>
           {loading ? (
             <>
               {[...Array(3)].map((_, index) => (
-                <div key={`skeleton-${index}`} className="hr-dashboard-home-candidate-skeleton">
+                <div
+                  key={`skeleton-${index}`}
+                  className="hr-dashboard-home-candidate-skeleton"
+                >
                   <div className="hr-dashboard-home-skeleton-button"></div>
                   <div className="hr-dashboard-home-recent-avatar-name-skeleton">
                     <div className="hr-dashboard-home-recent-avatar-skeleton"></div>
@@ -118,10 +152,7 @@ const HrDashboardHome = () => {
               const fullName = `${referral.Candidate.FirstName} ${referral.Candidate.LastName}`;
               const referralId = referral.Referral?.ReferralId;
               return (
-                <div
-                  className="candidate"
-                  key={referral.ApplicationId}
-                >
+                <div className="candidate" key={referral.ApplicationId}>
                   <div className="hr-dashboard-home-recent-avatar-name">
                     <div className="hr-dashboard-home-recent-avatar">
                       {referral.Candidate.FirstName?.[0]}
@@ -132,25 +163,33 @@ const HrDashboardHome = () => {
                   <div className="candidate-meta-row">
                     <span className="iconText candidate-meta-item">
                       <Mail size={14} />
-                      <span className="iconTextLabel">{referral.Candidate.Email}</span>
+                      <span className="iconTextLabel">
+                        {referral.Candidate.Email}
+                      </span>
                     </span>
                     {referral.Position?.PositionTitle && (
                       <span className="iconText candidate-meta-item">
                         <Briefcase size={14} />
-                        <span className="iconTextLabel">{referral.Position.PositionTitle}</span>
+                        <span className="iconTextLabel">
+                          {referral.Position.PositionTitle}
+                        </span>
                       </span>
                     )}
                     {referral.Referral?.Status && (
                       <span className="iconText candidate-meta-item">
                         <Clock size={14} />
-                        <span className="iconTextLabel">{referral.Referral.Status}</span>
+                        <span className="iconTextLabel">
+                          {referral.Referral.Status}
+                        </span>
                       </span>
                     )}
                     {referral.Referral?.CreatedAt && (
                       <span className="iconText candidate-meta-item">
                         <Calendar size={14} />
                         <span className="iconTextLabel">
-                          {new Date(referral.Referral.CreatedAt).toLocaleDateString("en-CA", {
+                          {new Date(
+                            referral.Referral.CreatedAt,
+                          ).toLocaleDateString("en-CA", {
                             year: "numeric",
                             month: "2-digit",
                             day: "2-digit",
@@ -172,10 +211,8 @@ const HrDashboardHome = () => {
           )}
         </div>
       </div>
-
     </div>
   );
 };
 
 export default HrDashboardHome;
-

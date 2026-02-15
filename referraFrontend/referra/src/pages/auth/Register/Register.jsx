@@ -4,7 +4,9 @@ import { CheckCircle, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { signup } from "../../../api/auth.api.js";
 import NormalSelect from "../../../components/normalSelect/NormalSelect";
 import "./Register.css";
-
+// Register page that allows new employees to create an account by filling out a registration form with their personal and work details.
+// It shows a loading state while the request is being processed and displays error messages based on the API response.
+//  It also has a toggle to show/hide the password and a link to the login page.
 const Register = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({

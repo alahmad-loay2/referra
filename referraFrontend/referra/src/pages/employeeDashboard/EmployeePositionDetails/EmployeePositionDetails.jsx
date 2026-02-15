@@ -6,7 +6,9 @@ import Button from "../../../components/button/Button";
 import Loading from "../../../components/loading/Loading";
 
 import "./EmployeePositionDetails.css";
-
+// Employee Position Details page that shows detailed information about a specific open position, including the job title, company name, department, location, job type, experience required, timezone, deadline, and job description.
+// It also has a button to refer a candidate for that position, which navigates to the referral submission page with the positionId as a query parameter.
+// The data is fetched from the backend API using the positionId from the URL when the component mounts, and a loading spinner is shown while the data is being fetched.
 const formatEnum = (value) =>
   value
     ?.toLowerCase()

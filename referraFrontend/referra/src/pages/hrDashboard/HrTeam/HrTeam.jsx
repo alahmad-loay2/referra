@@ -19,7 +19,9 @@ import NormalSelect from "../../../components/normalSelect/NormalSelect";
 
 import AddHr from "./AddHr";
 import "./HrTeam.css";
-
+// HrTeam is the page that displays the list of HR team members, along with their departments and contact information.
+// It also shows some stats about the HR team and allows filtering by name/email and department.
+// Admin users can add new HR members and create new departments from this page. The data is fetched from the backend API with applied filters and pagination, and loading states are shown while the data is being fetched.
 const HrTeam = () => {
   const [stats, setStats] = useState({
     totalMembers: 0,
@@ -363,7 +365,9 @@ const HrTeam = () => {
                     <td>
                       <div className="icon-text">
                         <Phone size={14} />
-                        <span className="phone-text">{hr.User.PhoneNumber || "—"}</span>
+                        <span className="phone-text">
+                          {hr.User.PhoneNumber || "—"}
+                        </span>
                       </div>
                     </td>
 

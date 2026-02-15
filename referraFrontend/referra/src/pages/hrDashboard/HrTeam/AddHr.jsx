@@ -4,7 +4,8 @@ import { createHr } from "../../../api/auth.api";
 import { getHrDepartments } from "../../../api/hrPositions.api";
 import NormalSelect from "../../../components/normalSelect/NormalSelect";
 import "./AddHr.css";
-
+// AddHr is a modal component that allows HR users to add a new HR team member by entering their details and assigning them to one or more departments.
+//  The form includes validation for required fields and shows loading and error states during the submission process.
 const AddHr = ({ onClose, onSuccess }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

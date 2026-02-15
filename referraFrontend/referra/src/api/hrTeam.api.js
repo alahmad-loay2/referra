@@ -1,6 +1,6 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
-
+// API to get HR team members with pagination, search, and department filter
 export const getHrTeam = async ({
   page = 1,
   limit = 10,

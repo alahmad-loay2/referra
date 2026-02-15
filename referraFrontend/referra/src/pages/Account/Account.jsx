@@ -1,11 +1,17 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import "./Account.css";
-import { getUserInfo, updateUserInfo, updateProfilePicture } from "../../api/user.api.js";
+import {
+  getUserInfo,
+  updateUserInfo,
+  updateProfilePicture,
+} from "../../api/user.api.js";
 import Loading from "../../components/loading/Loading.jsx";
 import { useUserStore } from "../../store/userStore.js";
 import NormalSelect from "../../components/normalSelect/NormalSelect";
-
+// account page where users can view and edit their profile information, including their profile picture,
+// personal details, and work information. It also allows employees to see their total compensation.
+//  The page includes modals for confirming cancel/save actions and for cropping the profile picture when updating it.
 const Account = () => {
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,14 +57,17 @@ const Account = () => {
   // Close avatar menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showAvatarMenu && !event.target.closest('.accountContentLeftAvatarContainer')) {
+      if (
+        showAvatarMenu &&
+        !event.target.closest(".accountContentLeftAvatarContainer")
+      ) {
         setShowAvatarMenu(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showAvatarMenu]);
 
@@ -71,8 +80,14 @@ const Account = () => {
         age: profileData.Age || "",
         phoneNumber: profileData.PhoneNumber || "",
         gender: profileData.Gender || "",
-        department: profileData.Role === "Employee" ? (profileData.Employee?.Department || "") : "",
-        position: profileData.Role === "Employee" ? (profileData.Employee?.Position || "") : "",
+        department:
+          profileData.Role === "Employee"
+            ? profileData.Employee?.Department || ""
+            : "",
+        position:
+          profileData.Role === "Employee"
+            ? profileData.Employee?.Position || ""
+            : "",
       });
     }
   }, [isEditMode, profileData]);
@@ -115,12 +130,13 @@ const Account = () => {
       setUpdateError("");
       setUpdateSuccess("");
       // Remove department and position for HR users only - they're not allowed in the schema
-      const payloadToSend = profileData?.Role === "HR" 
-        ? (() => {
-            const { department, position, ...rest } = formData;
-            return rest;
-          })()
-        : formData;
+      const payloadToSend =
+        profileData?.Role === "HR"
+          ? (() => {
+              const { department, position, ...rest } = formData;
+              return rest;
+            })()
+          : formData;
       const updatedData = await updateUserInfo(payloadToSend);
       setProfileData(updatedData);
       // Update Zustand store with new firstName if it was changed
@@ -178,7 +194,7 @@ const Account = () => {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       setUpdateError("Please select an image file");
       return;
     }
@@ -191,7 +207,7 @@ const Account = () => {
 
     // Read file and show crop modal
     const reader = new FileReader();
-    reader.addEventListener('load', () => {
+    reader.addEventListener("load", () => {
       setImageSrc(reader.result);
       setShowCropModal(true);
       setCrop({ x: 0, y: 0 });
@@ -209,15 +225,15 @@ const Account = () => {
   const createImage = (url) =>
     new Promise((resolve, reject) => {
       const image = new Image();
-      image.addEventListener('load', () => resolve(image));
-      image.addEventListener('error', (error) => reject(error));
+      image.addEventListener("load", () => resolve(image));
+      image.addEventListener("error", (error) => reject(error));
       image.src = url;
     });
 
   const getCroppedImg = async (imageSrc, pixelCrop) => {
     const image = await createImage(imageSrc);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
     // Set canvas size to crop size
     const size = Math.min(pixelCrop.width, pixelCrop.height);
@@ -243,13 +259,17 @@ const Account = () => {
       0,
       0,
       size,
-      size
+      size,
     );
 
     return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob);
-      }, 'image/jpeg', 0.9);
+      canvas.toBlob(
+        (blob) => {
+          resolve(blob);
+        },
+        "image/jpeg",
+        0.9,
+      );
     });
   };
 
@@ -263,22 +283,24 @@ const Account = () => {
       setUpdateSuccess("");
 
       const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
-      const file = new File([croppedImage], 'profile-picture.jpg', { type: 'image/jpeg' });
+      const file = new File([croppedImage], "profile-picture.jpg", {
+        type: "image/jpeg",
+      });
 
       const updatedData = await updateProfilePicture(file);
       setProfileData(updatedData);
       setUpdateSuccess("Profile picture updated successfully!");
-      
+
       // Close crop modal
       setShowCropModal(false);
       setImageSrc(null);
-      
+
       // Refresh profile data to ensure sidebar gets updated
       await fetchProfileData();
-      
+
       // Dispatch custom event to refresh sidebar
-      window.dispatchEvent(new CustomEvent('profilePictureUpdated'));
-      
+      window.dispatchEvent(new CustomEvent("profilePictureUpdated"));
+
       setTimeout(() => setUpdateSuccess(""), 3000);
     } catch (error) {
       setUpdateError(error.message || "Failed to update profile picture");
@@ -286,7 +308,7 @@ const Account = () => {
       setIsUploadingPP(false);
       // Reset file input
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -299,7 +321,7 @@ const Account = () => {
     setZoom(1);
     setCroppedAreaPixels(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -328,7 +350,8 @@ const Account = () => {
     if (!profileData) return "";
     if (profileData.Role === "HR") {
       // Get first department from HR departments
-      const firstDepartment = profileData.Hr?.Departments?.[0]?.Department?.DepartmentName;
+      const firstDepartment =
+        profileData.Hr?.Departments?.[0]?.Department?.DepartmentName;
       return firstDepartment || "";
     }
     return profileData.Employee?.Department || "";
@@ -353,10 +376,10 @@ const Account = () => {
           {profileData && (
             <>
               <div className="accountContentLeftAvatarContainer">
-                <div 
-                  className="accountContentLeftAvatar" 
+                <div
+                  className="accountContentLeftAvatar"
                   onClick={handleAvatarClick}
-                  style={{ cursor: 'pointer', position: 'relative' }}
+                  style={{ cursor: "pointer", position: "relative" }}
                 >
                   {isUploadingPP && (
                     <div className="accountContentLeftAvatarLoading">
@@ -364,26 +387,28 @@ const Account = () => {
                     </div>
                   )}
                   {profileData.ProfileUrl ? (
-                    <img 
-                      src={profileData.ProfileUrl} 
-                      alt="Profile" 
+                    <img
+                      src={profileData.ProfileUrl}
+                      alt="Profile"
                       className="accountContentLeftAvatarImage"
                       style={{ opacity: isUploadingPP ? 0.5 : 1 }}
                     />
                   ) : (
-                    <span style={{ opacity: isUploadingPP ? 0.5 : 1 }}>{getAvatarInitials()}</span>
+                    <span style={{ opacity: isUploadingPP ? 0.5 : 1 }}>
+                      {getAvatarInitials()}
+                    </span>
                   )}
                 </div>
                 {showAvatarMenu && (
                   <div className="accountAvatarMenu">
-                    <button 
+                    <button
                       className="accountAvatarMenuItem"
                       onClick={handleViewPP}
                       disabled={!profileData.ProfileUrl}
                     >
                       View PP
                     </button>
-                    <button 
+                    <button
                       className="accountAvatarMenuItem"
                       onClick={handleEditPP}
                       disabled={isUploadingPP}
@@ -396,7 +421,7 @@ const Account = () => {
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                   onChange={handleFileChange}
                 />
               </div>
@@ -408,28 +433,37 @@ const Account = () => {
             </>
           )}
         </div>
-        {profileData && profileData.Role === "Employee" && getTotalCompensation() !== null && (
-          <div className="accountContentCenter">
-            <div className="accountContentCenterLabel">Total Compensation</div>
-            <div className="accountContentCenterAmount">${getTotalCompensation().toLocaleString()}</div>
-          </div>
-        )}
+        {profileData &&
+          profileData.Role === "Employee" &&
+          getTotalCompensation() !== null && (
+            <div className="accountContentCenter">
+              <div className="accountContentCenterLabel">
+                Total Compensation
+              </div>
+              <div className="accountContentCenterAmount">
+                ${getTotalCompensation().toLocaleString()}
+              </div>
+            </div>
+          )}
         <div className="accountContentRight">
           {!isEditMode ? (
-            <button className="accountContentRightButton" onClick={handleEditClick}>
+            <button
+              className="accountContentRightButton"
+              onClick={handleEditClick}
+            >
               Edit Profile
             </button>
           ) : (
             <div className="accountContentRightActions">
-              <button 
-                className="accountContentRightCancel" 
+              <button
+                className="accountContentRightCancel"
                 onClick={handleCancelClick}
                 disabled={isSaving || isCancelling}
               >
                 Cancel
               </button>
-              <button 
-                className="accountContentRightSave" 
+              <button
+                className="accountContentRightSave"
                 onClick={handleSaveClick}
                 disabled={isSaving || isCancelling}
               >
@@ -588,7 +622,12 @@ const Account = () => {
               <div className="workInformationContentItem">
                 <h4>Join Date</h4>
                 {profileData.CreatedAt ? (
-                  <p>{new Date(profileData.CreatedAt).toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
+                  <p>
+                    {new Date(profileData.CreatedAt).toLocaleDateString(
+                      "en-CA",
+                      { year: "numeric", month: "2-digit", day: "2-digit" },
+                    )}
+                  </p>
                 ) : (
                   <p>N/A</p>
                 )}
@@ -603,7 +642,9 @@ const Account = () => {
         <div className="account-modalOverlay">
           <div className="account-modal">
             <h3>Cancel editing?</h3>
-            <p>Are you sure you want to cancel? All unsaved changes will be lost.</p>
+            <p>
+              Are you sure you want to cancel? All unsaved changes will be lost.
+            </p>
             <div className="account-modalActions">
               <button
                 className="account-modalCancel"
@@ -612,8 +653,8 @@ const Account = () => {
               >
                 No
               </button>
-              <button 
-                className="account-modalConfirm" 
+              <button
+                className="account-modalConfirm"
                 onClick={confirmCancel}
                 disabled={isCancelling}
               >
@@ -638,8 +679,8 @@ const Account = () => {
               >
                 Cancel
               </button>
-              <button 
-                className="account-modalConfirm" 
+              <button
+                className="account-modalConfirm"
                 onClick={confirmSave}
                 disabled={isSaving}
               >
@@ -653,7 +694,10 @@ const Account = () => {
       {/* Crop Modal */}
       {showCropModal && imageSrc && (
         <div className="account-modalOverlay">
-          <div className="account-cropModal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="account-cropModal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3>Crop Your Profile Picture</h3>
             <div className="account-cropContainer">
               <Cropper
@@ -705,11 +749,16 @@ const Account = () => {
       {/* View Profile Picture Modal */}
       {showViewPP && profileData?.ProfileUrl && (
         <div className="account-modalOverlay" onClick={handleCloseViewPP}>
-          <div className="account-viewPPModal" onClick={(e) => e.stopPropagation()}>
-            <button className="account-viewPPClose" onClick={handleCloseViewPP}>×</button>
-            <img 
-              src={profileData.ProfileUrl} 
-              alt="Profile Picture" 
+          <div
+            className="account-viewPPModal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="account-viewPPClose" onClick={handleCloseViewPP}>
+              ×
+            </button>
+            <img
+              src={profileData.ProfileUrl}
+              alt="Profile Picture"
               className="account-viewPPImage"
             />
           </div>
@@ -718,14 +767,10 @@ const Account = () => {
 
       {/* Success/Error Messages */}
       {updateSuccess && (
-        <div className="account-feedback success">
-          {updateSuccess}
-        </div>
+        <div className="account-feedback success">{updateSuccess}</div>
       )}
       {updateError && (
-        <div className="account-feedback error">
-          {updateError}
-        </div>
+        <div className="account-feedback error">{updateError}</div>
       )}
     </div>
   );

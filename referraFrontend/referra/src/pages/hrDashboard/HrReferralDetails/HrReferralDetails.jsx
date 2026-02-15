@@ -29,6 +29,8 @@ import {
 import Loading from "../../../components/loading/Loading";
 import "./HrReferralDetails.css";
 
+// Hr Referral Details page that shows detailed information about a specific referral, including the candidate's information, the position they were referred for, the referral status and progress, and the employee who made the referral.
+
 const STATUS_ORDER = [
   "Pending",
   "Confirmed",

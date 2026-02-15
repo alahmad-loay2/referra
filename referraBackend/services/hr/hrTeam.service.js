@@ -54,7 +54,7 @@ export const getHrTeam = async (query, loggedInHrId) => {
       take: limit,
     }),
 
-    // 🔥 This counts departments for the logged-in HR only
+    //  This counts departments for the logged-in HR only
     prisma.hrDepartment.count({
       where: {
         HrId: loggedInHrId,

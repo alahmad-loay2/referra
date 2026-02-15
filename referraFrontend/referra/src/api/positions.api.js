@@ -1,6 +1,6 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
-
+// API to get open positions visible to employees with pagination and search with open position details for a specific position
 export const getVisiblePositions = async () => {
   try {
     const res = await fetch(`${API_BASE_URL}/employee/positions-employee`, {

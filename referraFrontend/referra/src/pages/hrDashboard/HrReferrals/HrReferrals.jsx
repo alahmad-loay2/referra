@@ -10,6 +10,10 @@ import { getPaginationPages } from "../../../utils/pagination";
 import SearchableSelect from "../../../components/searchableSelect/SearchableSelect";
 import NormalSelect from "../../../components/normalSelect/NormalSelect";
 
+// Hr Referrals page that displays a paginated list of referrals for the HR user, with filters for search, status, date, and position.
+// Each referral card shows the candidate's name, email, position referred for, referral date, and a timeline of the referral status.
+// It also has badges for prospects and accepted candidates, and a button to view more details about each referral.
+// The data is fetched from the backend API with the applied filters and pagination, and loading states are shown while the data is being fetched.
 const HrReferrals = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [hrReferrals, setHrReferrals] = useState([]);

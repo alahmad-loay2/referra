@@ -1,54 +1,55 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5500/api'
-
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
+// API to get current user information and update user profile
 export const getUserInfo = async () => {
   const res = await fetch(`${API_BASE_URL}/user/me`, {
-    method: 'GET',
-    credentials: 'include',
+    method: "GET",
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-  })
+  });
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.message || 'Failed to fetch user information.');
+    throw new Error(errorData.message || "Failed to fetch user information.");
   }
 
-  return res.json()
-}
+  return res.json();
+};
 
 export const updateUserInfo = async (payload) => {
   const res = await fetch(`${API_BASE_URL}/user/me`, {
-    method: 'PUT',
-    credentials: 'include',
+    method: "PUT",
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
-  })
+  });
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.message || 'Failed to update user information.');
+    throw new Error(errorData.message || "Failed to update user information.");
   }
 
-  return res.json()
-}
+  return res.json();
+};
 
 export const updateProfilePicture = async (imageFile) => {
   const formData = new FormData();
-  formData.append('profileImage', imageFile);
+  formData.append("profileImage", imageFile);
 
   const res = await fetch(`${API_BASE_URL}/user/me/profile-picture`, {
-    method: 'PUT',
-    credentials: 'include',
+    method: "PUT",
+    credentials: "include",
     body: formData,
-  })
+  });
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.message || 'Failed to update profile picture.');
+    throw new Error(errorData.message || "Failed to update profile picture.");
   }
 
-  return res.json()
-}
+  return res.json();
+};

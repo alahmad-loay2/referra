@@ -5,23 +5,27 @@ import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import { Briefcase, LayoutDashboard, UserCog, Users } from "lucide-react";
 import "./EmployeeDashboard.css";
 import { clearUserStoreOnAuthFailure } from "../../utils/auth.utils.js";
-
+// Employee Dashboard is the main layout component for the employee dashboard section of the application.
+// It includes a sidebar for navigation between different pages (dashboard home, referral history, open positions, submit referrals, account settings) and a header that is shown on most pages except the referral submission and details pages.
 const EmployeeDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     const originalFetch = window.fetch;
-    
+
     window.fetch = async (...args) => {
       const response = await originalFetch(...args);
-      
-      if ((response.status === 401 || response.status === 403) && window.location.pathname !== '/login') {
+
+      if (
+        (response.status === 401 || response.status === 403) &&
+        window.location.pathname !== "/login"
+      ) {
         // Clear Zustand store on authentication failure
         clearUserStoreOnAuthFailure();
-        navigate('/login', { replace: true });
+        navigate("/login", { replace: true });
       }
-      
+
       return response;
     };
 

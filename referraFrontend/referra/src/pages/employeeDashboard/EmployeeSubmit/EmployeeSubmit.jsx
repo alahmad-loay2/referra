@@ -12,7 +12,9 @@ import { useSearchParams } from "react-router-dom";
 import SearchableSelect from "../../../components/searchableSelect/SearchableSelect";
 
 import "./EmployeeSubmit.css";
-
+// Employee Submit page that allows employees to submit a referral for a candidate.
+// It includes a form to enter the candidate's details, upload their CV, and select the position they are being referred for.
+// The page also fetches and displays details about the selected position, and checks if the candidate's email already exists in the system to prefill their information if available.
 const EmployeeSubmit = () => {
   // to fetch positions from backend to the dropdown
   const [positions, setPositions] = useState([]);

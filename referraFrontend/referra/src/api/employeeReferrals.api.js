@@ -1,4 +1,4 @@
-import { generateIdempotencyKey } from './idempotency.utils.js';
+import { generateIdempotencyKey } from "./idempotency.utils.js";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5500/api";
@@ -17,7 +17,10 @@ export const submitReferral = async (form, cvFile) => {
   const res = await fetch(`${API_BASE_URL}/employee/referral`, {
     method: "POST",
     headers: {
-      'Idempotency-Key': await generateIdempotencyKey('/employee/referral', formData),
+      "Idempotency-Key": await generateIdempotencyKey(
+        "/employee/referral",
+        formData,
+      ),
     },
     credentials: "include",
     body: formData,

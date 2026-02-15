@@ -8,7 +8,8 @@ import Button from "../../components/button/Button.jsx";
 import "./HomePage.css";
 import { motion } from "framer-motion";
 import HomeComponent from "../../components/cards/HomeComponent.jsx";
-
+// HomePage is the landing page of the application that showcases the main features and benefits of the employee referral system.
+// It includes a hero section with a headline, description, and call-to-action button, as well as some key stats and animated cards that highlight the referral process and success stories.
 const HomePage = () => {
   return (
     <div className="page">

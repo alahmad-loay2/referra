@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { verifyEmail } from "../../../api/auth.api.js";
 import "./VerifyEmailSuccess.css";
+// simple page that checks the email verification tokens from the URL and verifies the user's email with the backend API.
 const VerifyEmailSuccess = () => {
   const [status, setStatus] = useState("Verifying your email...");
   const verificationStarted = useRef(false);
