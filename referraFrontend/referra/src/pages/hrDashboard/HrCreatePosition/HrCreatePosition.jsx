@@ -185,11 +185,27 @@ const HrCreatePosition = () => {
   const [timeZones, setTimeZones] = useState([]);
   useEffect(() => {
     const zones = Intl.supportedValuesOf("timeZone");
-    const formatted = zones.map((zone) => ({
-      value: zone,
-      label: zone.replace("_", " "),
-    }));
-    setTimeZones(formatted);
+
+    const formatted = zones.map((zone) => {
+      const now = new Date();
+
+      const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: zone,
+        timeZoneName: "shortOffset",
+      });
+
+      const parts = formatter.formatToParts(now);
+      const offsetPart = parts.find((p) => p.type === "timeZoneName");
+
+      const gmtValue = offsetPart?.value || "GMT";
+
+      return {
+        value: zone, // 🔥 UNIQUE
+        label: `${zone.replace(/_/g, " ")} – ${gmtValue}`,
+      };
+    });
+
+    setTimeZones(formatted.sort((a, b) => a.label.localeCompare(b.label)));
   }, []);
 
   return (
