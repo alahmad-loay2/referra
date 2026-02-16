@@ -5,13 +5,10 @@ import { PrismaClient } from "../generated/prisma/client.js";
 import { PRISMA_LOG_QUERIES, NODE_ENV } from "../config/env.js";
 
 // Detect when we are running under tests (set via npm script)
+// Unit tests use NODE_ENV=test (mocked Prisma)
+// Integration tests use NODE_ENV=integration (real Prisma)
 const isTestRun = process.env.NODE_ENV === "test";
-
-// In serverless / hot-reload environments (Vercel, dev with nodemon),
-// reuse a single PrismaClient + Pool via globalThis to avoid spawning
-// many DB connections. Point DATABASE_URL at PgBouncer so that *this*
-// single pool talks to PgBouncer, which then fans out to Postgres.
-const globalForPrisma = globalThis;
+const isIntegrationTest = process.env.NODE_ENV === "integration";
 
 let prisma;
 
@@ -30,54 +27,69 @@ if (isTestRun) {
     employee: {},
     $disconnect: async () => {},
   };
-} else {
+} else if (isIntegrationTest) {
+  // Integration tests: Use globalThis to share the same Prisma instance across test files
+  // This prevents connection pool exhaustion when tests run in parallel
+  const globalForPrisma = globalThis;
   const existingPrisma = globalForPrisma.prisma;
 
   if (existingPrisma) {
-    // Reuse already-initialized PrismaClient (and its underlying pool)
     prisma = existingPrisma;
   } else {
-    // Initialize Prisma Client with PostgreSQL adapter (from prisma docs)
     const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
-      throw new Error("DATABASE_URL environment variable is not set");
+      throw new Error("DATABASE_URL environment variable is not set for integration tests");
     }
 
-    // Create a PostgreSQL connection pool (kept small; PgBouncer should handle fan-out)
-    const existingPool = globalForPrisma.pgPool;
-    const pool =
-      existingPool ||
-      new Pool({
-        connectionString,
-        max: process.env.NODE_ENV === "production" ? 1 : 10,
-        min: 0,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 5000,
-      });
-
-    if (!existingPool) {
-      globalForPrisma.pgPool = pool;
-    }
+    const pool = new Pool({
+      connectionString,
+      max: 1, // Single connection for integration tests to avoid exhausting DB pool
+      min: 0,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    });
 
     const adapter = new PrismaPg(pool);
 
-    // Prisma Optimize / performance visibility: enable query logging in dev
     prisma = new PrismaClient({
       adapter,
-      log:
-        NODE_ENV === "development"
-          ? [
-              { level: "query", emit: "event" }, // needed for Prisma Optimize & manual analysis
-              "error",
-              "warn",
-            ]
-          : ["error"],
+      log: ["error", "warn"],
     });
 
-    // Cache PrismaClient on globalThis so it's reused across hot reloads
     globalForPrisma.prisma = prisma;
+    globalForPrisma.pgPool = pool;
   }
+} else {
+  // Production/Development: Create a new PrismaClient instance
+  // On Render, this is a long-running process, so no need for globalThis caching
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+
+  const pool = new Pool({
+    connectionString,
+    max: process.env.NODE_ENV === "production" ? 10 : 10,
+    min: 0,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
+  });
+
+  const adapter = new PrismaPg(pool);
+
+  prisma = new PrismaClient({
+    adapter,
+    log:
+      NODE_ENV === "development"
+        ? [
+            { level: "query", emit: "event" }, // needed for Prisma Optimize & manual analysis
+            "error",
+            "warn",
+          ]
+        : ["error"],
+  });
 }
 
 // Optional: only dump queries when explicitly enabled to avoid noisy logs in dev

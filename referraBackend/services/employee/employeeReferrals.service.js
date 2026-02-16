@@ -11,7 +11,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const getResend = () => {
   // In test environment, return a no-op mock so tests don't require a real API key
-  if (process.env.NODE_ENV === "test") {
+  if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "integration") {
     return {
       emails: {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

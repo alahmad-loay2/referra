@@ -7,7 +7,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "set NODE_ENV=test&& node --test",
+    "test": "set NODE_ENV=test&& node --test \"tests/unit/**/*.test.js\"",
+    "test:integration": "set NODE_ENV=integration&& node --test \"tests/integration/**/*.test.js\"",
     "dev": "nodemon server.js",
     "postinstall": "prisma generate",
     "build": "prisma generate",
@@ -42,6 +43,7 @@
     "@types/node": "^25.0.9",
     "@types/pg": "^8.16.0",
     "nodemon": "^3.1.11",
+    "supertest": "^7.0.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }

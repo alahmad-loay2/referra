@@ -3,17 +3,24 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../config/env.js";
 
 // In tests we don't need a real Supabase client; avoid throwing if env isn't set
 const isTestRun = process.env.NODE_ENV === "test";
+const isIntegrationTest = process.env.NODE_ENV === "integration";
 
 let supabase;
 
-if (isTestRun) {
+if (isTestRun || isIntegrationTest) {
   supabase = {
     storage: {
       from: () => ({
         // Default no-op mocks; individual tests can override as needed
-        upload: async () => ({ data: null, error: null }),
+        upload: async () => ({ 
+          data: { path: `test-cv-${Date.now()}.pdf` }, 
+          error: null 
+        }),
         remove: async () => ({ data: null, error: null }),
       }),
+    },
+    auth: {
+      refreshSession: async () => ({ data: null, error: null }),
     },
   };
 } else {
