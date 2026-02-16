@@ -7,10 +7,45 @@ import { prisma } from "../../../lib/prisma.js";
 
 const app = createTestApp();
 let hrTestData;
+const createdDepartmentIds = []; // Track departments created during tests
 
 // Setup: Create test data before all tests
 test.before(async () => {
   try {
+    // Cleanup any orphaned test departments from previous failed runs
+    const orphanedDepartments = await prisma.department.findMany({
+      where: {
+        DepartmentName: { startsWith: "New Department " },
+      },
+      include: {
+        Positions: true,
+        Hrs: true,
+      },
+    });
+
+    for (const dept of orphanedDepartments) {
+      try {
+        // Delete positions first
+        if (dept.Positions.length > 0) {
+          await prisma.position.deleteMany({
+            where: { DepartmentId: dept.DepartmentId },
+          });
+        }
+        // Delete HrDepartment links
+        if (dept.Hrs.length > 0) {
+          await prisma.hrDepartment.deleteMany({
+            where: { DepartmentId: dept.DepartmentId },
+          });
+        }
+        // Delete department
+        await prisma.department.deleteMany({
+          where: { DepartmentId: dept.DepartmentId },
+        });
+      } catch (error) {
+        console.error(`Failed to cleanup orphaned department ${dept.DepartmentId}:`, error);
+      }
+    }
+
     hrTestData = await createHrTestData();
   } catch (error) {
     console.error("Failed to create test data:", error);
@@ -22,6 +57,25 @@ test.before(async () => {
 // Cleanup: Remove test data after all tests
 test.after(async () => {
   try {
+    // Cleanup any departments created during tests
+    for (const departmentId of createdDepartmentIds) {
+      try {
+        // Delete positions first (if any)
+        await prisma.position.deleteMany({
+          where: { DepartmentId: departmentId },
+        });
+        // Delete HrDepartment links
+        await prisma.hrDepartment.deleteMany({
+          where: { DepartmentId: departmentId },
+        });
+        // Delete department
+        await prisma.department.deleteMany({
+          where: { DepartmentId: departmentId },
+        });
+      } catch (error) {
+        console.error(`Failed to cleanup department ${departmentId}:`, error);
+      }
+    }
     await cleanupHrTestData(hrTestData);
   } catch (error) {
     console.error("Failed to cleanup test data:", error);
@@ -47,13 +101,8 @@ test("POST /api/hr/department creates a new department (admin only)", async () =
   assert.ok(response.body.DepartmentId);
   assert.ok(response.body.DepartmentName);
 
-  // Cleanup - delete HrDepartment links first, then department
-  await prisma.hrDepartment.deleteMany({
-    where: { DepartmentId: response.body.DepartmentId },
-  }).catch(() => {});
-  await prisma.department.deleteMany({
-    where: { DepartmentId: response.body.DepartmentId },
-  }).catch(() => {});
+  // Track for cleanup in after hook
+  createdDepartmentIds.push(response.body.DepartmentId);
 });
 
 test("POST /api/hr/department returns 400 when department already exists", async () => {
