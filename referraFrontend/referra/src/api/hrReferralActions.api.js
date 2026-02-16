@@ -41,8 +41,23 @@ export const finalizeReferral = async (
   );
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || "Failed to finalize referral");
+    let errorMessage = "Failed to finalize referral";
+    try {
+      const data = await res.json();
+      // Extract message from error response structure
+      errorMessage = data.message || data.error?.message || errorMessage;
+    } catch {
+      // If JSON parsing fails, try to parse as text
+      const text = await res.text();
+      try {
+        const parsed = JSON.parse(text);
+        errorMessage = parsed.message || parsed.error?.message || errorMessage;
+      } catch {
+        // If it's not JSON, use the text as-is (but limit length)
+        errorMessage = text.length > 200 ? text.substring(0, 200) + "..." : text || errorMessage;
+      }
+    }
+    throw new Error(errorMessage);
   }
 
   return res.json();

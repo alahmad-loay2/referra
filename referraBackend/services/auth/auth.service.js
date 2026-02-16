@@ -332,12 +332,21 @@ export const bootstrapFirstHr = async (payload) => {
       PhoneNumber: phoneNumber,
       Gender: gender,
       Role: "HR",
-      isAdmin: admin,
       Hr: {
-        create: {},
+        create: {
+          isAdmin: admin,
+        },
+      },
+      // Also create linked Employee record so HR can submit referrals
+      Employee: {
+        create: {
+          Department: "HR",
+          TotalCompensation: 0,
+          Position: "HR",
+        },
       },
     },
-    include: { Hr: true },
+    include: { Hr: true, Employee: true },
   });
   // 🔗 link HR to department
   await prisma.hrDepartment.create({
@@ -558,8 +567,20 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
   if (userMetadata.role === "HR") {
     const existingPrismaUser = await prisma.users.findUnique({
       where: { UserId: supabaseUser.id },
-      include: { Hr: true },
+      include: { Hr: true, Employee: true },
     });
+
+    // Always ensure HR user has Employee record (for submitting referrals)
+    if (existingPrismaUser && existingPrismaUser.Hr && !existingPrismaUser.Employee) {
+      await prisma.employee.create({
+        data: {
+          UserId: existingPrismaUser.UserId,
+          Department: "HR",
+          TotalCompensation: 0,
+          Position: "HR",
+        },
+      });
+    }
 
     if (!existingPrismaUser) {
       const { firstName, lastName, age, phoneNumber, gender, departmentIds } =
@@ -584,8 +605,16 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
           Hr: {
             create: {}, // HR created without department
           },
+          // Also create linked Employee record so HR can submit referrals
+          Employee: {
+            create: {
+              Department: "HR",
+              TotalCompensation: 0,
+              Position: "HR",
+            },
+          },
         },
-        include: { Hr: true },
+        include: { Hr: true, Employee: true },
       });
 
       //  Link HR to department (NEW SCHEMA)

@@ -270,12 +270,19 @@ export const FinalizeReferral = async (req, res, next) => {
     }
 
     const { referralId } = req.params;
-    const { action, compensation } = req.body;
+    let { action, compensation } = req.body;
 
     if (!referralId || !action) {
       const error = new Error("Referral ID and action are required");
       error.statusCode = 400;
       throw error;
+    }
+
+    // Map validation schema actions to service actions
+    if (action === "hire") {
+      action = "Accept";
+    } else if (action === "reject") {
+      action = "Prospect";
     }
 
     const candidate = await finalizeReferral(

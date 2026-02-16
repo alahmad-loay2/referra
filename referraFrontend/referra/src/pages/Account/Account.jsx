@@ -357,9 +357,9 @@ const Account = () => {
     return profileData.Employee?.Department || "";
   };
 
-  // Get total compensation (only for employees)
+  // Get total compensation (for employees and HR users who have Employee records)
   const getTotalCompensation = () => {
-    if (!profileData || profileData.Role !== "Employee") return null;
+    if (!profileData || !profileData.Employee) return null;
     return profileData.Employee?.TotalCompensation || 0;
   };
 
@@ -434,7 +434,7 @@ const Account = () => {
           )}
         </div>
         {profileData &&
-          profileData.Role === "Employee" &&
+          profileData.Employee &&
           getTotalCompensation() !== null && (
             <div className="accountContentCenter">
               <div className="accountContentCenterLabel">

@@ -189,6 +189,12 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.sidebarAccountDropdownDivider {
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 4px 0;
+}
+
 .sidebarBurgerButton {
     display: none;
 }

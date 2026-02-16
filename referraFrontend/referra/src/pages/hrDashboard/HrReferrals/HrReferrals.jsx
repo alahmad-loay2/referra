@@ -345,7 +345,7 @@ const HrReferrals = () => {
                   </span>
                   <Link
                     to={`/dashboard/hr/referrals/${ref.id || ref.Referral?.ReferralId}`}
-                    className="referral-details-btn"
+                    className="referral-details-btn-style"
                   >
                     View Details
                   </Link>

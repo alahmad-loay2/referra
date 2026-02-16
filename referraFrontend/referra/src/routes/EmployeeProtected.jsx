@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { getCurrentUser } from "../api/auth.api.js";
+import { getUserInfo } from "../api/user.api.js";
 import Loading from "../components/loading/Loading.jsx";
 
 const EmployeeProtected = () => {
-  const [status, setStatus] = useState("loading"); 
+  const [status, setStatus] = useState("loading");
 
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const res = await getCurrentUser();
-        const role = res?.user?.Role || res?.user?.role;
-        if (role === "Employee") {
+        const user = await getUserInfo();
+        const role = user?.Role;
+        
+        // Allow access if user is Employee or HR
+        if (role === "Employee" || role === "HR") {
           setStatus("ok");
         } else {
           setStatus("redirect");

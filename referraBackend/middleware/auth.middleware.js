@@ -54,6 +54,7 @@ const attachUser = async (req, supabaseUser, next) => {
   // Depending on role, fetch only the needed relation in a separate query:
   // - Employee → Employee by UserId
   // - HR       → Hr by UserId with Departments -> Department
+  // - HR users can also have Employee records (for submitting referrals)
   let employee = null;
   let hr = null;
 
@@ -69,6 +70,10 @@ const attachUser = async (req, supabaseUser, next) => {
           include: { Department: true },
         },
       },
+    });
+    // HR users can also have Employee records for submitting referrals
+    employee = await prisma.employee.findUnique({
+      where: { UserId: userId },
     });
   }
 
@@ -106,8 +111,10 @@ export const requireHr = (req, res, next) => {
 };
 
 export const requireEmployee = (req, res, next) => {
-  if (!req.user || req.user.Role !== "Employee" || !req.user.Employee) {
-    return res.status(403).json({ message: "Employee access required" });
+  // Allow Employee or HR users to access employee routes
+  // HR users can submit referrals as employees
+  if (!req.user || (req.user.Role !== "Employee" && req.user.Role !== "HR")) {
+    return res.status(403).json({ message: "Employee or HR access required" });
   }
   return next();
 };

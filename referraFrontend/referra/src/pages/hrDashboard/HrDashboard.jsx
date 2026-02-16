@@ -59,8 +59,9 @@ const HrDashboard = () => {
   ];
 
   const hideHeader =
-    location.pathname.startsWith("/dashboard/hr/referrals/") &&
-    location.pathname !== "/dashboard/hr/referrals";
+    (location.pathname.startsWith("/dashboard/hr/referrals/") &&
+      location.pathname !== "/dashboard/hr/referrals") ||
+    location.pathname === "/dashboard/hr/account";
   return (
     <div className="dashboardContainer">
       <div id="Sidebar">

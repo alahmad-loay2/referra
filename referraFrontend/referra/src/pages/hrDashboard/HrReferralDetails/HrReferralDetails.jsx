@@ -602,7 +602,7 @@ const HrReferralDetails = () => {
 
                     await finalizeReferral(
                       referralId,
-                      "Accept",
+                      "hire",
                       Number(compAmount),
                     );
 

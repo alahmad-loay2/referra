@@ -3,12 +3,6 @@ import { prisma } from "../../lib/prisma.js";
 // Also returns position details for a specific position
 
 export const getVisiblePositions = async (user, query) => {
-  if (user.Role !== "Employee") {
-    const error = new Error("Employee access only");
-    error.statusCode = 403;
-    throw error;
-  }
-
   const page = Math.max(Number(query.page) || 1, 1);
   const limit = Math.min(Number(query.limit) || 10, 50);
   const skip = (page - 1) * limit;
@@ -44,12 +38,6 @@ export const getVisiblePositions = async (user, query) => {
 };
 
 export const getPositionDetails = async (user, positionId) => {
-  if (user.Role !== "Employee") {
-    const error = new Error("Employee access only");
-    error.statusCode = 403;
-    throw error;
-  }
-
   if (!positionId) {
     const error = new Error("PositionId is required");
     error.statusCode = 400;

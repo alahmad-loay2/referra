@@ -20,10 +20,18 @@ const Sidebar = (props) => {
   const menuRef = useRef(null);
   const burgerButtonRef = useRef(null);
 
+  const setIsHr = useUserStore((state) => state.setIsHr);
+
   const fetchUser = async () => {
     try {
       const userData = await getUserInfo();
       setUser(userData);
+      // Set isHr in zustand if user is HR
+      if (userData?.Role === "HR") {
+        setIsHr(true);
+      } else {
+        setIsHr(false);
+      }
     } catch (error) {
       console.error("Failed to fetch user info:", error);
     } finally {
@@ -33,7 +41,7 @@ const Sidebar = (props) => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [setIsHr]);
 
   // Listen for profile picture updates
   useEffect(() => {
@@ -117,6 +125,29 @@ const Sidebar = (props) => {
   };
 
   const resetUserStore = useUserStore((state) => state.reset);
+  const viewMode = useUserStore((state) => state.viewMode);
+  const setViewMode = useUserStore((state) => state.setViewMode);
+  const isHr = useUserStore((state) => state.isHr);
+
+  // Check if user is HR (can switch accounts)
+  const canSwitchAccounts = isHr;
+
+  // Get current effective view mode
+  const currentViewMode = viewMode || (isHr ? "hr" : "employee");
+
+  const handleSwitchToEmployee = (e) => {
+    e.stopPropagation();
+    setViewMode("employee");
+    setShowDropdown(false);
+    navigate("/dashboard/employee");
+  };
+
+  const handleSwitchToHr = (e) => {
+    e.stopPropagation();
+    setViewMode("hr");
+    setShowDropdown(false);
+    navigate("/dashboard/hr");
+  };
 
   const handleLogout = async (e) => {
     e.stopPropagation();
@@ -220,6 +251,26 @@ const Sidebar = (props) => {
           </div>
           {showDropdown && (
             <div className="sidebarAccountDropdown" ref={dropdownRef}>
+              {canSwitchAccounts && (
+                <>
+                  {currentViewMode === "hr" ? (
+                    <button
+                      className="sidebarAccountDropdownItem"
+                      onClick={handleSwitchToEmployee}
+                    >
+                      Switch to Employee Account
+                    </button>
+                  ) : (
+                    <button
+                      className="sidebarAccountDropdownItem"
+                      onClick={handleSwitchToHr}
+                    >
+                      Switch to HR Account
+                    </button>
+                  )}
+                  <div className="sidebarAccountDropdownDivider"></div>
+                </>
+              )}
               <button
                 className="sidebarAccountDropdownItem"
                 onClick={handleGoToAccount}

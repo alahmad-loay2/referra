@@ -8,6 +8,7 @@ const Header = (props) => {
   const firstName = useUserStore((state) => state.firstName);
   const setFirstName = useUserStore((state) => state.setFirstName);
   const setIsAdmin = useUserStore((state) => state.setIsAdmin);
+  const setIsHr = useUserStore((state) => state.setIsHr);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -22,6 +23,12 @@ const Header = (props) => {
         } else {
           setIsAdmin(false);
         }
+        // Set isHr if user is HR
+        if (userData?.Role === "HR") {
+          setIsHr(true);
+        } else {
+          setIsHr(false);
+        }
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
@@ -31,7 +38,7 @@ const Header = (props) => {
     if (!firstName) {
       fetchUser();
     }
-  }, [firstName, setFirstName, setIsAdmin]);
+  }, [firstName, setFirstName, setIsAdmin, setIsHr]);
 
   return (
     <div className="headerContainer">
