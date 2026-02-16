@@ -64,7 +64,7 @@ const Docs = () => {
     <div className="docs-container">
       <div className="docs-sidebar">
         <div className="docs-sidebar-header">
-          <h2>Documentation</h2>
+          <div className="docs-sidebar-title">Documentation</div>
         </div>
 
         <div className="docs-sidebar-content">

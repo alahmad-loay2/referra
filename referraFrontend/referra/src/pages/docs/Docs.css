@@ -21,10 +21,11 @@
   border-bottom: 1px solid var(--gray-light);
 }
 
-.docs-sidebar-header h2 {
+.docs-sidebar-title {
   font-size: var(--fs-large);
   color: var(--secondary-color);
   margin: 0;
+  font-weight: 600;
 }
 
 .docs-sidebar-content {
