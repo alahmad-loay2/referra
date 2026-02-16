@@ -23,7 +23,7 @@ Referra is a web application designed to simplify and streamline the employee re
 - Compensation Tracking: Employees can receive compensation for successfully hired referrals.
 - Secure Backend: Built with Express.js and Prisma ORM.
 - Database: PostgreSQL (Supabase) for reliable and scalable data storage.
-- Deployment: Frontend and backend deployed separately on Vercel.
+- Deployment: Frontend deployed on Vercel and backend deployed on Render.
 
 ---
 
@@ -45,7 +45,8 @@ Referra is a web application designed to simplify and streamline the employee re
 - PostgreSQL (Supabase)
 
 ### Deployment
-- Vercel (separate deployments for frontend and backend)
+- Vercel (Frontend)
+- Render (Backend)
 
 --- 
 
@@ -118,6 +119,8 @@ SUPABASE_ANON_KEY="your supabase anon key"
 RESEND_API_KEY="Your resend api key for your domain"
 
 PRISMA_LOG_QUERIES=true
+
+RENDER_EXTERNAL_URL="http://localhost:5500"
 ```
 
 
@@ -163,6 +166,9 @@ HR can prospect, move candidates through interview stages, or accept candidates 
 
 #### 5. Compensation
 If a candidate is successfully hired, the employee who referred them can be compensated.
+
+#### NOTE: 
+HR accounts also have a linked employee account they can switch to.
 
 ---
 
