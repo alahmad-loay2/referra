@@ -109,15 +109,15 @@ const EmployeePositionDetails = () => {
           <span className="label">Job Description</span>
           <p>{position.Description}</p>
         </div>
-      </div>
 
-      {/* Action */}
-      <div className="position-details-actions">
-        <Button
-          text="Refer Candidate"
-          to={`/dashboard/employee/submit-referrals?positionId=${position.PositionId}`}
-          className="refer-btn"
-        />
+        {/* Action */}
+        <div className="position-details-actions">
+          <Button
+            text="Refer Candidate"
+            to={`/dashboard/employee/submit-referrals?positionId=${position.PositionId}`}
+            className="refer-btn"
+          />
+        </div>
       </div>
     </div>
   );

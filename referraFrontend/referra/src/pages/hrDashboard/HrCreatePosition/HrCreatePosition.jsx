@@ -198,15 +198,69 @@ const HrCreatePosition = () => {
       const offsetPart = parts.find((p) => p.type === "timeZoneName");
 
       const gmtValue = offsetPart?.value || "GMT";
+      const fullLabel = `${zone.replace(/_/g, " ")} - ${gmtValue}`;
 
       return {
-        value: zone, // 🔥 UNIQUE
-        label: `${zone.replace(/_/g, " ")} – ${gmtValue}`,
+        value: fullLabel, // Save full label including GMT
+        label: fullLabel,
+        zone: zone, // Keep zone identifier for matching
       };
     });
 
     setTimeZones(formatted.sort((a, b) => a.label.localeCompare(b.label)));
   }, []);
+
+  const [countries, setCountries] = useState([]);
+  useEffect(() => {
+    // Generate all possible two-letter combinations (AA-ZZ)
+    const countryCodes = [];
+    for (let first = 65; first <= 90; first++) {
+      for (let second = 65; second <= 90; second++) {
+        countryCodes.push(String.fromCharCode(first) + String.fromCharCode(second));
+      }
+    }
+    
+    const displayNames = new Intl.DisplayNames(["en"], { type: "region" });
+
+    const formatted = countryCodes
+      .map((code) => {
+        try {
+          const name = displayNames.of(code);
+          // Filter out codes that return the same code (invalid) or contain numbers/special chars
+          if (name && name !== code && name.length > 0) {
+            return {
+              value: name,
+              label: name,
+            };
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    setCountries(formatted);
+  }, []);
+
+  // Update timezone value when timeZones are loaded (for edit mode)
+  useEffect(() => {
+    if (isEditMode && formData.timeZone && timeZones.length > 0) {
+      // Check if current timeZone value is just the zone identifier (doesn't contain "–")
+      const isFullLabel = formData.timeZone.includes("-");
+      if (!isFullLabel) {
+        // Find matching timezone and update to full label
+        const matchingTz = timeZones.find((tz) => tz.zone === formData.timeZone);
+        if (matchingTz) {
+          setFormData((prev) => ({
+            ...prev,
+            timeZone: matchingTz.value,
+          }));
+        }
+      }
+    }
+  }, [timeZones, isEditMode]);
 
   return (
     <div className="HrCreatePosition">
@@ -270,7 +324,7 @@ const HrCreatePosition = () => {
                     employmentType: val,
                   }))
                 }
-                placeholder="Select Employment Type"
+                placeholder="Employment Type"
                 searchPlaceholder="Search employment types..."
                 noResultsText="No employment types found"
               />
@@ -287,20 +341,26 @@ const HrCreatePosition = () => {
                 onChange={handleChange}
               />
             </div>
+
+            <div className="labelInput">
+              <label>Location*</label>
+              <SearchableSelect
+                options={countries}
+                value={formData.positionLocation}
+                onChange={(val) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    positionLocation: val,
+                  }))
+                }
+                placeholder="Select Country"
+                searchPlaceholder="Search countries..."
+                noResultsText="No countries found"
+              />
+            </div>
           </div>
 
           <div className="formGroup">
-            <div className="labelInput">
-              <label>Location*</label>
-              <input
-                type="text"
-                name="positionLocation"
-                placeholder="e.g. USA"
-                required
-                value={formData.positionLocation}
-                onChange={handleChange}
-              />
-            </div>
             <div className="labelInput">
               <label>Department*</label>
               <SearchableSelect
@@ -318,9 +378,7 @@ const HrCreatePosition = () => {
                 loading={loadingData}
               />
             </div>
-          </div>
 
-          <div className="formGroup">
             <div className="labelInput">
               <label>Time Zone*</label>
               <SearchableSelect

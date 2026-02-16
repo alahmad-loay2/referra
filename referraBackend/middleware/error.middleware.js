@@ -34,13 +34,6 @@ const errorMiddleware = (err, req, res, next) => {
 
     const message = err.message || "Internal Server Error";
 
-    // Detect rate limit style errors so we can surface a clearer message even in production
-    const isRateLimitError =
-        statusCode === 429 ||
-        (typeof message === "string" &&
-            (message.toLowerCase().includes("rate limit") ||
-                message.toLowerCase().includes("too many")));
-
     // In dev: log full error details to the console
     if (isDev) {
         // eslint-disable-next-line no-console
@@ -60,13 +53,16 @@ const errorMiddleware = (err, req, res, next) => {
     }
 
     // Shape of error response differs in dev vs prod
+    // Show actual message for client errors (4xx) in production (user-facing errors)
+    // Hide message for server errors (5xx) in production (internal errors)
+    const isClientError = statusCode >= 400 && statusCode < 500;
     const responseBody = {
         success: false,
         // In dev: always show the real message.
-        // In prod: show specific message for rate limit errors, generic for everything else.
+        // In prod: show message for client errors (4xx), hide for server errors (5xx)
         message: isDev
             ? message
-            : isRateLimitError
+            : isClientError
                 ? message
                 : "Something went wrong. Please try again later.",
     };

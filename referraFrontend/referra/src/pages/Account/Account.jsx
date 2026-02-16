@@ -345,7 +345,7 @@ const Account = () => {
     return profileData.Employee?.Position || "";
   };
 
-  // Get department
+  // Get department (for single display - used in work info for employees)
   const getDepartment = () => {
     if (!profileData) return "";
     if (profileData.Role === "HR") {
@@ -355,6 +355,15 @@ const Account = () => {
       return firstDepartment || "";
     }
     return profileData.Employee?.Department || "";
+  };
+
+  // Get all departments (for HR users)
+  const getAllDepartments = () => {
+    if (!profileData || profileData.Role !== "HR") return [];
+    const departments = profileData.Hr?.Departments || [];
+    return departments
+      .map((hrDept) => hrDept?.Department?.DepartmentName)
+      .filter(Boolean);
   };
 
   // Get total compensation (for employees and HR users who have Employee records)
@@ -428,7 +437,6 @@ const Account = () => {
               <div className="accountContentLeftInfo">
                 <h4>{getFullName()}</h4>
                 <p>{getPosition()}</p>
-                <span>{getDepartment()}</span>
               </div>
             </>
           )}
@@ -611,7 +619,11 @@ const Account = () => {
                 <>
                   <div className="workInformationContentItem">
                     <h4>Department</h4>
-                    <p>{getDepartment()}</p>
+                    {getAllDepartments().length > 0 ? (
+                      <p>{getAllDepartments().join(", ")}</p>
+                    ) : (
+                      <p>N/A</p>
+                    )}
                   </div>
                   <div className="workInformationContentItem">
                     <h4>Position</h4>

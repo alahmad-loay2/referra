@@ -152,21 +152,22 @@ const HrDashboardHome = () => {
               const fullName = `${referral.Candidate.FirstName} ${referral.Candidate.LastName}`;
               const referralId = referral.Referral?.ReferralId;
               return (
-                <div className="candidate" key={referral.ApplicationId}>
+                <div className="candidate" key={referralId}>
                   <div className="hr-dashboard-home-recent-avatar-name">
                     <div className="hr-dashboard-home-recent-avatar">
                       {referral.Candidate.FirstName?.[0]}
                       {referral.Candidate.LastName?.[0]}
                     </div>
-                    <p>{fullName}</p>
+                    <div className="hr-dashboard-home-name-email">
+                      <p>{fullName}</p>
+                      <span className="iconText candidate-meta-item">
+                        <span className="iconTextLabel">
+                          {referral.Candidate.Email}
+                        </span>
+                      </span>
+                    </div>
                   </div>
                   <div className="candidate-meta-row">
-                    <span className="iconText candidate-meta-item">
-                      <Mail size={14} />
-                      <span className="iconTextLabel">
-                        {referral.Candidate.Email}
-                      </span>
-                    </span>
                     {referral.Position?.PositionTitle && (
                       <span className="iconText candidate-meta-item">
                         <Briefcase size={14} />

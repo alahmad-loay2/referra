@@ -39,8 +39,8 @@
 }
 
 .accountContentLeftAvatar {
-  width: 60px;
-  height: 60px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background-color: var(--primary-color);
   color: var(--white);
@@ -194,7 +194,7 @@
 }
 
 .accountContentRight {
-  transform: translateY(-20px);
+  align-self: center;
 }
 
 .accountContentRightButton {
@@ -291,11 +291,13 @@
 .personalInformationContentItem {
   display: flex;
   flex-direction: column;
-  background-color: var(--gray-light);
+  background-color: var(--account-container-background);
   padding: 20px;
   border-radius: var(--radius-md);
   width: 100%;
-  overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Allow overflow for gender field to show dropdown */
@@ -303,10 +305,12 @@
   overflow: visible;
 }
 
+.personalInformationContentItem h4,
 .personalInformationContentItem p {
-  overflow: hidden;
-  text-overflow: ellipsis;
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .workInformation {
@@ -336,15 +340,20 @@
 .workInformationContentItem {
   display: flex;
   flex-direction: column;
-  background-color: var(--gray-light);
+  background-color: var(--account-container-background);
   padding: 20px;
   border-radius: var(--radius-md);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
+.workInformationContentItem h4,
 .workInformationContentItem p {
-  overflow: hidden;
-  text-overflow: ellipsis;
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 @media (max-width: 768px) {

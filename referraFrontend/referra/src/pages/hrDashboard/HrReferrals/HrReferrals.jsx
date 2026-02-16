@@ -295,7 +295,7 @@ const HrReferrals = () => {
           hrReferrals.map((ref) => {
             const badge = getStatusBadge(ref);
             return (
-              <div className="candidate" key={ref.ApplicationId}>
+              <div className="candidate" key={ref.Referral?.ReferralId}>
                 <div className="candidate-header">
                   <div className="hr-referrals-avatar">
                     {ref.Candidate?.FirstName?.[0]}

@@ -142,6 +142,17 @@
     width: calc(100% - 150px);
 }
 
+.hr-dashboard-home-name-email {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    flex-wrap: wrap;
+}
+
+.hr-dashboard-home-name-email .candidate-meta-item {
+    margin: 0;
+}
+
 .hr-dashboard-home-recent-avatar {
     width: 42px;
     height: 42px;
@@ -176,14 +187,19 @@
     overflow-wrap: break-word;
 }
 
-.candidate-meta-row {
+.hr-dashboard-home-recent-referrals .candidate-meta-row {
     display: flex;
     flex-wrap: wrap;
     gap: var(--gap-lg);
     align-items: center;
     margin-left: 58px; /* avatar width (42px) + gap (16px) = 58px to align under name */
+    width: calc(100% - 200px);
     word-break: break-word;
     overflow-wrap: break-word;
+}
+
+.hr-dashboard-home-name-email .candidate-meta-item .iconTextLabel {
+    font-size: var(--fs-medium);
 }
 
 .candidate-meta-item {
@@ -208,8 +224,9 @@
 
 .candidate .referral-details-btn {
     position: absolute;
-    top: 20px;
+    top: 50%;
     right: 20px;
+    transform: translateY(-50%);
     padding: 8px 14px;
     border-radius: var(--radius-md);
     border: none;
@@ -338,14 +355,24 @@
         font-size: var(--fs-small);
     }
 
-    .candidate-meta-row {
+    .hr-dashboard-home-name-email {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--gap-sm);
+    }
+
+    .hr-dashboard-home-recent-referrals .candidate-meta-row {
         margin-left: 0;
         margin-top: var(--gap-sm);
+        width: 100%;
     }
 
     .candidate .referral-details-btn {
         position: static;
-        align-self: flex-start;
+        top: auto;
+        right: auto;
+        transform: none;
+        align-self: center;
         margin-top: var(--gap-md);
     }
 
