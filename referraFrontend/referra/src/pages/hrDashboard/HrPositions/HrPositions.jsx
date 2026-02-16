@@ -527,7 +527,7 @@ const HrPositions = () => {
                             <button
                               onClick={() => handleViewDetails(p.PositionId)}
                             >
-                              View Details
+                              View Applicants
                             </button>
                             <button
                               onClick={() => handleDeletePosition(p)}

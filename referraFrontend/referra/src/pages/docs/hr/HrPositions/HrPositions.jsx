@@ -31,8 +31,20 @@ const HrPositions = () => {
           <li>Location</li>
           <li>Applicant Count</li>
           <li>Status (Open / Closed)</li>
-          <li>Posted Date</li>
+          <li>Deadline</li>
         </ul>
+        
+        <p className="positions-paragraph">
+          <strong>Table Sorting:</strong> You can click on any column header in the positions table to sort by that column. For example:
+        </p>
+        <ul>
+          <li>Click on <strong>Applicants</strong> to sort by number of applicants</li>
+          <li>Click on <strong>Deadline</strong> to sort by deadline date</li>
+          <li>Click on <strong>Status</strong> to sort by position status</li>
+        </ul>
+        <p className="positions-paragraph">
+          Clicking once sorts ascending, clicking twice sorts descending, and clicking a third time resets to the default order.
+        </p>
         <div className="positions-images">
           <img src="/hrPositionsImg.png" alt="HR Positions List" />
         </div>
@@ -58,6 +70,16 @@ const HrPositions = () => {
             <strong>View Details:</strong>
             Redirects to the Referrals page and displays all referrals for this
             specific position within the company.
+          </li>
+
+          <li>
+            <strong>Delete Position:</strong>
+            Permanently deletes a position. This action will:
+            <ul>
+              <li>Remove all applications and referrals associated with this position</li>
+              <li>Delete candidates if they are not associated with any other applications or referrals</li>
+            </ul>
+            <strong>Warning:</strong> This action cannot be undone. Use with caution.
           </li>
         </ul>
       </section>

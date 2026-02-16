@@ -251,20 +251,22 @@ const EmployeeReferralHD = () => {
       // Remove extension
       let nameWithoutExt = fileName.replace(/\.(pdf|PDF)$/, "");
 
+      // Remove timestamp patterns (T followed by numbers and Z, with spaces or separators)
+      nameWithoutExt = nameWithoutExt.replace(/T\d{2}[\s_-]?\d{2}[\s_-]?\d{2}[\s_-]?\d+Z?/gi, ""); // T22 13 12 444Z or variants
+      nameWithoutExt = nameWithoutExt.replace(/T\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/gi, ""); // ISO format
+      nameWithoutExt = nameWithoutExt.replace(/T\d{8}T\d{6}Z?/gi, ""); // Compact ISO format
+      
       // Remove date patterns (common formats: YYYY-MM-DD, YYYYMMDD, etc.)
       nameWithoutExt = nameWithoutExt.replace(/\d{4}-\d{2}-\d{2}/g, ""); // YYYY-MM-DD
       nameWithoutExt = nameWithoutExt.replace(/\d{8}/g, ""); // YYYYMMDD
       nameWithoutExt = nameWithoutExt.replace(/\d{2}-\d{2}-\d{4}/g, ""); // DD-MM-YYYY
       nameWithoutExt = nameWithoutExt.replace(/\d{2}\/\d{2}\/\d{4}/g, ""); // DD/MM/YYYY
+      nameWithoutExt = nameWithoutExt.replace(/\d{4}\/\d{2}\/\d{2}/g, ""); // YYYY/MM/DD
+      nameWithoutExt = nameWithoutExt.replace(/\d{2}_\d{2}_\d{4}/g, ""); // DD_MM_YYYY
+      nameWithoutExt = nameWithoutExt.replace(/\d{4}_\d{2}_\d{2}/g, ""); // YYYY_MM_DD
 
-      // Clean up extra dashes/underscores
-      nameWithoutExt = nameWithoutExt.replace(/[-_]+/g, " ").trim();
-
-      // Truncate if too long and add ellipsis
-      const maxLength = 30;
-      if (nameWithoutExt.length > maxLength) {
-        return nameWithoutExt.substring(0, maxLength) + "...";
-      }
+      // Clean up trailing/leading separators but keep original format
+      nameWithoutExt = nameWithoutExt.replace(/^[-_\s]+|[-_\s]+$/g, "");
 
       return nameWithoutExt || "CV";
     } catch (error) {

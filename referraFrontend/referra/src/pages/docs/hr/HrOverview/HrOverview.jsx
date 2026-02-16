@@ -26,9 +26,35 @@ const HrOverview = () => {
       </section>
 
       <section className="hr-section">
+        <h2>Switching to Employee Account</h2>
+        <p className="hr-paragraph">
+          HR users can switch to an employee account view at any time. When switched to employee mode, HR users have full access to all employee features, including:
+        </p>
+        <ul className="hr-list">
+          <li>Viewing open positions across all departments</li>
+          <li>Submitting referrals for candidates</li>
+          <li>Tracking their own referral history and status</li>
+          <li>Editing candidate information for their referrals</li>
+          <li>Viewing referral details and progress</li>
+        </ul>
+        <p className="hr-paragraph">
+          This allows HR team members to participate in the referral program just like any other employee, while still maintaining their HR management capabilities when switched back to HR view.
+        </p>
+      </section>
+
+      <section className="hr-section">
         <h2>Admin HR</h2>
         <p className="hr-paragraph">
-          Admin HR users have additional permissions. In addition to the standard HR actions above, they can create and manage departments for the organization.
+          There are two types of HR users: regular HR and Admin HR (Created with bootstrap API). Admin HR users have additional permissions beyond standard HR capabilities.
+        </p>
+        <p className="hr-paragraph">
+          <strong>Admin HR Additional Permissions:</strong>
+        </p>
+        <ul className="hr-list">
+          <li>Create and manage departments for the organization (accessible from the HR Team page)</li>
+        </ul>
+        <p className="hr-paragraph">
+          For now, creating departments is the primary additional capability of Admin HR users. All other HR features remain the same for both regular and Admin HR users.
         </p>
       </section>
 
