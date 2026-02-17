@@ -18,7 +18,10 @@ import {
 import { uploadCV } from "../middleware/upload.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
 import { idempotencyMiddleware } from "../middleware/idempotency.middleware.js";
-import { validateBody, validateParams } from "../middleware/validation.middleware.js";
+import {
+  validateBody,
+  validateParams,
+} from "../middleware/validation.middleware.js";
 import { candidateBodySchemas, paramsSchemas } from "../validation/schemas.js";
 
 const employeeRoutes = Router();

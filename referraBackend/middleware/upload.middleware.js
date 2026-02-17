@@ -50,7 +50,13 @@ export const uploadCV = (req, res, next) => {
 
 // File filter for images only
 const imageFileFilter = (req, file, cb) => {
-  const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+  const allowedMimeTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ];
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {

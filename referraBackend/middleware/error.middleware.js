@@ -3,78 +3,77 @@
 import { Prisma } from "../generated/prisma/client.js";
 
 const errorMiddleware = (err, req, res, next) => {
-    const isDev = process.env.NODE_ENV === "development";
+  const isDev = process.env.NODE_ENV === "development";
 
-    // Handle Prisma validation errors
-    if (err instanceof Prisma.PrismaClientValidationError) {
-        err.statusCode = 400;
-        err.message = "Invalid input data.";
-    }
+  // Handle Prisma validation errors
+  if (err instanceof Prisma.PrismaClientValidationError) {
+    err.statusCode = 400;
+    err.message = "Invalid input data.";
+  }
 
-    // Handle Prisma errors
-    if (err.code === "P2002") {
-        // Unique constraint violation
-        const fieldName = err.meta?.target?.[0] || "field";
-        err.statusCode = 409;
-        err.message = `A record with this ${fieldName} already exists.`;
-    } else if (err.code === "P2025") {
-        // Record not found
-        err.statusCode = 404;
-        err.message = err.meta?.cause || "The requested record was not found.";
-    } else if (err.code === "P2003") {
-        // Foreign key constraint violation
-        err.statusCode = 400;
-        err.message = "Invalid reference: the related record does not exist.";
-    }
+  // Handle Prisma errors
+  if (err.code === "P2002") {
+    // Unique constraint violation
+    const fieldName = err.meta?.target?.[0] || "field";
+    err.statusCode = 409;
+    err.message = `A record with this ${fieldName} already exists.`;
+  } else if (err.code === "P2025") {
+    // Record not found
+    err.statusCode = 404;
+    err.message = err.meta?.cause || "The requested record was not found.";
+  } else if (err.code === "P2003") {
+    // Foreign key constraint violation
+    err.statusCode = 400;
+    err.message = "Invalid reference: the related record does not exist.";
+  }
 
-    // Fallbacks so we always have sane values
-    const statusCode = err.statusCode && Number.isInteger(err.statusCode)
-        ? err.statusCode
-        : 500;
+  // Fallbacks so we always have sane values
+  const statusCode =
+    err.statusCode && Number.isInteger(err.statusCode) ? err.statusCode : 500;
 
-    const message = err.message || "Internal Server Error";
+  const message = err.message || "Internal Server Error";
 
-    // In dev: log full error details to the console
-    if (isDev) {
-        // eslint-disable-next-line no-console
-        console.error("Error middleware caught an error:", {
-            message: err.message,
-            stack: err.stack,
-            name: err.name,
-            statusCode,
-            path: req.originalUrl,
-            method: req.method,
-        });
-    }
+  // In dev: log full error details to the console
+  if (isDev) {
+    // eslint-disable-next-line no-console
+    console.error("Error middleware caught an error:", {
+      message: err.message,
+      stack: err.stack,
+      name: err.name,
+      statusCode,
+      path: req.originalUrl,
+      method: req.method,
+    });
+  }
 
-    // If headers are already sent, delegate to Express' default handler
-    if (res.headersSent) {
-        return next(err);
-    }
+  // If headers are already sent, delegate to Express' default handler
+  if (res.headersSent) {
+    return next(err);
+  }
 
-    // Shape of error response differs in dev vs prod
-    // Show actual message for client errors (4xx) in production (user-facing errors)
-    // Hide message for server errors (5xx) in production (internal errors)
-    const isClientError = statusCode >= 400 && statusCode < 500;
-    const responseBody = {
-        success: false,
-        // In dev: always show the real message.
-        // In prod: show message for client errors (4xx), hide for server errors (5xx)
-        message: isDev
-            ? message
-            : isClientError
-                ? message
-                : "Something went wrong. Please try again later.",
+  // Shape of error response differs in dev vs prod
+  // Show actual message for client errors (4xx) in production (user-facing errors)
+  // Hide message for server errors (5xx) in production (internal errors)
+  const isClientError = statusCode >= 400 && statusCode < 500;
+  const responseBody = {
+    success: false,
+    // In dev: always show the real message.
+    // In prod: show message for client errors (4xx), hide for server errors (5xx)
+    message: isDev
+      ? message
+      : isClientError
+        ? message
+        : "Something went wrong. Please try again later.",
+  };
+
+  if (isDev) {
+    responseBody.error = {
+      message,
+      stack: err.stack,
     };
+  }
 
-    if (isDev) {
-        responseBody.error = {
-            message,
-            stack: err.stack,
-        };
-    }
-
-    res.status(statusCode).json(responseBody);
+  res.status(statusCode).json(responseBody);
 };
 
 export default errorMiddleware;

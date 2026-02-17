@@ -16,11 +16,23 @@ import {
   UnprospectReferral,
   createDepartmentController,
 } from "../controllers/hr.controller.js";
-import { authenticate, requireAdmin, requireHr } from "../middleware/auth.middleware.js";
+import {
+  authenticate,
+  requireAdmin,
+  requireHr,
+} from "../middleware/auth.middleware.js";
 import { generalLimiter } from "../middleware/rateLimit.middleware.js";
 import { idempotencyMiddleware } from "../middleware/idempotency.middleware.js";
-import { validateBody, validateParams } from "../middleware/validation.middleware.js";
-import { positionBodySchemas, paramsSchemas, referralBodySchemas, departmentBodySchemas } from "../validation/schemas.js";
+import {
+  validateBody,
+  validateParams,
+} from "../middleware/validation.middleware.js";
+import {
+  positionBodySchemas,
+  paramsSchemas,
+  referralBodySchemas,
+  departmentBodySchemas,
+} from "../validation/schemas.js";
 // later we will add auth + HR middleware here
 const router = Router();
 
@@ -34,7 +46,6 @@ router.post(
   validateBody(positionBodySchemas.createPosition),
   CreatePosition,
 );
-
 
 // update position state for toggle =
 router.patch(
@@ -144,6 +155,14 @@ router.get(
   getHrDashboardController,
 );
 
-router.post("/department", generalLimiter, authenticate, requireAdmin, idempotencyMiddleware, validateBody(departmentBodySchemas.createDepartment), createDepartmentController)
+router.post(
+  "/department",
+  generalLimiter,
+  authenticate,
+  requireAdmin,
+  idempotencyMiddleware,
+  validateBody(departmentBodySchemas.createDepartment),
+  createDepartmentController,
+);
 
 export default router;
