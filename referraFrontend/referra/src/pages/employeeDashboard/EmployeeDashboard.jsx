@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "../../components/header/Header.jsx";
 import Sidebar from "../../components/sidebar/Sidebar.jsx";
@@ -10,6 +10,11 @@ import { clearUserStoreOnAuthFailure } from "../../utils/auth.utils.js";
 const EmployeeDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia?.("(max-width: 768px)")?.matches ?? false;
+  });
 
   useEffect(() => {
     const originalFetch = window.fetch;
@@ -33,6 +38,33 @@ const EmployeeDashboard = () => {
       window.fetch = originalFetch;
     };
   }, [navigate]);
+
+  // Desktop-only collapsible sidebar: force open on mobile widths
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+
+    const mql = window.matchMedia("(max-width: 768px)");
+
+    const onChange = (e) => {
+      setIsMobile(e.matches);
+      if (e.matches) {
+        setIsSidebarCollapsed(false);
+      }
+    };
+
+    // Set initial value (in case hydration differs)
+    setIsMobile(mql.matches);
+    if (mql.matches) setIsSidebarCollapsed(false);
+
+    if (typeof mql.addEventListener === "function") {
+      mql.addEventListener("change", onChange);
+      return () => mql.removeEventListener("change", onChange);
+    }
+
+    // Safari fallback
+    mql.addListener(onChange);
+    return () => mql.removeListener(onChange);
+  }, []);
 
   const pages = [
     {
@@ -63,9 +95,16 @@ const EmployeeDashboard = () => {
     location.pathname === "/dashboard/employee/account" ||
     location.pathname.startsWith("/dashboard/employee/open-positions/");
   return (
-    <div className="employeeDashboardContainer">
+    <div
+      className={`employeeDashboardContainer ${
+        isSidebarCollapsed && !isMobile ? "sidebar-collapsed" : ""
+      }`}
+    >
       <div id="Sidebar">
-        <Sidebar pages={pages} />
+        <Sidebar
+          pages={pages}
+          isCollapsed={isSidebarCollapsed && !isMobile}
+        />
       </div>
       {!hideHeader && (
         <div id="Header">
@@ -73,6 +112,10 @@ const EmployeeDashboard = () => {
             text="Track your referrals and help us build an amazing team"
             buttonText="Submit a Referral"
             to="/dashboard/employee/submit-referrals"
+            isSidebarCollapsed={isSidebarCollapsed && !isMobile}
+            onToggleSidebar={
+              isMobile ? undefined : () => setIsSidebarCollapsed((v) => !v)
+            }
           />
         </div>
       )}

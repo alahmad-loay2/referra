@@ -3,6 +3,7 @@ import "./Header.css";
 import Button from "../button/Button";
 import { getUserInfo } from "../../api/user.api.js";
 import { useUserStore } from "../../store/userStore.js";
+import { Menu, X } from "lucide-react";
 // Header component that displays a greeting with the user's first name and a button for navigation. It fetches user info on mount to get the first name and admin status.
 const Header = (props) => {
   const firstName = useUserStore((state) => state.firstName);
@@ -42,9 +43,27 @@ const Header = (props) => {
 
   return (
     <div className="headerContainer">
-      <div>
-        <h3>Hello {firstName || "..."}</h3>
-        <p>{props.text}</p>
+      <div className="headerLeft">
+        <div className="headerTitleRow">
+          {props.onToggleSidebar && (
+            <button
+              type="button"
+              className="headerSidebarToggleButton"
+              onClick={props.onToggleSidebar}
+              aria-label={
+                props.isSidebarCollapsed ? "Open sidebar" : "Close sidebar"
+              }
+              aria-expanded={!props.isSidebarCollapsed}
+            >
+              {props.isSidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
+            </button>
+          )}
+
+          <div className="headerTextBlock">
+            <h3>Hello {firstName || "..."}</h3>
+            <p>{props.text}</p>
+          </div>
+        </div>
       </div>
       <Button text={props.buttonText} to={props.to} />
     </div>

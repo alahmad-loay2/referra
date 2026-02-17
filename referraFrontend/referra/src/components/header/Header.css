@@ -5,10 +5,57 @@
     padding: 10px 30px;
     height: 100px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    gap: 10px;
+}
+
+.headerLeft {
+    min-width: 0;
+}
+
+.headerTitleRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.headerTextBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.headerSidebarToggleButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    line-height: 0;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: var(--white);
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.headerSidebarToggleButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
 .headerContainer h3 {
     font-size: 2.3rem;
+    margin: 0;
 }
 
 .headerContainer p {

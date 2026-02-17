@@ -15,6 +15,7 @@ const Sidebar = (props) => {
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const isCollapsed = Boolean(props.isCollapsed);
   const dropdownRef = useRef(null);
   const accountRef = useRef(null);
   const menuRef = useRef(null);
@@ -173,9 +174,15 @@ const Sidebar = (props) => {
   };
 
   return (
-    <div className="sidebarContainer">
+    <div className={`sidebarContainer ${isCollapsed ? "collapsed" : ""}`}>
       <div className="sidebarTop">
-        <img src="/logoWhite.png" alt="Referra Logo" className="sidebarLogo" />
+        <div className="sidebarLogoRow">
+          <img
+            src="/logoWhite.png"
+            alt="Referra Logo"
+            className="sidebarLogo"
+          />
+        </div>
         <div className="divider"></div>
 
         <nav className="sidebarNav">
@@ -268,7 +275,6 @@ const Sidebar = (props) => {
                       Switch to HR Account
                     </button>
                   )}
-                  <div className="sidebarAccountDropdownDivider"></div>
                 </>
               )}
               <button
