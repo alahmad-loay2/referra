@@ -252,10 +252,16 @@ const EmployeeReferralHD = () => {
       let nameWithoutExt = fileName.replace(/\.(pdf|PDF)$/, "");
 
       // Remove timestamp patterns (T followed by numbers and Z, with spaces or separators)
-      nameWithoutExt = nameWithoutExt.replace(/T\d{2}[\s_-]?\d{2}[\s_-]?\d{2}[\s_-]?\d+Z?/gi, ""); // T22 13 12 444Z or variants
-      nameWithoutExt = nameWithoutExt.replace(/T\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/gi, ""); // ISO format
+      nameWithoutExt = nameWithoutExt.replace(
+        /T\d{2}[\s_-]?\d{2}[\s_-]?\d{2}[\s_-]?\d+Z?/gi,
+        "",
+      ); // T22 13 12 444Z or variants
+      nameWithoutExt = nameWithoutExt.replace(
+        /T\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/gi,
+        "",
+      ); // ISO format
       nameWithoutExt = nameWithoutExt.replace(/T\d{8}T\d{6}Z?/gi, ""); // Compact ISO format
-      
+
       // Remove date patterns (common formats: YYYY-MM-DD, YYYYMMDD, etc.)
       nameWithoutExt = nameWithoutExt.replace(/\d{4}-\d{2}-\d{2}/g, ""); // YYYY-MM-DD
       nameWithoutExt = nameWithoutExt.replace(/\d{8}/g, ""); // YYYYMMDD
@@ -486,11 +492,11 @@ const EmployeeReferralHD = () => {
                       <span>
                         <strong>Date:</strong>{" "}
                         {new Date(Candidate.CreatedAt).toLocaleDateString(
-                          "en-CA",
+                          "en-GB",
                           {
-                            year: "numeric",
-                            month: "2-digit",
                             day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
                           },
                         )}
                       </span>
@@ -672,11 +678,12 @@ const EmployeeReferralHD = () => {
                     <strong>Deadline:</strong>{" "}
                     {Position.Deadline
                       ? new Date(Position.Deadline).toLocaleDateString(
-                          "en-CA",
+                          "en-GB",
                           {
-                            year: "numeric",
-                            month: "2-digit",
                             day: "2-digit",
+                            month: "2-digit",
+
+                            year: "numeric",
                           },
                         )
                       : "N/A"}

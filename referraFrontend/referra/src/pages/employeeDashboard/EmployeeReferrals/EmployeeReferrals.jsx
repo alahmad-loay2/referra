@@ -214,7 +214,11 @@ const EmployeeReferrals = () => {
 
                         <span className="meta-item">
                           <Calendar size={14} />
-                          {new Date(createdAt).toLocaleDateString()}
+                          {new Date(createdAt).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })}
                         </span>
                       </div>
 

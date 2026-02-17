@@ -375,7 +375,14 @@ const HrTeam = () => {
                     <td>
                       <div className="icon-text">
                         <Calendar size={14} />
-                        {new Date(hr.User.CreatedAt).toLocaleDateString()}
+                        {new Date(hr.User.CreatedAt).toLocaleDateString(
+                          "en-GB",
+                          {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          },
+                        )}
                       </div>
                     </td>
                   </tr>
