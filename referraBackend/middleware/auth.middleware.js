@@ -88,7 +88,7 @@ const attachUser = async (req, supabaseUser, next) => {
   // Cache the result
   userDataCache.set(userCacheKey, {
     data: userData,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
 
   req.user = userData;
@@ -97,11 +97,16 @@ const attachUser = async (req, supabaseUser, next) => {
 };
 
 export const requireAdmin = (req, res, next) => {
-  if (!req.user || req.user.Role !== "HR" || !req.user.Hr || !req.user.Hr.isAdmin) {
+  if (
+    !req.user ||
+    req.user.Role !== "HR" ||
+    !req.user.Hr ||
+    !req.user.Hr.isAdmin
+  ) {
     return res.status(403).json({ message: "Admin access required" });
   }
   return next();
-}
+};
 
 export const requireHr = (req, res, next) => {
   if (!req.user || req.user.Role !== "HR") {
@@ -133,7 +138,7 @@ export const authenticate = async (req, res, next) => {
       try {
         // Decode JWT token to extract user ID and check expiration
         const decoded = jwt.decode(accessToken, { complete: true });
-        
+
         if (!decoded || !decoded.payload) {
           throw new Error("Invalid token format");
         }

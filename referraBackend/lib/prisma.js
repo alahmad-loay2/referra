@@ -39,7 +39,9 @@ if (isTestRun) {
     const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
-      throw new Error("DATABASE_URL environment variable is not set for integration tests");
+      throw new Error(
+        "DATABASE_URL environment variable is not set for integration tests",
+      );
     }
 
     const pool = new Pool({
@@ -93,7 +95,11 @@ if (isTestRun) {
 }
 
 // Optional: only dump queries when explicitly enabled to avoid noisy logs in dev
-if (PRISMA_LOG_QUERIES === "true" && prisma && typeof prisma.$on === "function") {
+if (
+  PRISMA_LOG_QUERIES === "true" &&
+  prisma &&
+  typeof prisma.$on === "function"
+) {
   prisma.$on("query", (e) => {
     // This is the data Prisma Optimize (CLI / cloud) uses under the hood
     console.log(

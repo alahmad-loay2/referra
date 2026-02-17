@@ -14,7 +14,8 @@ export const idempotencyMiddleware = async (req, res, next) => {
     return next();
   }
 
-  const idempotencyKey = req.headers["idempotency-key"] || req.headers["x-idempotency-key"];
+  const idempotencyKey =
+    req.headers["idempotency-key"] || req.headers["x-idempotency-key"];
 
   // If no idempotency key provided, proceed normally
   if (!idempotencyKey) {
@@ -22,7 +23,10 @@ export const idempotencyMiddleware = async (req, res, next) => {
   }
 
   // Validate key format (should be a non-empty string)
-  if (typeof idempotencyKey !== "string" || idempotencyKey.trim().length === 0) {
+  if (
+    typeof idempotencyKey !== "string" ||
+    idempotencyKey.trim().length === 0
+  ) {
     return res.status(400).json({
       success: false,
       message: "Invalid idempotency key. Must be a non-empty string.",
@@ -37,10 +41,13 @@ export const idempotencyMiddleware = async (req, res, next) => {
   // Create a unique key combining idempotency key, method, and path
   const method = req.method;
   const path = req.path;
-  
+
   // Create a hash of the request body for additional validation (optional)
   const requestBody = req.body ? JSON.stringify(req.body) : "";
-  const requestHash = crypto.createHash("sha256").update(requestBody).digest("hex");
+  const requestHash = crypto
+    .createHash("sha256")
+    .update(requestBody)
+    .digest("hex");
 
   try {
     // Check if this idempotency key already exists for this user
@@ -59,35 +66,45 @@ export const idempotencyMiddleware = async (req, res, next) => {
       // Verify it's for the same endpoint
       if (existingKey.Method === method && existingKey.Path === path) {
         //  verify request hash matches (for extra safety)
-        if (existingKey.RequestHash && existingKey.RequestHash !== requestHash) {
+        if (
+          existingKey.RequestHash &&
+          existingKey.RequestHash !== requestHash
+        ) {
           return res.status(409).json({
             success: false,
-            message: "Idempotency key conflict: same key used with different request body.",
+            message:
+              "Idempotency key conflict: same key used with different request body.",
           });
         }
 
         // Only return cached response if it was a success (2xx status codes)
         // If the previous request failed, allow retry by proceeding with the request
-        const isSuccess = existingKey.ResponseStatus >= 200 && existingKey.ResponseStatus < 300;
+        const isSuccess =
+          existingKey.ResponseStatus >= 200 && existingKey.ResponseStatus < 300;
         if (isSuccess) {
-          return res.status(existingKey.ResponseStatus).json(existingKey.ResponseBody);
+          return res
+            .status(existingKey.ResponseStatus)
+            .json(existingKey.ResponseBody);
         }
         // If previous request was an error, delete the cached entry and allow retry
         // This allows users to retry failed requests with the same idempotency key
-        await prisma.idempotencyKey.delete({
-          where: {
-            IdempotencyKeyId: existingKey.IdempotencyKeyId,
-          },
-        }).catch((err) => {
-          // Log but don't fail if deletion fails
-          console.error("Failed to delete error idempotency key:", err);
-        });
+        await prisma.idempotencyKey
+          .delete({
+            where: {
+              IdempotencyKeyId: existingKey.IdempotencyKeyId,
+            },
+          })
+          .catch((err) => {
+            // Log but don't fail if deletion fails
+            console.error("Failed to delete error idempotency key:", err);
+          });
         // Fall through to proceed with the request
       } else {
         // Same key used for different endpoint
         return res.status(409).json({
           success: false,
-          message: "Idempotency key conflict: same key used for different endpoint.",
+          message:
+            "Idempotency key conflict: same key used for different endpoint.",
         });
       }
     }

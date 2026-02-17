@@ -4,7 +4,8 @@ import { PORT } from "../config/env.js";
 // Ping health endpoint to keep Render service awake
 const pingHealthEndpoint = async () => {
   try {
-    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+    const baseUrl =
+      process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
     const response = await fetch(`${baseUrl}/api/health`);
     if (response.ok) {
       console.log(" Health check ping successful");

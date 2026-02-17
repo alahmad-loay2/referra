@@ -636,8 +636,8 @@ const Account = () => {
                 {profileData.CreatedAt ? (
                   <p>
                     {new Date(profileData.CreatedAt).toLocaleDateString(
-                      "en-CA",
-                      { year: "numeric", month: "2-digit", day: "2-digit" },
+                      "en-GB",
+                      { day: "2-digit", month: "2-digit", year: "numeric" },
                     )}
                   </p>
                 ) : (

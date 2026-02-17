@@ -458,7 +458,14 @@ const EmployeeSubmit = () => {
                 </span>
                 <span className="employeeSubmit-detailValue">
                   {positionDetails.Deadline
-                    ? new Date(positionDetails.Deadline).toLocaleDateString()
+                    ? new Date(positionDetails.Deadline).toLocaleDateString(
+                        "en-GB",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        },
+                      )
                     : "-"}
                 </span>
               </div>

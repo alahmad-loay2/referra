@@ -99,7 +99,11 @@ const EmployeePositionDetails = () => {
           <div className="info-box">
             <span className="label">Deadline</span>
             <span className="value">
-              {new Date(position.Deadline).toLocaleDateString()}
+              {new Date(position.Deadline).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}
             </span>
           </div>
         </div>

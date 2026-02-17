@@ -190,10 +190,10 @@ const HrDashboardHome = () => {
                         <span className="iconTextLabel">
                           {new Date(
                             referral.Referral.CreatedAt,
-                          ).toLocaleDateString("en-CA", {
-                            year: "numeric",
-                            month: "2-digit",
+                          ).toLocaleDateString("en-GB", {
                             day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
                           })}
                         </span>
                       </span>

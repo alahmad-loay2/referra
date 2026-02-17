@@ -571,7 +571,11 @@ export const resetPassword = async (accessToken, refreshToken, newPassword) => {
     });
 
     // Always ensure HR user has Employee record (for submitting referrals)
-    if (existingPrismaUser && existingPrismaUser.Hr && !existingPrismaUser.Employee) {
+    if (
+      existingPrismaUser &&
+      existingPrismaUser.Hr &&
+      !existingPrismaUser.Employee
+    ) {
       await prisma.employee.create({
         data: {
           UserId: existingPrismaUser.UserId,

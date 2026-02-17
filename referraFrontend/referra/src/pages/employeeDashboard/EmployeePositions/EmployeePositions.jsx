@@ -100,7 +100,11 @@ const EmployeePositions = () => {
                     <span>
                       <Calendar size={14} />
                       <span className="meta-text">
-                        {new Date(pos.Deadline).toLocaleDateString()}
+                        {new Date(pos.Deadline).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
                       </span>
                     </span>
                   </div>

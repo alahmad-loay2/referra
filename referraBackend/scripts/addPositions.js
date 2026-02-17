@@ -34,7 +34,13 @@ const positionTitles = [
   "Network Engineer",
 ];
 
-const employmentTypes = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "TEMPORARY"];
+const employmentTypes = [
+  "FULL_TIME",
+  "PART_TIME",
+  "CONTRACT",
+  "INTERNSHIP",
+  "TEMPORARY",
+];
 
 const locations = [
   "New York, NY",
@@ -97,23 +103,31 @@ async function addPositions() {
       });
 
       if (!department) {
-        console.error("No departments found in the database. Please create a department first.");
+        console.error(
+          "No departments found in the database. Please create a department first.",
+        );
         process.exit(1);
       }
 
-      console.log(`Department with ID '1' not found. Using first department: ${department.DepartmentName} (ID: ${department.DepartmentId})`);
+      console.log(
+        `Department with ID '1' not found. Using first department: ${department.DepartmentName} (ID: ${department.DepartmentId})`,
+      );
     } else {
-      console.log(`Found department: ${department.DepartmentName} (ID: ${department.DepartmentId})`);
+      console.log(
+        `Found department: ${department.DepartmentName} (ID: ${department.DepartmentId})`,
+      );
     }
 
-    console.log(`\nAdding 100 positions to department: ${department.DepartmentName} (ID: ${department.DepartmentId})...`);
+    console.log(
+      `\nAdding 100 positions to department: ${department.DepartmentName} (ID: ${department.DepartmentId})...`,
+    );
 
     const positions = [];
     for (let i = 0; i < 100; i++) {
       const yearsRequired = Math.floor(Math.random() * 10) + 1; // 1-10 years
       const positionTitle = getRandomElement(positionTitles);
       const companyName = getRandomElement(companies);
-      
+
       positions.push({
         PositionTitle: `${positionTitle} ${i + 1}`,
         CompanyName: companyName,
@@ -142,8 +156,10 @@ async function addPositions() {
       console.log(`Inserted ${inserted}/100 positions...`);
     }
 
-    console.log(`\n✅ Successfully added ${inserted} positions to department: ${department.DepartmentName}`);
-    
+    console.log(
+      `\n✅ Successfully added ${inserted} positions to department: ${department.DepartmentName}`,
+    );
+
     // Verify the insertions
     const count = await prisma.position.count({
       where: { DepartmentId: department.DepartmentId },

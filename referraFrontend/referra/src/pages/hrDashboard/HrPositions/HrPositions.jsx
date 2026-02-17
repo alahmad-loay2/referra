@@ -484,7 +484,11 @@ const HrPositions = () => {
                     <td>{p.applicantsCount}</td>
                     <td>
                       {p.Deadline
-                        ? new Date(p.Deadline).toLocaleDateString()
+                        ? new Date(p.Deadline).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })
                         : "-"}
                     </td>
                     <td>
