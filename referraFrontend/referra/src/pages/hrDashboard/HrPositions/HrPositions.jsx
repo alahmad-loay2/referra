@@ -339,7 +339,14 @@ const HrPositions = () => {
           </div>
           <div className="positionCardsText">
             <p>Total Positions</p>
-            {statsLoading ? <Loading /> : <span>{stats.totalPositions}</span>}
+            {statsLoading ? (
+              <Loading />
+            ) : (
+              <>
+                <span>{stats.totalPositions}</span>
+                <span className="positionsStatSubtitle">in your department</span>
+              </>
+            )}
           </div>
         </div>
         <div className="positionCards">
@@ -348,7 +355,14 @@ const HrPositions = () => {
           </div>
           <div className="positionCardsText">
             <p>Total Applicants</p>
-            {statsLoading ? <Loading /> : <span>{stats.totalApplicants}</span>}
+            {statsLoading ? (
+              <Loading />
+            ) : (
+              <>
+                <span>{stats.totalApplicants}</span>
+                <span className="positionsStatSubtitle">in your department</span>
+              </>
+            )}
           </div>
         </div>
         <div className="positionCards">
@@ -357,7 +371,14 @@ const HrPositions = () => {
           </div>
           <div className="positionCardsText">
             <p>Open Positions</p>
-            {statsLoading ? <Loading /> : <span>{stats.openPositions}</span>}
+            {statsLoading ? (
+              <Loading />
+            ) : (
+              <>
+                <span>{stats.openPositions}</span>
+                <span className="positionsStatSubtitle">in your department</span>
+              </>
+            )}
           </div>
         </div>
       </div>

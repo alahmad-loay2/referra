@@ -47,12 +47,17 @@ export const createReferral = async (payload) => {
     cvFileName,
   } = payload;
 
+  const isMissingYearOfExperience =
+    candidateYearOfExperience === undefined ||
+    candidateYearOfExperience === null ||
+    candidateYearOfExperience === "";
+
   if (
     !candidateFirstName ||
     !candidateLastName ||
     !candidateEmail ||
     !candidatePhoneNumber ||
-    !candidateYearOfExperience ||
+    isMissingYearOfExperience ||
     !positionId ||
     !employeeId ||
     !cvFile
@@ -164,12 +169,7 @@ export const createReferral = async (payload) => {
     let candidate = await tx.candidate.findUnique({
       where: { Email: candidateEmail },
       include: {
-        Application: {
-          where: {
-            EmployeeId: employeeId,
-            PositionId: positionId,
-          },
-        },
+        Application: true,
       },
     });
 
@@ -183,7 +183,16 @@ export const createReferral = async (payload) => {
         throw error;
       }
 
-      if (candidate.Application && candidate.Application.length > 0) {
+      // Prevent duplicate applications for the SAME position,
+      // even if created by a different employee.
+      const existingForSamePosition = await tx.application.findFirst({
+        where: {
+          CandidateId: candidate.CandidateId,
+          PositionId: positionId,
+        },
+      });
+
+      if (existingForSamePosition) {
         const error = new Error(
           "Application already exists for this candidate and position",
         );

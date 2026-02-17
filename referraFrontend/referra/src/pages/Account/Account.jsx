@@ -484,165 +484,167 @@ const Account = () => {
 
       {profileData && (
         <>
-          <div className="personalInformation">
-            <h3>Personal Information</h3>
-            <p>Your basic personal and contact details.</p>
-            <div className="personalInformationContent">
-              <div className="personalInformationRow">
-                <div className="personalInformationContentItem">
-                  <h4>First Name</h4>
-                  {isEditMode ? (
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName || ""}
-                      onChange={handleInputChange}
-                      className="accountInput"
-                    />
-                  ) : (
-                    <p>{profileData.FirstName}</p>
-                  )}
+          <div className="accountInfoRow">
+            <div className="personalInformation">
+              <h3>Personal Information</h3>
+              <p>Your basic personal and contact details.</p>
+              <div className="personalInformationContent">
+                <div className="personalInformationRow">
+                  <div className="personalInformationContentItem">
+                    <h4>First Name</h4>
+                    {isEditMode ? (
+                      <input
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName || ""}
+                        onChange={handleInputChange}
+                        className="accountInput"
+                      />
+                    ) : (
+                      <p>{profileData.FirstName}</p>
+                    )}
+                  </div>
+                  <div className="personalInformationContentItem">
+                    <h4>Last Name</h4>
+                    {isEditMode ? (
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName || ""}
+                        onChange={handleInputChange}
+                        className="accountInput"
+                      />
+                    ) : (
+                      <p>{profileData.LastName}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="personalInformationContentItem">
-                  <h4>Last Name</h4>
-                  {isEditMode ? (
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName || ""}
-                      onChange={handleInputChange}
-                      className="accountInput"
-                    />
-                  ) : (
-                    <p>{profileData.LastName}</p>
-                  )}
-                </div>
-              </div>
 
-              <div className="personalInformationRow">
-                <div className="personalInformationContentItem">
-                  <h4>Email</h4>
-                  <p>{profileData.Email}</p>
+                <div className="personalInformationRow">
+                  <div className="personalInformationContentItem">
+                    <h4>Email</h4>
+                    <p>{profileData.Email}</p>
+                  </div>
+                  <div className="personalInformationContentItem">
+                    <h4>Age</h4>
+                    {isEditMode ? (
+                      <input
+                        type="number"
+                        name="age"
+                        value={formData.age || ""}
+                        onChange={handleInputChange}
+                        className="accountInput"
+                      />
+                    ) : (
+                      <p>{profileData.Age}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="personalInformationContentItem">
-                  <h4>Age</h4>
-                  {isEditMode ? (
-                    <input
-                      type="number"
-                      name="age"
-                      value={formData.age || ""}
-                      onChange={handleInputChange}
-                      className="accountInput"
-                    />
-                  ) : (
-                    <p>{profileData.Age}</p>
-                  )}
-                </div>
-              </div>
 
-              <div className="personalInformationRow">
-                <div className="personalInformationContentItem">
-                  <h4>Phone</h4>
-                  {isEditMode ? (
-                    <input
-                      type="text"
-                      name="phoneNumber"
-                      value={formData.phoneNumber || ""}
-                      onChange={handleInputChange}
-                      className="accountInput"
-                    />
-                  ) : (
-                    <p>{profileData.PhoneNumber}</p>
-                  )}
-                </div>
-                <div className="personalInformationContentItem personalInformationContentItemGender">
-                  <h4>Gender</h4>
-                  {isEditMode ? (
-                    <NormalSelect
-                      name="gender"
-                      value={formData.gender || ""}
-                      onChange={(val) =>
-                        setFormData((prev) => ({ ...prev, gender: val }))
-                      }
-                      options={[
-                        { value: "Male", label: "Male" },
-                        { value: "Female", label: "Female" },
-                        { value: "Other", label: "Other" },
-                      ]}
-                      placeholder="Select gender"
-                    />
-                  ) : (
-                    <p>{profileData.Gender}</p>
-                  )}
+                <div className="personalInformationRow">
+                  <div className="personalInformationContentItem">
+                    <h4>Phone</h4>
+                    {isEditMode ? (
+                      <input
+                        type="text"
+                        name="phoneNumber"
+                        value={formData.phoneNumber || ""}
+                        onChange={handleInputChange}
+                        className="accountInput"
+                      />
+                    ) : (
+                      <p>{profileData.PhoneNumber}</p>
+                    )}
+                  </div>
+                  <div className="personalInformationContentItem personalInformationContentItemGender">
+                    <h4>Gender</h4>
+                    {isEditMode ? (
+                      <NormalSelect
+                        name="gender"
+                        value={formData.gender || ""}
+                        onChange={(val) =>
+                          setFormData((prev) => ({ ...prev, gender: val }))
+                        }
+                        options={[
+                          { value: "Male", label: "Male" },
+                          { value: "Female", label: "Female" },
+                          { value: "Other", label: "Other" },
+                        ]}
+                        placeholder="Select gender"
+                      />
+                    ) : (
+                      <p>{profileData.Gender}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="workInformation">
-            <h3>Work Information</h3>
-            <p>Your employment details at Aspire.</p>
-            <div className="workInformationContent">
-              {profileData.Role === "Employee" && (
-                <>
-                  <div className="workInformationContentItem">
-                    <h4>Department</h4>
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        name="department"
-                        value={formData.department || ""}
-                        onChange={handleInputChange}
-                        className="accountInput"
-                      />
-                    ) : (
-                      <p>{getDepartment()}</p>
-                    )}
-                  </div>
-                  <div className="workInformationContentItem">
-                    <h4>Position</h4>
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        name="position"
-                        value={formData.position || ""}
-                        onChange={handleInputChange}
-                        className="accountInput"
-                      />
-                    ) : (
-                      <p>{getPosition()}</p>
-                    )}
-                  </div>
-                </>
-              )}
-              {profileData.Role === "HR" && (
-                <>
-                  <div className="workInformationContentItem">
-                    <h4>Department</h4>
-                    {getAllDepartments().length > 0 ? (
-                      <p>{getAllDepartments().join(", ")}</p>
-                    ) : (
-                      <p>N/A</p>
-                    )}
-                  </div>
-                  <div className="workInformationContentItem">
-                    <h4>Position</h4>
-                    <p>{getPosition()}</p>
-                  </div>
-                </>
-              )}
-              <div className="workInformationContentItem">
-                <h4>Join Date</h4>
-                {profileData.CreatedAt ? (
-                  <p>
-                    {new Date(profileData.CreatedAt).toLocaleDateString(
-                      "en-GB",
-                      { day: "2-digit", month: "2-digit", year: "numeric" },
-                    )}
-                  </p>
-                ) : (
-                  <p>N/A</p>
+            <div className="workInformation">
+              <h3>Work Information</h3>
+              <p>Your employment details at Aspire.</p>
+              <div className="workInformationContent">
+                {profileData.Role === "Employee" && (
+                  <>
+                    <div className="workInformationContentItem">
+                      <h4>Department</h4>
+                      {isEditMode ? (
+                        <input
+                          type="text"
+                          name="department"
+                          value={formData.department || ""}
+                          onChange={handleInputChange}
+                          className="accountInput"
+                        />
+                      ) : (
+                        <p>{getDepartment()}</p>
+                      )}
+                    </div>
+                    <div className="workInformationContentItem">
+                      <h4>Position</h4>
+                      {isEditMode ? (
+                        <input
+                          type="text"
+                          name="position"
+                          value={formData.position || ""}
+                          onChange={handleInputChange}
+                          className="accountInput"
+                        />
+                      ) : (
+                        <p>{getPosition()}</p>
+                      )}
+                    </div>
+                  </>
                 )}
+                {profileData.Role === "HR" && (
+                  <>
+                    <div className="workInformationContentItem">
+                      <h4>Department</h4>
+                      {getAllDepartments().length > 0 ? (
+                        <p>{getAllDepartments().join(", ")}</p>
+                      ) : (
+                        <p>N/A</p>
+                      )}
+                    </div>
+                    <div className="workInformationContentItem">
+                      <h4>Position</h4>
+                      <p>{getPosition()}</p>
+                    </div>
+                  </>
+                )}
+                <div className="workInformationContentItem">
+                  <h4>Join Date</h4>
+                  {profileData.CreatedAt ? (
+                    <p>
+                      {new Date(profileData.CreatedAt).toLocaleDateString(
+                        "en-GB",
+                        { day: "2-digit", month: "2-digit", year: "numeric" },
+                      )}
+                    </p>
+                  ) : (
+                    <p>N/A</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -267,7 +267,7 @@
 @media (min-width: 768px) {
   .referralHr .allCandidates {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(410px, 1fr));
   }
 }
 
@@ -563,6 +563,11 @@
   .candidate {
     padding: 16px;
   }
+
+  .referralHr .candidate-details .detail-item svg {
+    display: none;
+  }
+
 
   .candidate-header {
     flex-direction: column;

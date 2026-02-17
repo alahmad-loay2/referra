@@ -151,8 +151,15 @@ const EmployeeSubmit = () => {
     if (!form.lastName) newErrors.lastName = "Last name is required";
     if (!form.email) newErrors.email = "Email is required";
     if (!form.phoneNumber) newErrors.phoneNumber = "Phone number is required";
-
-    if (!form.experience) newErrors.experience = "Experience is required";
+ 
+    // Allow 0 years of experience, but require the field to be filled in
+    if (
+      form.experience === "" ||
+      form.experience === null ||
+      form.experience === undefined
+    ) {
+      newErrors.experience = "Experience is required";
+    }
     if (!cvFile) newErrors.cvFile = "CV is required";
 
     setErrors(newErrors);
@@ -533,6 +540,8 @@ const EmployeeSubmit = () => {
               Total Years of Experience <span>*</span>
             </label>
             <input
+              type="number"
+              min="0"
               name="experience"
               value={form.experience}
               onChange={handleChange}

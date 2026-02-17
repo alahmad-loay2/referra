@@ -104,22 +104,23 @@ const HrDashboard = () => {
         <Sidebar
           pages={pages}
           isCollapsed={isSidebarCollapsed && !isMobile}
+          onCollapseSidebar={
+            isMobile ? undefined : () => setIsSidebarCollapsed(true)
+          }
         />
       </div>
-
-      {!hideHeader && (
-        <div id="Header">
-          <Header
-            text="Manage referrals and track hiring progress"
-            buttonText="View Referrals"
-            to="/dashboard/hr/referrals"
-            isSidebarCollapsed={isSidebarCollapsed && !isMobile}
-            onToggleSidebar={
-              isMobile ? undefined : () => setIsSidebarCollapsed((v) => !v)
-            }
-          />
-        </div>
-      )}
+      <div id="Header">
+        <Header
+          text="Manage referrals and track hiring progress"
+          buttonText="View Referrals"
+          to="/dashboard/hr/referrals"
+          isSidebarCollapsed={isSidebarCollapsed && !isMobile}
+          onToggleSidebar={
+            isMobile ? undefined : () => setIsSidebarCollapsed(false)
+          }
+          hideText={hideHeader}
+        />
+      </div>
       <div id="Content">
         <Outlet />
       </div>

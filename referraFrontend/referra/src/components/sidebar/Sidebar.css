@@ -19,6 +19,10 @@
   padding: 0 12px;
 }
 
+.sidebarCollapseButton {
+  display: none;
+}
+
 
 .sidebarTop {
     display: flex;
@@ -378,6 +382,32 @@
         min-width: 180px;
         width: 100%;
     }
+}
+
+/* Desktop-only collapse button next to logo */
+@media (min-width: 769px) {
+  .sidebarCollapseButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 10px;
+    top: -10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: var(--white);
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .sidebarCollapseButton:hover {
+    background-color: rgba(0, 0, 0, 0.35);
+    transform: translateY(-1px);
+  }
 }
 
 /* Desktop collapsible sidebar (layout only, toggle button lives in header) */

@@ -104,21 +104,23 @@ const EmployeeDashboard = () => {
         <Sidebar
           pages={pages}
           isCollapsed={isSidebarCollapsed && !isMobile}
+          onCollapseSidebar={
+            isMobile ? undefined : () => setIsSidebarCollapsed(true)
+          }
         />
       </div>
-      {!hideHeader && (
-        <div id="Header">
-          <Header
-            text="Track your referrals and help us build an amazing team"
-            buttonText="Submit a Referral"
-            to="/dashboard/employee/submit-referrals"
-            isSidebarCollapsed={isSidebarCollapsed && !isMobile}
-            onToggleSidebar={
-              isMobile ? undefined : () => setIsSidebarCollapsed((v) => !v)
-            }
-          />
-        </div>
-      )}
+      <div id="Header">
+        <Header
+          text="Track your referrals and help us build an amazing team"
+          buttonText="Submit a Referral"
+          to="/dashboard/employee/submit-referrals"
+          isSidebarCollapsed={isSidebarCollapsed && !isMobile}
+          onToggleSidebar={
+            isMobile ? undefined : () => setIsSidebarCollapsed(false)
+          }
+          hideText={hideHeader}
+        />
+      </div>
 
       <div id="Content">
         <Outlet />

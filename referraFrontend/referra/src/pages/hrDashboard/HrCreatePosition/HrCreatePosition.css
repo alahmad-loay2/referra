@@ -39,6 +39,14 @@
     flex: 1;
 }
 
+.positionFormGrid {
+    display: grid;
+    /* Max 3 fields per row on large screens */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--gap-xl);
+    margin-bottom: 20px;
+}
+
 .formGroup {
     display: flex;
     gap: var(--gap-xl);
@@ -187,7 +195,18 @@
   opacity: 0.9;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+  /* 1 field per row on <= 900px */
+  .positionFormGrid {
+      grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1100px) and (min-width: 901px) {
+  /* 2 fields per row on medium screens between 901px and 1100px */
+  .positionFormGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .createPosition-modalOverlay {
     padding: 10px;
   }

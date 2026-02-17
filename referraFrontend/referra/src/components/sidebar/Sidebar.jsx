@@ -184,6 +184,16 @@ const Sidebar = (props) => {
             alt="Referra Logo"
             className="sidebarLogo"
           />
+          {!isCollapsed && props.onCollapseSidebar && (
+            <button
+              type="button"
+              className="sidebarCollapseButton"
+              onClick={props.onCollapseSidebar}
+              aria-label="Collapse sidebar"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
         <div className="divider"></div>
 

@@ -8,6 +8,13 @@
     gap: 10px;
 }
 
+.headerContainer--toggleOnly {
+    padding: 12px 16px 0;
+    height: auto;
+    border-bottom: none;
+    justify-content: flex-start;
+}
+
 .headerLeft {
     min-width: 0;
 }

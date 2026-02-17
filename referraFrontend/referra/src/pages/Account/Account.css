@@ -257,12 +257,20 @@
   cursor: not-allowed;
 }
 
-.personalInformation {
-  width: 100%;
-  background-color: var(--white);
-  padding: 30px 50px;
-  border-radius: var(--radius-md);
+.accountInfoRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-xl);
   margin-top: 20px;
+  align-items: stretch; /* make both cards equal height */
+}
+
+.personalInformation {
+  background-color: var(--white);
+  padding: 30px;
+  border-radius: var(--radius-md);
+  flex: 1 1 0;
+  min-width: 500px;
 }
 
 .personalInformation h3 {
@@ -314,11 +322,11 @@
 }
 
 .workInformation {
-  width: 100%;
   background-color: var(--white);
-  padding: 30px 50px;
+  padding: 30px;
   border-radius: var(--radius-md);
-  margin-top: 20px;
+  flex: 1 1 0;
+  min-width: 500px;
 }
 
 .workInformation h3 {
@@ -356,9 +364,21 @@
   word-break: break-word;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .personalInformationRow {
     grid-template-columns: 1fr;
+  }
+
+  .accountInfoRow {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .personalInformation,
+  .workInformation {
+    /* Remove min-width constraint and keep a nice readable width */
+    min-width: 0;
+    width: 100%;
   }
 }
 

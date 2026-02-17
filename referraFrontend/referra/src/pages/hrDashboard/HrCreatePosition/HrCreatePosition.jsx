@@ -287,7 +287,8 @@ const HrCreatePosition = () => {
             pointerEvents: loadingData ? "none" : "auto",
           }}
         >
-          <div className="formGroup">
+          <div className="positionFormGrid">
+            {/* Row 1 */}
             <div className="labelInput">
               <label>Job Title*</label>
               <input
@@ -310,9 +311,19 @@ const HrCreatePosition = () => {
                 onChange={handleChange}
               />
             </div>
-          </div>
+            <div className="labelInput">
+              <label>Years Of Experience Needed*</label>
+              <input
+                type="number"
+                name="yearsRequired"
+                placeholder="e.g. 2"
+                required
+                value={formData.yearsRequired}
+                onChange={handleChange}
+              />
+            </div>
 
-          <div className="formGroup">
+            {/* Row 2 */}
             <div className="labelInput">
               <label>Employment Type*</label>
               <SearchableSelect
@@ -327,18 +338,6 @@ const HrCreatePosition = () => {
                 placeholder="Employment Type"
                 searchPlaceholder="Search employment types..."
                 noResultsText="No employment types found"
-              />
-            </div>
-
-            <div className="labelInput">
-              <label>Years Of Experience Needed*</label>
-              <input
-                type="number"
-                name="yearsRequired"
-                placeholder="e.g. 2"
-                required
-                value={formData.yearsRequired}
-                onChange={handleChange}
               />
             </div>
 
@@ -358,26 +357,6 @@ const HrCreatePosition = () => {
                 noResultsText="No countries found"
               />
             </div>
-          </div>
-
-          <div className="formGroup">
-            <div className="labelInput">
-              <label>Department*</label>
-              <SearchableSelect
-                options={departmentOptions}
-                value={formData.departmentId}
-                onChange={(val) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    departmentId: val,
-                  }))
-                }
-                placeholder="Select Department"
-                searchPlaceholder="Search departments..."
-                noResultsText="No departments found"
-                loading={loadingData}
-              />
-            </div>
 
             <div className="labelInput">
               <label>Time Zone*</label>
@@ -393,6 +372,25 @@ const HrCreatePosition = () => {
                 placeholder="Select Time Zone"
                 searchPlaceholder="Search time zones..."
                 noResultsText="No time zones found"
+              />
+            </div>
+
+            {/* Row 3 */}
+            <div className="labelInput">
+              <label>Department*</label>
+              <SearchableSelect
+                options={departmentOptions}
+                value={formData.departmentId}
+                onChange={(val) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    departmentId: val,
+                  }))
+                }
+                placeholder="Select Department"
+                searchPlaceholder="Search departments..."
+                noResultsText="No departments found"
+                loading={loadingData}
               />
             </div>
 

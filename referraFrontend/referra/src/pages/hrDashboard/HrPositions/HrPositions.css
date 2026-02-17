@@ -22,7 +22,7 @@
   padding: 20px 30px;
   gap: var(--gap-lg);
   width: 20vw;
-  min-width: 220px;
+  min-width: 260px;
   border-radius: var(--radius-xl);
   flex: 1;
 }
@@ -39,6 +39,16 @@
   font-size: var(--fs-small);
   color: var(--gray-dark);
   margin-bottom: 5px;
+}
+
+.positionCardsText span {
+  display: block;
+}
+
+.positionsStatSubtitle {
+  font-size: var(--fs-small);
+  color: var(--gray-dark);
+  opacity: 0.8;
 }
 
 /* Smaller loading spinner for position cards */
