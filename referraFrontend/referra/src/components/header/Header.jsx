@@ -41,6 +41,12 @@ const Header = (props) => {
     }
   }, [firstName, setFirstName, setIsAdmin, setIsHr]);
 
+  // When header text is hidden and there's no sidebar toggle to show,
+  // don't render the header at all (no height/space).
+  if (props.hideText && !(props.onToggleSidebar && props.isSidebarCollapsed)) {
+    return null;
+  }
+
   const containerClassName = props.hideText
     ? "headerContainer headerContainer--toggleOnly"
     : "headerContainer";
