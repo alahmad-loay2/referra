@@ -12,9 +12,9 @@ if (isTestRun || isIntegrationTest) {
     storage: {
       from: () => ({
         // Default no-op mocks; individual tests can override as needed
-        upload: async () => ({ 
-          data: { path: `test-cv-${Date.now()}.pdf` }, 
-          error: null 
+        upload: async () => ({
+          data: { path: `test-cv-${Date.now()}.pdf` },
+          error: null,
         }),
         remove: async () => ({ data: null, error: null }),
       }),

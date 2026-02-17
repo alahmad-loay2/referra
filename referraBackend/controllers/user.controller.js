@@ -1,4 +1,8 @@
-import { getUserInfo, updateUserInfo, updateProfilePicture } from "../services/user/user.service.js";
+import {
+  getUserInfo,
+  updateUserInfo,
+  updateProfilePicture,
+} from "../services/user/user.service.js";
 import { clearUserCache } from "../middleware/auth.middleware.js";
 
 /**
@@ -73,7 +77,11 @@ export const UpdateProfilePicture = async (req, res, next) => {
     clearUserCache(userId);
 
     const accessToken = req.cookies?.accessToken || null;
-    const updatedUser = await updateProfilePicture(userId, req.file, accessToken);
+    const updatedUser = await updateProfilePicture(
+      userId,
+      req.file,
+      accessToken,
+    );
 
     res.status(200).json(updatedUser);
   } catch (error) {

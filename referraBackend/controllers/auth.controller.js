@@ -9,9 +9,8 @@ import {
 } from "../services/auth/auth.service.js";
 import { clearUserCache } from "../middleware/auth.middleware.js";
 
-
 // all controller for authentication and sending cookies to client
-// business logic is in services 
+// business logic is in services
 
 export const signup = async (req, res, next) => {
   try {
