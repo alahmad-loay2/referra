@@ -8,7 +8,8 @@ export const useUserStore = create((set) => ({
   isHr: false,
   setIsHr: (isHr) => set({ isHr: isHr }),
   // View mode for HR users: "hr" or "employee"
-  viewMode: "hr", // default to "hr" for HR users
+  viewMode: null, // null = derive from current route
   setViewMode: (mode) => set({ viewMode: mode }),
-  reset: () => set({ firstName: null, isAdmin: false, isHr: false, viewMode: "hr" }),
+  reset: () =>
+    set({ firstName: null, isAdmin: false, isHr: false, viewMode: null }),
 }))

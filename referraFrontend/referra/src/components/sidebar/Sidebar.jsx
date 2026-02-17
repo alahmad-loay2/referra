@@ -134,7 +134,9 @@ const Sidebar = (props) => {
   const canSwitchAccounts = isHr;
 
   // Get current effective view mode
-  const currentViewMode = viewMode || (isHr ? "hr" : "employee");
+  const currentViewMode =
+    viewMode ||
+    (location.pathname.startsWith("/dashboard/hr") ? "hr" : "employee");
 
   const handleSwitchToEmployee = (e) => {
     e.stopPropagation();

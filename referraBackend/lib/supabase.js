@@ -21,6 +21,10 @@ if (isTestRun || isIntegrationTest) {
     },
     auth: {
       refreshSession: async () => ({ data: null, error: null }),
+      // no-op mocks used in tests; real behavior is covered in integration/e2e
+      signUp: async () => ({ data: null, error: null }),
+      resend: async () => ({ data: null, error: null }),
+      resetPasswordForEmail: async () => ({ error: null }),
     },
   };
 } else {

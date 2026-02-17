@@ -303,13 +303,16 @@
 }
 
 .statusBadgeSecondary {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
   font-size: var(--fs-small);
   font-weight: 500;
-  width: fit-content;
-  white-space: nowrap;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .status-badge-accepted {

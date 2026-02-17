@@ -56,7 +56,28 @@ export const signupUser = async (payload) => {
   });
 
   if (authError) {
-    if (authError.message && authError.message.includes("already registered")) {
+    const alreadyRegistered =
+      authError.message &&
+      authError.message.toLowerCase().includes("already registered");
+
+    // User exists in Supabase but not yet verified in Prisma – resend verification email
+    if (alreadyRegistered) {
+      const { error: resendError } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: {
+          emailRedirectTo: `${FRONTEND_URL}/auth/verify-email-success`,
+        },
+      });
+
+      if (resendError) {
+        const error = new Error(
+          resendError.message || "Failed to resend verification email",
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+
       return {
         message:
           "Verification email sent. Please verify your email to complete signup.",
@@ -456,6 +477,24 @@ export const createHrUser = async (payload) => {
     if (!alreadyRegistered) {
       const error = new Error(
         authError.message || "Failed to create HR auth user",
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // If the user already exists in Supabase (but may not have finished onboarding),
+    // send / re-send a reset-password (invite) email so they can complete setup.
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo: `${FRONTEND_URL}/auth/reset-password`,
+      },
+    );
+
+    if (resetError) {
+      const error = new Error(
+        resetError.message ||
+          "Failed to send HR invite email. Please try again later.",
       );
       error.statusCode = 400;
       throw error;
