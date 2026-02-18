@@ -314,6 +314,7 @@ export const bootstrapFirstHr = async (payload) => {
     email,
     password,
     options: {
+      emailRedirectTo: `${FRONTEND_URL}/auth/verify-email-success`,
       data: {
         firstName,
         lastName,

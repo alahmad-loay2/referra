@@ -26,7 +26,11 @@ const EmployeeProtected = () => {
   }, []);
 
   if (status === "loading") {
-    return <Loading />;
+    return (
+      <div className="centerLoading">
+        <Loading />
+      </div>
+    );
   }
 
   if (status === "redirect") {

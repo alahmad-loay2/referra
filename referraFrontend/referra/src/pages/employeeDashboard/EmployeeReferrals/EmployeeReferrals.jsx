@@ -250,7 +250,11 @@ const EmployeeReferrals = () => {
                                 {index < STATUS_ORDER.length - 1 && (
                                   <div
                                     className={`line ${
-                                      isDone ? "done" : isActive ? "active" : ""
+                                      isDone
+                                        ? "done"
+                                        : isActive && !Referral.Prospect
+                                          ? "active"
+                                          : ""
                                     }`}
                                   />
                                 )}

@@ -176,7 +176,7 @@ export const EditCandidate = async (req, res, next) => {
       throw error;
     }
     const employeeId = req.user.Employee?.EmployeeId;
-    const { candidateId } = req.params;
+    const { referralId } = req.params;
 
     if (!employeeId) {
       const error = new Error("Employee profile not found");
@@ -197,7 +197,7 @@ export const EditCandidate = async (req, res, next) => {
     const accessToken = req.cookies?.accessToken;
 
     const payload = {
-      candidateId,
+      referralId,
       employeeId,
       candidateFirstName,
       candidateLastName,

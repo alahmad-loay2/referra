@@ -97,7 +97,7 @@ export const fetchEmployeeReferralDetails = async (referralId) => {
   return data;
 };
 
-export const editCandidate = async (candidateId, form, cvFile) => {
+export const editCandidate = async (referralId, form, cvFile) => {
   const formData = new FormData();
 
   formData.append("candidateFirstName", form.firstName);
@@ -110,7 +110,7 @@ export const editCandidate = async (candidateId, form, cvFile) => {
     formData.append("cvFile", cvFile, cvFile.name);
   }
 
-  const res = await fetch(`${API_BASE_URL}/employee/candidate/${candidateId}`, {
+  const res = await fetch(`${API_BASE_URL}/employee/referral/${referralId}`, {
     method: "PUT",
     credentials: "include",
     body: formData,

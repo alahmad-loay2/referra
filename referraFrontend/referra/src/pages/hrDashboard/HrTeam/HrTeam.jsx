@@ -198,9 +198,7 @@ const HrTeam = () => {
           </div>
           <div className="HRCardsText">
             <p>Departments Covered</p>
-            <strong>
               {statsLoading ? <Loading /> : stats.departmentsCount}
-            </strong>
           </div>
         </div>
 
@@ -210,7 +208,7 @@ const HrTeam = () => {
           </div>
           <div className="HRCardsText">
             <p>Total Members</p>
-            <strong>{statsLoading ? <Loading /> : stats.totalMembers}</strong>
+           {statsLoading ? <Loading /> : stats.totalMembers}
           </div>
         </div>
       </div>

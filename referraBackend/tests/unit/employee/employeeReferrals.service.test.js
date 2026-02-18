@@ -391,9 +391,9 @@ test("getEmployeeReferrals returns paginated applications for employee", async (
   }
 });
 
-test("editCandidate updates candidate fields when only pending referrals exist", async () => {
+test("editCandidate updates candidate and referral fields for a given referral", async () => {
   const payload = {
-    candidateId: 9,
+    referralId: 800,
     employeeId: 60,
     candidateFirstName: "Updated",
     candidateLastName: "",
@@ -409,31 +409,44 @@ test("editCandidate updates candidate fields when only pending referrals exist",
     LastName: "Name",
     Email: "old@example.com",
     PhoneNumber: "+19876543210",
-    Application: [
-      {
-        ReferralId: 800,
-        EmployeeId: 60,
-        Referral: { Status: "Pending" },
-        Position: {},
-        Employee: {},
-      },
-    ],
   };
 
-  const originalFindUnique = prisma.candidate.findUnique;
+  const referral = {
+    ReferralId: 800,
+    Status: "Pending",
+    YearOfExperience: 5,
+  };
+
+  const application = {
+    ReferralId: 800,
+    EmployeeId: 60,
+    Candidate: candidate,
+    Referral: referral,
+    Position: {},
+    Employee: {},
+  };
+
+  const originalFindFirst = prisma.application.findFirst;
   const originalTx = prisma.$transaction;
 
-  let updateArgs;
+  let candidateUpdateArgs;
+  let referralUpdateArgs;
 
-  prisma.candidate.findUnique = async () => candidate;
+  prisma.application.findFirst = async () => application;
 
   prisma.$transaction = async (fn) => {
     const tx = {
       candidate: {
         findUnique: async () => null, // Email uniqueness check - no existing candidate with new email
         update: async (args) => {
-          updateArgs = args;
+          candidateUpdateArgs = args;
           return { ...candidate, ...args.data };
+        },
+      },
+      referral: {
+        update: async (args) => {
+          referralUpdateArgs = args;
+          return { ...referral, ...args.data };
         },
       },
     };
@@ -443,15 +456,20 @@ test("editCandidate updates candidate fields when only pending referrals exist",
   try {
     const result = await editCandidate(payload);
 
-    assert.equal(updateArgs.where.CandidateId, payload.candidateId);
-    assert.equal(updateArgs.data.FirstName, "Updated");
-    assert.equal(updateArgs.data.PhoneNumber, "+11234567890");
-    assert.equal(updateArgs.data.YearOfExperience, 10);
+    assert.equal(candidateUpdateArgs.where.CandidateId, candidate.CandidateId);
+    assert.equal(candidateUpdateArgs.data.FirstName, "Updated");
+    assert.equal(
+      candidateUpdateArgs.data.PhoneNumber,
+      "+11234567890",
+    );
+    assert.equal(referralUpdateArgs.where.ReferralId, referral.ReferralId);
+    assert.equal(referralUpdateArgs.data.YearOfExperience, 10);
     assert.equal(result.updatedCandidate.CandidateId, 9);
     assert.equal(result.updatedCandidate.FirstName, "Updated");
     assert.equal(result.updatedCandidate.PhoneNumber, "+11234567890");
+    assert.equal(result.updatedReferral.YearOfExperience, 10);
   } finally {
-    prisma.candidate.findUnique = originalFindUnique;
+    prisma.application.findFirst = originalFindFirst;
     prisma.$transaction = originalTx;
   }
 });

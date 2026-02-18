@@ -195,7 +195,7 @@ const HrReferralDetails = () => {
       }
 
       if (action === "prospect") {
-        await finalizeReferral(referralId, "Prospect");
+        await finalizeReferral(referralId, "reject");
         await loadDetails(); // refresh state
         return;
       }
@@ -231,7 +231,7 @@ const HrReferralDetails = () => {
 
   if (loading || !referralData) {
     return (
-      <div className="hr-referral-hd-container">
+      <div className={`hr-referral-hd-container ${error ? "" : "centerLoading"}`}>
         {error ? (
           <div className="hr-referral-hd-loading">{error}</div>
         ) : (
@@ -316,20 +316,30 @@ const HrReferralDetails = () => {
                       state = "prospect";
                     }
 
+                    const isDone = state === "done";
+                    const isActive = state === "active";
+                    const isProspect = state === "prospect";
+
                     return (
                       <React.Fragment key={step}>
                         <div className={`step ${state}`}>
                           <span className="icon">
-                            {state === "done" && <Check size={14} />}
-                            {state === "active" && <Briefcase size={14} />}
-                            {state === "prospect" && <X size={14} />}
+                            {isDone && <Check size={14} />}
+                            {isActive && <Briefcase size={14} />}
+                            {isProspect && <X size={14} />}
                           </span>
                           <span className="label">{step}</span>
                         </div>
 
                         {index < STATUS_ORDER.length - 1 && (
                           <div
-                            className={`line ${state === "done" ? "done" : ""}`}
+                            className={`line ${
+                              isDone
+                                ? "done"
+                                : isActive && !Referral.Prospect
+                                  ? "active"
+                                  : ""
+                            }`}
                           />
                         )}
                       </React.Fragment>
@@ -380,14 +390,14 @@ const HrReferralDetails = () => {
                   <Award size={18} />
                   <span>
                     <strong>Years of Experience:</strong>{" "}
-                    {Candidate.YearOfExperience}
+                    {Referral.YearOfExperience}
                   </span>
                 </div>
                 <div className="hr-referral-candidate-info-item">
                   <Calendar size={18} />
                   <span>
                     <strong>Date:</strong>{" "}
-                    {new Date(Candidate.CreatedAt).toLocaleDateString("en-GB")}
+                    {new Date(Referral.CreatedAt).toLocaleDateString("en-GB")}
                   </span>
                 </div>
               </div>
@@ -398,7 +408,7 @@ const HrReferralDetails = () => {
                 <div className="hr-referral-cv-content">
                   <FileText size={32} className="hr-referral-cv-icon" />
                   <span className="hr-referral-cv-name">
-                    {getCVFileName(Candidate.CVUrl) ||
+                    {getCVFileName(Referral.CVUrl) ||
                       `${Candidate.FirstName} - CV`}
                   </span>
                   <span className="hr-referral-cv-subtext">
@@ -407,7 +417,7 @@ const HrReferralDetails = () => {
                 </div>
 
                 <a
-                  href={Candidate.CVUrl}
+                href={Referral.CVUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hr-referral-cv-download-btn"

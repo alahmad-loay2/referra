@@ -107,8 +107,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   appearance: none;
 }
 
-
-
 @media (max-width: 768px) {
   :root {
     --fs-small: 0.8rem;
@@ -130,4 +128,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   textarea {
     font-size: 16px !important;
   }
+}
+
+/* Centered loading helper (used in EmployeeReferralHD only for now) */
+.centerLoading {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

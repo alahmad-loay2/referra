@@ -373,7 +373,11 @@ const Account = () => {
   };
 
   if (isLoading) {
-    return <Loading />;
+    return (
+      <div className="centerLoading">
+        <Loading />
+      </div>
+    );
   }
 
   return (

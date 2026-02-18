@@ -126,10 +126,10 @@ export const createTestApp = () => {
   );
 
   testEmployeeRoutes.put(
-    "/candidate/:candidateId",
+    "/referral/:referralId",
     bypassAuth,
     uploadCV,
-    validateParams(paramsSchemas.candidateId),
+    validateParams(paramsSchemas.referralId),
     validateBody(candidateBodySchemas.editCandidate),
     EditCandidate,
   );

@@ -51,7 +51,6 @@
 }
 
 .hr-dashboard-home-header-item > span {
-    font-size: var(--fs-large);
     color: var(--secondary-color);
     align-self: flex-start;
 }

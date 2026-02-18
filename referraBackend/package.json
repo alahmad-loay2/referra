@@ -12,7 +12,6 @@
     "dev": "nodemon server.js",
     "postinstall": "prisma generate",
     "build": "prisma generate",
-    "vercel-build": "prisma generate",
     "add-positions": "node scripts/addPositions.js",
     "start": "node server.js"
   },

@@ -170,7 +170,10 @@ export const DeletePosition = async (req, res, next) => {
 
     const { positionId } = req.params;
 
-    const result = await deletePosition(positionId, hr);
+    // Get access token from cookies for authenticated Supabase operations
+    const accessToken = req.cookies?.accessToken;
+
+    const result = await deletePosition(positionId, hr, accessToken);
 
     res.status(200).json({
       message: "Position deleted successfully",

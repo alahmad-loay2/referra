@@ -1,4 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
+import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../../config/env.js";
 
 // create a new position we just take all the data and if a field is missing we say all fields are required and then if everything was okay we create the position in the database
 export const createPosition = async (payload, hr) => {
@@ -588,7 +590,7 @@ export const getDepartmentsByHr = async (hrId) => {
 };
 
 // Delete a position and all related data (applications, referrals, and candidates if they have no other referrals)
-export const deletePosition = async (positionId, hrUser) => {
+export const deletePosition = async (positionId, hrUser, accessToken = null) => {
   if (!positionId) {
     const error = new Error("PositionId is required");
     error.statusCode = 400;
@@ -603,7 +605,10 @@ export const deletePosition = async (positionId, hrUser) => {
 
   const allowedDepartmentIds = hrUser.Departments.map((d) => d.DepartmentId);
 
-  return await prisma.$transaction(async (tx) => {
+  // Store CV URLs outside transaction so we can use them after
+  let cvUrlsToDelete = [];
+
+  const result = await prisma.$transaction(async (tx) => {
     // Check ownership within transaction to prevent TOCTOU
     const position = await tx.position.findFirst({
       where: {
@@ -640,14 +645,21 @@ export const deletePosition = async (positionId, hrUser) => {
     // Track candidates to delete (those with no other applications)
     const candidatesToDelete = new Set();
     const referralIds = [];
+    const referralCVUrls = [];
 
-    // Process each application to collect referral IDs and determine candidates to delete
+    // Process each application to collect referral IDs, CV URLs, and determine candidates to delete
     for (const application of applications) {
       const referralId = application.ReferralId;
       const candidateId = application.CandidateId;
       const candidate = application.Candidate;
+      const referral = application.Referral;
 
       referralIds.push(referralId);
+
+      // Collect CV URL from referral if it exists
+      if (referral.CVUrl) {
+        referralCVUrls.push(referral.CVUrl);
+      }
 
       // Check if candidate has other applications (excluding this one)
       const otherApplications = candidate.Application.filter(
@@ -659,6 +671,9 @@ export const deletePosition = async (positionId, hrUser) => {
         candidatesToDelete.add(candidateId);
       }
     }
+
+    // Store CV URLs before deletion (we'll use them after transaction)
+    cvUrlsToDelete = [...referralCVUrls];
 
     // Delete all applications for this position first (before referrals due to FK constraint)
     await tx.application.deleteMany({
@@ -700,4 +715,81 @@ export const deletePosition = async (positionId, hrUser) => {
       deletedCandidates: candidatesToDelete.size,
     };
   });
+
+  // Delete CV files from Supabase for all referrals
+  // This happens outside transaction since it's an external service
+  if (cvUrlsToDelete && cvUrlsToDelete.length > 0) {
+    const fileNames = [];
+
+    for (const cvUrl of cvUrlsToDelete) {
+      try {
+        // Extract filename from CVUrl (format: ${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName})
+        // Handle both full URL and relative path formats
+        let fileName = cvUrl;
+
+        // If it's a full URL, extract just the filename
+        if (cvUrl.includes("/cvs/")) {
+          const cvUrlParts = cvUrl.split("/cvs/");
+          if (cvUrlParts.length === 2) {
+            fileName = cvUrlParts[1];
+          }
+        } else if (cvUrl.includes("/")) {
+          // If it's a path, get the last part (filename)
+          fileName = cvUrl.split("/").pop();
+        }
+
+        // Remove any query parameters if present
+        fileName = fileName.split("?")[0];
+
+        if (fileName) {
+          fileNames.push(fileName);
+        }
+      } catch (error) {
+        console.error(`Error extracting filename from CV URL:`, {
+          cvUrl,
+          error: error.message,
+        });
+      }
+    }
+
+    if (fileNames.length > 0) {
+      try {
+        // Create authenticated Supabase client with access token
+        // This is needed to satisfy the RLS policy that requires authentication
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          global: {
+            headers: accessToken
+              ? {
+                  Authorization: `Bearer ${accessToken}`,
+                }
+              : {},
+          },
+        });
+
+        const { data, error: deleteError } = await supabaseClient.storage
+          .from("cvs")
+          .remove(fileNames);
+
+        if (deleteError) {
+          console.error(`Failed to delete CV files from Supabase:`, {
+            fileNames,
+            error: deleteError.message,
+            errorDetails: deleteError,
+          });
+          // Continue even if file deletion fails (non-critical)
+        } else {
+          console.log(`Successfully deleted ${fileNames.length} CV file(s) from Supabase`);
+        }
+      } catch (error) {
+        console.error(`Error deleting CV files from Supabase:`, {
+          fileNames,
+          error: error.message,
+          stack: error.stack,
+        });
+        // Continue even if file deletion fails (non-critical)
+      }
+    }
+  }
+
+  return result;
 };

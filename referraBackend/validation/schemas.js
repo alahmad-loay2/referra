@@ -195,11 +195,15 @@ export const positionBodySchemas = {
     positionTitle: varcharSchema(100),
     companyName: varcharSchema(100),
     yearsRequired: Joi.number().integer().min(0).max(100).required(),
-    description: Joi.string().custom((value, helpers) => {
-      if (typeof value !== "string") return value;
-      const sanitized = sanitizeString(value);
-      return validateNoSqlInjection(sanitized, helpers);
-    }).required().allow(""), // No length limit - TEXT field in Prisma
+    description: Joi.string()
+      .max(3000)
+      .custom((value, helpers) => {
+        if (typeof value !== "string") return value;
+        const sanitized = sanitizeString(value);
+        return validateNoSqlInjection(sanitized, helpers);
+      })
+      .required()
+      .allow(""),
     timeZone: varcharSchema(64),
     deadline: dateTimePattern.required(),
     positionLocation: varcharSchema(100),
@@ -213,11 +217,15 @@ export const positionBodySchemas = {
     positionTitle: optionalVarcharSchema(100),
     companyName: optionalVarcharSchema(100),
     yearsRequired: Joi.number().integer().min(0).max(100).optional(),
-    description: Joi.string().custom((value, helpers) => {
-      if (typeof value !== "string") return value;
-      const sanitized = sanitizeString(value);
-      return validateNoSqlInjection(sanitized, helpers);
-    }).optional().allow(""), // No length limit - TEXT field in Prisma
+    description: Joi.string()
+      .max(3000)
+      .custom((value, helpers) => {
+        if (typeof value !== "string") return value;
+        const sanitized = sanitizeString(value);
+        return validateNoSqlInjection(sanitized, helpers);
+      })
+      .optional()
+      .allow(""),
     timeZone: optionalVarcharSchema(64),
     deadline: dateTimePattern.optional(),
     positionLocation: optionalVarcharSchema(100),

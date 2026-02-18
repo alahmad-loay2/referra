@@ -358,7 +358,7 @@ test("GET /api/employee/applications returns paginated applications for employee
   }).catch(() => {});
 });
 
-test("PUT /api/employee/candidate/:candidateId updates candidate fields", async () => {
+test("PUT /api/employee/referral/:referralId updates candidate and referral fields", async () => {
   // Create a referral first
   const cvBuffer = Buffer.from("%PDF-1.4 fake pdf content");
   const candidateEmail = `edit-test-${Date.now()}@example.com`;
@@ -381,9 +381,9 @@ test("PUT /api/employee/candidate/:candidateId updates candidate fields", async 
   const candidateId = createResponse.body.application.CandidateId;
   const referralId = createResponse.body.application.ReferralId;
 
-  // Update candidate
+  // Update candidate + referral
   const updateResponse = await request(app)
-    .put(`/api/employee/candidate/${candidateId}`)
+    .put(`/api/employee/referral/${referralId}`)
     .set("x-test-user-id", testData.testUser.UserId)
     .set("x-test-user-email", testData.testUser.Email)
     .set("x-test-user-role", "Employee")
@@ -394,9 +394,13 @@ test("PUT /api/employee/candidate/:candidateId updates candidate fields", async 
 
   assert.equal(updateResponse.status, 200);
   assert.ok(updateResponse.body.updatedCandidate);
+  assert.ok(updateResponse.body.updatedReferral);
   assert.equal(updateResponse.body.updatedCandidate.FirstName, "Updated");
-  assert.equal(updateResponse.body.updatedCandidate.PhoneNumber, "+19876543210");
-  assert.equal(updateResponse.body.updatedCandidate.YearOfExperience, 10);
+  assert.equal(
+    updateResponse.body.updatedCandidate.PhoneNumber,
+    "+19876543210",
+  );
+  assert.equal(updateResponse.body.updatedReferral.YearOfExperience, 10);
 
   // Cleanup
   await prisma.application.deleteMany({

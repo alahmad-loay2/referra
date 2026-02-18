@@ -58,12 +58,12 @@ employeeRoutes.get(
   getApplicationsByEmployee,
 );
 employeeRoutes.put(
-  "/candidate/:candidateId",
+  "/referral/:referralId",
   generalLimiter,
   authenticate,
   requireEmployee,
   uploadCV,
-  validateParams(paramsSchemas.candidateId),
+  validateParams(paramsSchemas.referralId),
   validateBody(candidateBodySchemas.editCandidate),
   EditCandidate,
 );

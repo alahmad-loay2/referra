@@ -202,26 +202,22 @@ export const createReferral = async (payload) => {
     }
 
     if (!candidate) {
-      // Create new candidate with submitted data
+      // Create new candidate with submitted data (CV and experience are stored per referral)
       candidate = await tx.candidate.create({
         data: {
           FirstName: candidateFirstName,
           LastName: candidateLastName,
           Email: candidateEmail,
-          YearOfExperience: parseInt(candidateYearOfExperience, 10),
           PhoneNumber: candidatePhoneNumber,
-          CVUrl: cvUrl,
         },
       });
     } else {
-      // Email already exists → update the existing candidate with the latest info
-      // so the source of truth is always the most recent submission.
+      // Email already exists → update the existing candidate with the latest contact info
+      // CV and years of experience are referral-specific now.
       const updateData = {
         FirstName: candidateFirstName,
         LastName: candidateLastName,
         PhoneNumber: candidatePhoneNumber,
-        YearOfExperience: parseInt(candidateYearOfExperience, 10),
-        CVUrl: cvUrl,
       };
 
       candidate = await tx.candidate.update({
@@ -234,6 +230,8 @@ export const createReferral = async (payload) => {
       data: {
         Status: "Pending",
         AcceptedInOtherPosition: false,
+        YearOfExperience: parseInt(candidateYearOfExperience, 10),
+        CVUrl: cvUrl,
       },
     });
 
@@ -455,6 +453,8 @@ export const deleteCandidate = async (
     const willDeleteCandidate =
       candidate.Application.length === 1 && !hasConfirmedOrAbove;
 
+    const referralCVUrl = application.Referral.CVUrl;
+
     await tx.application.delete({
       where: {
         ReferralId: referralId,
@@ -477,27 +477,27 @@ export const deleteCandidate = async (
 
     return {
       deletedCandidate: willDeleteCandidate,
-      candidateCVUrl: willDeleteCandidate ? candidate.CVUrl : null,
+      referralCVUrl,
     };
   });
 
-  // Delete CV file from Supabase if we're deleting the candidate
+  // Delete CV file from Supabase for this referral
   // This happens outside transaction since it's an external service
-  if (result.deletedCandidate && result.candidateCVUrl) {
+  if (result.referralCVUrl) {
     try {
       // Extract filename from CVUrl (format: ${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName})
       // Handle both full URL and relative path formats
-      let fileName = result.candidateCVUrl;
+      let fileName = result.referralCVUrl;
 
       // If it's a full URL, extract just the filename
-      if (result.candidateCVUrl.includes("/cvs/")) {
-        const cvUrlParts = result.candidateCVUrl.split("/cvs/");
+      if (result.referralCVUrl.includes("/cvs/")) {
+        const cvUrlParts = result.referralCVUrl.split("/cvs/");
         if (cvUrlParts.length === 2) {
           fileName = cvUrlParts[1];
         }
-      } else if (result.candidateCVUrl.includes("/")) {
+      } else if (result.referralCVUrl.includes("/")) {
         // If it's a path, get the last part (filename)
-        fileName = result.candidateCVUrl.split("/").pop();
+        fileName = result.referralCVUrl.split("/").pop();
       }
 
       // Remove any query parameters if present
@@ -529,7 +529,7 @@ export const deleteCandidate = async (
       }
     } catch (error) {
       console.error(`Error deleting CV file from Supabase:`, {
-        cvUrl: result.candidateCVUrl,
+        cvUrl: result.referralCVUrl,
         error: error.message,
         stack: error.stack,
       });
@@ -627,7 +627,7 @@ export const getEmployeeReferrals = async ({
 
 export const editCandidate = async (payload) => {
   const {
-    candidateId,
+    referralId,
     employeeId,
     candidateFirstName,
     candidateLastName,
@@ -639,8 +639,8 @@ export const editCandidate = async (payload) => {
     accessToken = null,
   } = payload;
 
-  if (!candidateId) {
-    const error = new Error("Candidate ID is required");
+  if (!referralId) {
+    const error = new Error("Referral ID is required");
     error.statusCode = 400;
     throw error;
   }
@@ -650,26 +650,33 @@ export const editCandidate = async (payload) => {
     throw error;
   }
 
-  const candidate = await prisma.candidate.findUnique({
-    where: { CandidateId: candidateId },
+  // Ensure this referral belongs to the requesting employee and fetch candidate + referral
+  const application = await prisma.application.findFirst({
+    where: {
+      ReferralId: referralId,
+      EmployeeId: employeeId,
+    },
     include: {
-      Application: {
-        include: {
-          Referral: true,
-          Position: true,
-          Employee: true,
-        },
-      },
+      Candidate: true,
+      Referral: true,
+      Position: true,
+      Employee: true,
     },
   });
 
-  if (!candidate) {
-    const error = new Error("Candidate not found");
+  if (!application) {
+    const error = new Error(
+      "Application not found for this employee and referral",
+    );
     error.statusCode = 404;
     throw error;
   }
 
-  const dataToUpdate = {};
+  const candidate = application.Candidate;
+  const referral = application.Referral;
+
+  const candidateDataToUpdate = {};
+  const referralDataToUpdate = {};
 
   // Length validations for editable fields (respect prisma limits)
   if (candidateFirstName && candidateFirstName.length > 50) {
@@ -690,42 +697,45 @@ export const editCandidate = async (payload) => {
     throw error;
   }
   if (candidateFirstName !== undefined && candidateFirstName !== "") {
-    dataToUpdate.FirstName = candidateFirstName;
+    candidateDataToUpdate.FirstName = candidateFirstName;
   }
   if (candidateLastName !== undefined && candidateLastName !== "") {
-    dataToUpdate.LastName = candidateLastName;
+    candidateDataToUpdate.LastName = candidateLastName;
   }
   if (candidatePhoneNumber !== undefined && candidatePhoneNumber !== "") {
-    dataToUpdate.PhoneNumber = candidatePhoneNumber;
+    candidateDataToUpdate.PhoneNumber = candidatePhoneNumber;
   }
   if (
     candidateYearOfExperience !== undefined &&
     candidateYearOfExperience !== ""
   ) {
-    dataToUpdate.YearOfExperience = parseInt(candidateYearOfExperience, 10);
+    referralDataToUpdate.YearOfExperience = parseInt(
+      candidateYearOfExperience,
+      10,
+    );
   }
 
   if (candidateEmail && candidateEmail !== candidate.Email) {
-    dataToUpdate.Email = candidateEmail;
+    candidateDataToUpdate.Email = candidateEmail;
   }
 
   if (cvFile) {
-    // Delete old CV file if it exists
-    if (candidate.CVUrl) {
+    // Delete old CV file for this referral if it exists
+    if (referral.CVUrl) {
       try {
         // Extract filename from CVUrl (format: ${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName})
         // Handle both full URL and relative path formats
-        let oldFileName = candidate.CVUrl;
+        let oldFileName = referral.CVUrl;
 
         // If it's a full URL, extract just the filename
-        if (candidate.CVUrl.includes("/cvs/")) {
-          const cvUrlParts = candidate.CVUrl.split("/cvs/");
+        if (referral.CVUrl.includes("/cvs/")) {
+          const cvUrlParts = referral.CVUrl.split("/cvs/");
           if (cvUrlParts.length === 2) {
             oldFileName = cvUrlParts[1];
           }
-        } else if (candidate.CVUrl.includes("/")) {
+        } else if (referral.CVUrl.includes("/")) {
           // If it's a path, get the last part (filename)
-          oldFileName = candidate.CVUrl.split("/").pop();
+          oldFileName = referral.CVUrl.split("/").pop();
         }
 
         // Remove any query parameters if present
@@ -758,7 +768,7 @@ export const editCandidate = async (payload) => {
         }
       } catch (error) {
         console.error(`Error deleting old CV file from Supabase:`, {
-          cvUrl: candidate.CVUrl,
+          cvUrl: referral.CVUrl,
           error: error.message,
           stack: error.stack,
         });
@@ -797,51 +807,72 @@ export const editCandidate = async (payload) => {
       throw error;
     }
 
-    dataToUpdate.CVUrl = `${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName}`;
+    referralDataToUpdate.CVUrl = `${SUPABASE_URL}/storage/v1/object/public/cvs/${fileName}`;
   }
 
-  if (Object.keys(dataToUpdate).length === 0) {
+  if (
+    Object.keys(candidateDataToUpdate).length === 0 &&
+    Object.keys(referralDataToUpdate).length === 0
+  ) {
     const error = new Error("No valid fields to update");
     error.statusCode = 400;
     throw error;
   }
 
   const updatedCandidate = await prisma.$transaction(async (tx) => {
-    if (dataToUpdate.Email) {
+    if (candidateDataToUpdate.Email) {
       const existing = await tx.candidate.findUnique({
-        where: { Email: dataToUpdate.Email },
+        where: { Email: candidateDataToUpdate.Email },
       });
-      if (existing && existing.CandidateId !== candidateId) {
+      if (existing && existing.CandidateId !== candidate.CandidateId) {
         const error = new Error("Email is already used by another candidate");
         error.statusCode = 400;
         throw error;
       }
     }
 
-    return await tx.candidate.update({
-      where: { CandidateId: candidateId },
-      data: dataToUpdate,
-    });
+    let updatedCandidateRecord = candidate;
+    let updatedReferralRecord = referral;
+
+    if (Object.keys(candidateDataToUpdate).length > 0) {
+      updatedCandidateRecord = await tx.candidate.update({
+        where: { CandidateId: candidate.CandidateId },
+        data: candidateDataToUpdate,
+      });
+    }
+
+    if (Object.keys(referralDataToUpdate).length > 0) {
+      updatedReferralRecord = await tx.referral.update({
+        where: { ReferralId: referral.ReferralId },
+        data: referralDataToUpdate,
+      });
+    }
+
+    return {
+      updatedCandidate: updatedCandidateRecord,
+      updatedReferral: updatedReferralRecord,
+    };
   });
 
-  if (dataToUpdate.Email) {
+  if (candidateDataToUpdate.Email) {
     try {
       const resend = getResend();
       const frontendUrl = FRONTEND_URL;
-      // Get the first application's referral ID for the confirmation link
-      const firstApplication = candidate.Application?.[0];
-      const confirmationUrl = firstApplication
-        ? `${frontendUrl}/referral/confirm/${firstApplication.Referral.ReferralId}`
-        : `${frontendUrl}/referral/confirm`;
+      // Use this referral for the confirmation link
+      const confirmationUrl = `${frontendUrl}/referral/confirm/${referral.ReferralId}`;
 
       await resend.emails.send({
         from: "no-reply@referra.space",
-        to: dataToUpdate.Email,
+        to: candidateDataToUpdate.Email,
         subject: "Referral Confirmation Request",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2>Hello ${dataToUpdate.FirstName || candidate.FirstName} ${dataToUpdate.LastName || candidate.LastName},</h2>
-            <p>You have been referred for the position: <strong>${firstApplication?.Position?.PositionTitle || "the position"}</strong></p>
+            <h2>Hello ${candidateDataToUpdate.FirstName || candidate.FirstName} ${
+              candidateDataToUpdate.LastName || candidate.LastName
+            },</h2>
+            <p>You have been referred for the position: <strong>${
+              application.Position?.PositionTitle || "the position"
+            }</strong></p>
             <p>Please click the link below to confirm your referral:</p>
             <p style="text-align: center; margin: 30px 0;">
               <a href="${confirmationUrl}" 
@@ -860,7 +891,7 @@ export const editCandidate = async (payload) => {
     }
   }
 
-  return { updatedCandidate };
+  return updatedCandidate;
 };
 
 //employee referral history details backend
@@ -904,7 +935,7 @@ export const getEmployeeReferralDetails = async ({
 export const findCandidateByEmail = async (email) => {
   if (!email) return null;
 
-  return prisma.candidate.findUnique({
+  const candidate = await prisma.candidate.findUnique({
     where: { Email: email },
     select: {
       CandidateId: true,
@@ -912,8 +943,35 @@ export const findCandidateByEmail = async (email) => {
       LastName: true,
       Email: true,
       PhoneNumber: true,
-      YearOfExperience: true,
-      CVUrl: true,
+      Application: {
+        orderBy: {
+          Referral: { CreatedAt: "desc" },
+        },
+        take: 1,
+        select: {
+          Referral: {
+            select: {
+              YearOfExperience: true,
+              CVUrl: true,
+            },
+          },
+        },
+      },
     },
   });
+
+  if (!candidate) return null;
+
+  const lastApplication = candidate.Application?.[0];
+  const referralData = lastApplication?.Referral;
+
+  return {
+    CandidateId: candidate.CandidateId,
+    FirstName: candidate.FirstName,
+    LastName: candidate.LastName,
+    Email: candidate.Email,
+    PhoneNumber: candidate.PhoneNumber,
+    YearOfExperience: referralData?.YearOfExperience ?? null,
+    CVUrl: referralData?.CVUrl ?? null,
+  };
 };

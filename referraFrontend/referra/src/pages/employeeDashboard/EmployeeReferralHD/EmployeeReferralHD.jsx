@@ -72,7 +72,7 @@ const EmployeeReferralHD = () => {
           lastName: data.Candidate.LastName || "",
           email: data.Candidate.Email || "",
           phoneNumber: data.Candidate.PhoneNumber || "",
-          experience: data.Candidate.YearOfExperience || "",
+          experience: data.Referral.YearOfExperience || "",
         });
         setShowExistingCV(true);
         setError(null);
@@ -125,7 +125,7 @@ const EmployeeReferralHD = () => {
       lastName: referralData.Candidate.LastName || "",
       email: referralData.Candidate.Email || "",
       phoneNumber: referralData.Candidate.PhoneNumber || "",
-      experience: referralData.Candidate.YearOfExperience || "",
+      experience: referralData.Referral.YearOfExperience || "",
     });
     setCvFile(null);
     setCvError("");
@@ -140,7 +140,7 @@ const EmployeeReferralHD = () => {
   const confirmSave = async () => {
     setEditLoading(true);
     try {
-      await editCandidate(referralData.Candidate.CandidateId, editForm, cvFile);
+      await editCandidate(referralData.Referral.ReferralId, editForm, cvFile);
       const updatedData = await fetchEmployeeReferralDetails(referralId);
       setReferralData(updatedData);
       setIsEditMode(false);
@@ -200,7 +200,7 @@ const EmployeeReferralHD = () => {
 
   if (loading) {
     return (
-      <div className="referral-hd-container">
+      <div className="referral-hd-container centerLoading">
         <Loading />
       </div>
     );
@@ -337,7 +337,11 @@ const EmployeeReferralHD = () => {
                         {index < STATUS_ORDER.length - 1 && (
                           <div
                             className={`line ${
-                              isDone ? "done" : isActive ? "active" : ""
+                              isDone
+                                ? "done"
+                                : isActive && !Referral.Prospect
+                                  ? "active"
+                                  : ""
                             }`}
                           />
                         )}
@@ -484,14 +488,14 @@ const EmployeeReferralHD = () => {
                       <Award size={18} />
                       <span>
                         <strong>Years of Experience:</strong>{" "}
-                        {Candidate.YearOfExperience}
+                        {Referral.YearOfExperience}
                       </span>
                     </div>
                     <div className="emp-referral-candidate-info-item">
                       <Calendar size={18} />
                       <span>
                         <strong>Date:</strong>{" "}
-                        {new Date(Candidate.CreatedAt).toLocaleDateString(
+                        {new Date(Referral.CreatedAt).toLocaleDateString(
                           "en-GB",
                           {
                             day: "2-digit",
@@ -508,12 +512,12 @@ const EmployeeReferralHD = () => {
               <hr />
 
               <div className="emp-referral-cv-section">
-                {!isEditMode && Candidate.CVUrl ? (
+                {!isEditMode && Referral.CVUrl ? (
                   <div className="emp-referral-cv-display">
                     <div className="emp-referral-cv-content">
                       <FileText size={32} className="emp-referral-cv-icon" />
                       <span className="emp-referral-cv-name">
-                        {getCVFileName(Candidate.CVUrl) ||
+                        {getCVFileName(Referral.CVUrl) ||
                           `${Candidate.FirstName} - CV`}
                       </span>
                       <span className="emp-referral-cv-subtext">
@@ -521,7 +525,7 @@ const EmployeeReferralHD = () => {
                       </span>
                     </div>
                     <a
-                      href={Candidate.CVUrl}
+                      href={Referral.CVUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="emp-referral-cv-download-btn"
@@ -558,11 +562,11 @@ const EmployeeReferralHD = () => {
                           <X size={16} />
                         </button>
                       </div>
-                    ) : Candidate.CVUrl && showExistingCV ? (
+                    ) : Referral.CVUrl && showExistingCV ? (
                       <div className="emp-referral-file-preview">
                         <span className="emp-referral-file-icon">📄</span>
                         <span className="emp-referral-file-name">
-                          {getCVFileName(Candidate.CVUrl)}
+                          {getCVFileName(Referral.CVUrl)}
                         </span>
                         <button
                           type="button"
@@ -575,7 +579,7 @@ const EmployeeReferralHD = () => {
                           <X size={16} />
                         </button>
                       </div>
-                    ) : Candidate.CVUrl ? (
+                    ) : Referral.CVUrl ? (
                       <p>
                         Click to upload new CV or drag and drop (PDF only).
                         Current CV will be kept unless replaced.

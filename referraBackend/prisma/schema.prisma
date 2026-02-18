@@ -86,9 +86,7 @@ model Candidate {
   FirstName  String @db.VarChar(50)
   LastName   String @db.VarChar(50)
   Email      String @unique @db.VarChar(255)
-  YearOfExperience Int
   PhoneNumber      String @db.VarChar(32)
-  CVUrl            String @db.VarChar(512)
   Acceptance Boolean @default(false)
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt 
@@ -113,6 +111,8 @@ model Referral {
   Status                 Status   @default(Pending)
   AcceptedInOtherPosition Boolean @default(false)
   Prospect               Boolean  @default(false)
+  YearOfExperience       Int
+  CVUrl                  String   @db.VarChar(512)
   CreatedAt              DateTime @default(now())
   UpdatedAt              DateTime @updatedAt
 
@@ -141,7 +141,7 @@ model Position {
   PositionState PositionState @default(OPEN)
   EmploymentType EmploymentType
   YearsRequired Int
-  Description String
+  Description String @db.VarChar(3000)
   Timezone    String @db.VarChar(64)
   Deadline DateTime
   PositionLocation String @db.VarChar(100)

@@ -34,7 +34,7 @@ const EmployeePositionDetails = () => {
 
   if (loading) {
     return (
-      <div className="position-details-container">
+      <div className="position-details-container centerLoading">
         <Loading />
       </div>
     );
