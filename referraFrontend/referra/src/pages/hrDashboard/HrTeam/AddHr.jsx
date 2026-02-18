@@ -134,6 +134,7 @@ const AddHr = ({ onClose, onSuccess }) => {
                   name="hr-first-name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
+                  maxLength={50}
                 />
               </div>
 
@@ -143,6 +144,7 @@ const AddHr = ({ onClose, onSuccess }) => {
                   name="hr-last-name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
+                  maxLength={50}
                 />
               </div>
             </div>
@@ -155,6 +157,7 @@ const AddHr = ({ onClose, onSuccess }) => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                maxLength={255}
               />
             </div>
             {/* DEPARTMENT */}
@@ -196,6 +199,8 @@ const AddHr = ({ onClose, onSuccess }) => {
                 type="number"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
+                min={1}
+                max={150}
               />
             </div>
 
@@ -206,6 +211,7 @@ const AddHr = ({ onClose, onSuccess }) => {
                 name="hr-phone"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
+                maxLength={32}
               />
             </div>
           </form>

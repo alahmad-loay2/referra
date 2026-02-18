@@ -451,6 +451,7 @@ const HrTeam = () => {
                   handleCreateDepartment();
                 }
               }}
+              maxLength={100}
             />
             {createDeptError && (
               <p className="dept-modal-error">{createDeptError}</p>

@@ -59,6 +59,7 @@ const LoginPage = () => {
                 placeholder="you@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                maxLength={255}
               />
             </div>
           </div>
@@ -81,6 +82,7 @@ const LoginPage = () => {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                maxLength={128}
               />
               {showPassword ? (
                 <EyeOff

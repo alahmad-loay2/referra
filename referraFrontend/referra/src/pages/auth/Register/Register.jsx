@@ -123,6 +123,7 @@ const Register = () => {
                   value={form.firstName}
                   onChange={handleChange}
                   required
+                  maxLength={50}
                 />
               </div>
 
@@ -134,6 +135,7 @@ const Register = () => {
                   value={form.lastName}
                   onChange={handleChange}
                   required
+                  maxLength={50}
                 />
               </div>
             </div>
@@ -160,10 +162,13 @@ const Register = () => {
                 <label>Age*</label>
                 <input
                   name="age"
+                  type="number"
                   placeholder="20"
                   value={form.age}
                   onChange={handleChange}
                   required
+                  min={1}
+                  max={150}
                 />
               </div>
             </div>
@@ -176,6 +181,7 @@ const Register = () => {
                   value={form.phoneNumber}
                   onChange={handleChange}
                   required
+                  maxLength={32}
                 />
               </div>
 
@@ -208,6 +214,7 @@ const Register = () => {
                   value={form.email}
                   onChange={handleChange}
                   required
+                  maxLength={255}
                 />
               </div>
             </div>
@@ -224,6 +231,7 @@ const Register = () => {
                   value={form.password}
                   onChange={handleChange}
                   required
+                  maxLength={128}
                 />
                 <span
                   className="eye"
@@ -246,6 +254,7 @@ const Register = () => {
                   value={form.confirmPassword}
                   onChange={handleChange}
                   required
+                  maxLength={128}
                 />
                 <span className="eye" onClick={() => setShowConfirm((p) => !p)}>
                   {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}

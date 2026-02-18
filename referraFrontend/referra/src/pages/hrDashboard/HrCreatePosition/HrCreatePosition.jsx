@@ -298,6 +298,7 @@ const HrCreatePosition = () => {
                 required
                 value={formData.positionTitle}
                 onChange={handleChange}
+                maxLength={100}
               />
             </div>
             <div className="labelInput">
@@ -309,6 +310,7 @@ const HrCreatePosition = () => {
                 required
                 value={formData.companyName}
                 onChange={handleChange}
+                maxLength={100}
               />
             </div>
             <div className="labelInput">
@@ -320,6 +322,8 @@ const HrCreatePosition = () => {
                 required
                 value={formData.yearsRequired}
                 onChange={handleChange}
+                min={0}
+                max={100}
               />
             </div>
 
@@ -416,6 +420,7 @@ const HrCreatePosition = () => {
                 required
                 value={formData.description}
                 onChange={handleChange}
+                maxLength={3000}
               />
             </div>
           </div>

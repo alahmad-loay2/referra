@@ -497,6 +497,7 @@ const EmployeeSubmit = () => {
               onChange={handleChange}
               className="employeeSubmit-input"
               placeholder="Jana"
+              maxLength={50}
             />
             {errors.firstName && (
               <p className="errorText">{errors.firstName}</p>
@@ -513,6 +514,7 @@ const EmployeeSubmit = () => {
               onChange={handleChange}
               className="employeeSubmit-input"
               placeholder="Al-Mawla"
+              maxLength={50}
             />
             {errors.lastName && <p className="errorText">{errors.lastName}</p>}
           </div>
@@ -528,6 +530,7 @@ const EmployeeSubmit = () => {
               onChange={handleChange}
               className="employeeSubmit-input"
               placeholder="03060846"
+              maxLength={32}
             />
 
             {errors.phoneNumber && (
@@ -542,6 +545,7 @@ const EmployeeSubmit = () => {
             <input
               type="number"
               min="0"
+              max={100}
               name="experience"
               value={form.experience}
               onChange={handleChange}
@@ -558,6 +562,7 @@ const EmployeeSubmit = () => {
             </label>
             <input
               name="email"
+              type="email"
               value={form.email}
               onChange={(e) => {
                 setEmailChecked(false);
@@ -565,6 +570,7 @@ const EmployeeSubmit = () => {
               }}
               className="employeeSubmit-input"
               placeholder="you@example.com"
+              maxLength={255}
             />
 
             {errors.email && <p className="errorText">{errors.email}</p>}
