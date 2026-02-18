@@ -18,7 +18,6 @@ router.get(
   "/department/:id",
   generalLimiter,
   authenticate,
-  validateParams(Joi.object({ id: Joi.string().uuid().required() })),
   async (req, res, next) => {
     const startTime = performance.now();
 
