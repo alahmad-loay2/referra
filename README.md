@@ -29,24 +29,7 @@ Referra is a web application designed to simplify and streamline the employee re
 
 ## Technologies
 
-### Frontend
-- Vite + React
-- Lucide Icons
-
-### Backend
-- Express.js
-- Prisma ORM
-
-### Services
-- Supabase (authentication & storage)
-- Resend (emails)
-
-### Database
-- PostgreSQL (Supabase)
-
-### Deployment
-- Vercel (Frontend)
-- Render (Backend)
+![Tech Stack](./doc/techstack.png)
 
 --- 
 
