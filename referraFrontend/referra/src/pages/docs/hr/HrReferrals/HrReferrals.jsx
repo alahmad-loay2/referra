@@ -36,7 +36,7 @@ const HrReferrals = () => {
           <li>Candidate Name</li>
           <li>Email</li>
           <li>
-            Candidate state (In Progress, Prospected, Hired, Accepted in other position)
+            Candidate state badge (In Progress, Finalized, Accepted in other position)
           </li>
           <li>Referral status (Confirmed, Interview1, Interview2, Acceptance, Hired)</li>
           <li>Position applied for</li>

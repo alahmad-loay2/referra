@@ -186,14 +186,9 @@ const HrReferrals = () => {
       };
     }
 
-    // If status is Hired or candidate is accepted, show Accepted
-    if (status === "Hired" || candidateAcceptance) {
-      return { text: "Accepted", className: "status-badge-accepted" };
-    }
-
-    // If Prospect is true, show Prospect badge
-    if (prospect) {
-      return { text: "Prospect", className: "status-badge-prospect" };
+    // If status is Hired or candidate is accepted, or Prospect is true, show Finalized
+    if (status === "Hired" || candidateAcceptance || prospect) {
+      return { text: "Finalized", className: "status-badge-accepted" };
     }
 
     // Default: In Progress
@@ -330,9 +325,7 @@ const HrReferrals = () => {
                     </div>
                     <div className="detail-item">
                       <span className="detail-label">Status</span>
-                      <span
-                        className={`statusBadge status-${ref.Referral?.Status?.toLowerCase()}`}
-                      >
+                      <span className="detail-value">
                         {ref.Referral?.Status}
                       </span>
                     </div>

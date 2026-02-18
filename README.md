@@ -104,6 +104,16 @@ RESEND_API_KEY="Your resend api key for your domain"
 PRISMA_LOG_QUERIES=true
 
 RENDER_EXTERNAL_URL="http://localhost:5500"
+
+# Seed HR user (for initial setup)
+SEED_HR_EMAIL="your-email@example.com"
+SEED_HR_PASSWORD="your-secure-password"
+SEED_HR_FIRST_NAME="Your"
+SEED_HR_LAST_NAME="Name"
+SEED_HR_AGE=30
+SEED_HR_PHONE="+1234567890"
+SEED_HR_GENDER="Male"
+SEED_HR_DEPARTMENT_NAME="Engineering"
 ```
 
 
@@ -124,6 +134,13 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
+##### Seed initial data (Create first HR user and department)
+
+```bash
+npm run seed
+```
+
+**Note:** The seed script will create the first HR user (admin) and department. Make sure to set the seed environment variables in `.env.development.local` before running.
 
 ##### Run the project
 
@@ -165,9 +182,10 @@ You can view and test all the API endpoints using the Postman collection:
 
 #### Important notes: 
 
-- When first starting the application use bootstrap api to create first department and hr employee (use your email)
-- You can create dummy data with 100 positions using the script
-- Only admin Hr member can manage departments
+- When first starting the application, run `npm run seed` to create the first department and HR admin user (configure seed variables in `.env.development.local`)
+- The bootstrap API endpoint (`/bootstrap-first-hr`) should not be in prod.
+- You can create dummy data with 100 positions using the script: `npm run add-positions`
+- Only admin HR members can manage departments
 - Non documented APIs in postman include only verify email for candidate + Reset password
 
 ---

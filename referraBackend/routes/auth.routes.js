@@ -55,6 +55,7 @@ authRoutes.post(
   resetPasswordController,
 );
 
+// This endpoint should be removed or secured in production
 authRoutes.post(
   "/bootstrap-first-hr",
   authLimiter,
