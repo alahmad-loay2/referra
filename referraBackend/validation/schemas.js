@@ -32,7 +32,7 @@ const validateNoSqlInjection = (value, helpers) => {
   // Check for SQL injection patterns
   const sqlPatterns = [
     /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|SCRIPT)\b)/i,
-    /(--|#|\/\*|\*\/|;)/,
+    /(#|\/\*|\*\/|;)/,
     /(\bOR\b|\bAND\b).*?=.*?=/i,
     /'.*?'/,
   ];
@@ -202,6 +202,9 @@ export const positionBodySchemas = {
         const sanitized = sanitizeString(value);
         return validateNoSqlInjection(sanitized, helpers);
       })
+      .messages({
+        "string.noSqlInjection": "Input contains potentially dangerous content",
+      })
       .required()
       .allow(""),
     timeZone: varcharSchema(64),
@@ -223,6 +226,9 @@ export const positionBodySchemas = {
         if (typeof value !== "string") return value;
         const sanitized = sanitizeString(value);
         return validateNoSqlInjection(sanitized, helpers);
+      })
+      .messages({
+        "string.noSqlInjection": "Input contains potentially dangerous content",
       })
       .optional()
       .allow(""),
@@ -263,6 +269,8 @@ export const querySchemas = {
     search: Joi.string().max(255).custom((value, helpers) => {
       const sanitized = sanitizeString(value);
       return validateNoSqlInjection(sanitized, helpers);
+    }).messages({
+      "string.noSqlInjection": "Input contains potentially dangerous content",
     }).optional(),
     status: Joi.string().valid("Pending", "Confirmed", "InterviewOne", "InterviewTwo", "Acceptance", "Hired").optional(),
     createdAt: Joi.string().optional(),
