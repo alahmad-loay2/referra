@@ -25,16 +25,22 @@ const sanitizeString = (value) => {
 
 /*
  Validate string doesn't contain SQL injection patterns
+ Only check for obvious SQL injection attempts, not common punctuation or words
  */
 const validateNoSqlInjection = (value, helpers) => {
   if (typeof value !== "string") return value;
   
-  // Check for SQL injection patterns
+  // Check for obvious SQL injection patterns only
+  // More specific patterns that indicate actual SQL injection attempts
   const sqlPatterns = [
-    /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|SCRIPT)\b)/i,
-    /(#|\/\*|\*\/|;)/,
-    /(\bOR\b|\bAND\b).*?=.*?=/i,
-    /'.*?'/,
+    // SQL keywords followed by SQL syntax (actual injection attempts)
+    /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION)\b\s+.*?(FROM|INTO|SET|WHERE|VALUES|TABLE|DATABASE|SCHEMA))/i,
+    // SQL comment patterns in suspicious context
+    /(\/\*.*?\*\/|--\s+[^\n]*)/,
+    // SQL injection with OR/AND in suspicious context
+    /(\bOR\b|\bAND\b)\s+['"]?\d+['"]?\s*=\s*['"]?\d+['"]?/i,
+    // Multiple single quotes in suspicious pattern (SQL string injection)
+    /'.*'.*'.*'/,
   ];
   
   for (const pattern of sqlPatterns) {
