@@ -22,10 +22,15 @@ const HrDashboard = () => {
 
     window.fetch = async (...args) => {
       const response = await originalFetch(...args);
+      const requestInput = args[0];
+      const url =
+        typeof requestInput === "string" ? requestInput : requestInput?.url || "";
 
       if (
         (response.status === 401 || response.status === 403) &&
-        window.location.pathname !== "/login"
+        window.location.pathname !== "/login" &&
+        // Don't treat business-rule 403s (like creating HR) as auth failures
+        !url.includes("/auth/hr/create")
       ) {
         // Clear Zustand store on authentication failure
         clearUserStoreOnAuthFailure();

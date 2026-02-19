@@ -25,8 +25,8 @@ const HomePage = () => {
           >
             Docs
           </a>
-          <Button text="Sign In" to="/login" variant="secondary" />
-          <Button text="Get Started" to="/register" />
+          <Button text="sign up" to="/register" variant="secondary" />
+          <Button text="Get Started" to="/login" />
         </div>
       </div>
       <div className="parent-content">
@@ -64,7 +64,7 @@ const HomePage = () => {
                   Start Referring <span className="btn-arrow">→</span>
                 </>
               }
-              to="/register"
+              to="/login"
               className="hero-btn"
             />
             <div className="stats">

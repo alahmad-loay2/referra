@@ -440,14 +440,9 @@ export const createHrUser = async (payload) => {
     }
 
     if (existingByEmail.Role === "HR" && existingByEmail.Hr) {
-      return {
-        message: "HR already exists",
-        user: {
-          UserId: existingByEmail.UserId,
-          Email: existingByEmail.Email,
-          Role: existingByEmail.Role,
-        },
-      };
+      const error = new Error("HR already exists");
+      error.statusCode = 400;
+      throw error;
     }
   }
 
@@ -500,8 +495,41 @@ export const createHrUser = async (payload) => {
       error.statusCode = 400;
       throw error;
     }
+
+    return {
+      message:
+        "HR invite sent. The user must set their password from the email link.",
+    };
   }
 
+  // Check if user was actually created (new user) or if it's an existing user
+  // If identities is empty, the user already existed in Supabase
+  if (authData?.user && (!authData.user.identities || authData.user.identities.length === 0)) {
+    // User already exists in Supabase but signUp didn't error
+    // Send reset password email to invite them
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo: `${FRONTEND_URL}/auth/reset-password`,
+      },
+    );
+
+    if (resetError) {
+      const error = new Error(
+        resetError.message ||
+          "Failed to send HR invite email. Please try again later.",
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    return {
+      message:
+        "HR invite sent. The user must set their password from the email link.",
+    };
+  }
+
+  // New user created successfully - Supabase sends email automatically
   return {
     message:
       "HR invite created. The user must set their password from the email link.",
