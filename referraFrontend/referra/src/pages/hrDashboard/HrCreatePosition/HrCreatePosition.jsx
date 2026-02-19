@@ -239,6 +239,10 @@ const HrCreatePosition = () => {
         }
       })
       .filter(Boolean)
+      // Remove duplicates by name
+      .filter((country, index, self) => 
+        index === self.findIndex((c) => c.label.toLowerCase() === country.label.toLowerCase())
+      )
       .sort((a, b) => a.label.localeCompare(b.label));
 
     setCountries(formatted);
