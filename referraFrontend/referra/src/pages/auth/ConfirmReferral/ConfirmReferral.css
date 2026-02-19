@@ -1,0 +1,20 @@
+ .confirm-referral-container {
+   min-height: 100svh;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 24px;
+   box-sizing: border-box;
+ }
+
+ .confirm-referral-center {
+   text-align: center;
+   flex-direction: column;
+   gap: 16px;
+ }
+
+ .confirm-referral-center p {
+   font-size: var(--fs-medium);
+   color: var(--gray-dark);
+   margin: 0;
+ }

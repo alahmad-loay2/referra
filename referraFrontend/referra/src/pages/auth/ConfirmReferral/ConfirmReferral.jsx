@@ -46,7 +46,11 @@ const ConfirmReferral = () => {
   }, [referralId]);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className="confirm-referral-container confirm-referral-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (expired) {
@@ -61,7 +65,7 @@ const ConfirmReferral = () => {
   }
 
   return (
-    <div className="confirm-referral-container">
+    <div className="confirm-referral-container confirm-referral-center">
       <p>You went through and you can safely close this tab.</p>
     </div>
   );

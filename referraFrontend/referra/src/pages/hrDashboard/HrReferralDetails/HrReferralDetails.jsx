@@ -436,8 +436,18 @@ const HrReferralDetails = () => {
 
               <div className="hr-referral-referred-by-user">
                 <div className="hr-referral-referred-by-avatar">
-                  {referredUser?.FirstName?.[0]}
-                  {referredUser?.LastName?.[0]}
+                  {referredUser?.ProfileUrl ? (
+                    <img
+                      src={referredUser.ProfileUrl}
+                      alt={`${referredUser.FirstName} ${referredUser.LastName}`}
+                      className="avatar-img"
+                    />
+                  ) : (
+                    <>
+                      {referredUser?.FirstName?.[0]}
+                      {referredUser?.LastName?.[0]}
+                    </>
+                  )}
                 </div>
 
                 <div className="hr-referral-referred-by-name">
