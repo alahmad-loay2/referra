@@ -377,12 +377,29 @@ export const getHrPositions = async (hr, query) => {
     whereClause.DepartmentId = departmentId;
   }
 
-  // Search by position title
+  // Search by position title, company name, and location
   if (search && search.trim() !== "") {
-    whereClause.PositionTitle = {
-      contains: search.trim(),
-      mode: "insensitive",
-    };
+    const searchTerm = search.trim();
+    whereClause.OR = [
+      {
+        PositionTitle: {
+          contains: searchTerm,
+          mode: "insensitive",
+        },
+      },
+      {
+        CompanyName: {
+          contains: searchTerm,
+          mode: "insensitive",
+        },
+      },
+      {
+        PositionLocation: {
+          contains: searchTerm,
+          mode: "insensitive",
+        },
+      },
+    ];
   }
 
   //  Sorting
