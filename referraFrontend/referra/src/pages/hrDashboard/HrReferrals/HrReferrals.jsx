@@ -186,8 +186,13 @@ const HrReferrals = () => {
       };
     }
 
-    // If status is Hired or candidate is accepted, or Prospect is true, show Finalized
-    if (status === "Hired" || candidateAcceptance || prospect) {
+    // If prospect is true, show Prospect badge
+    if (prospect) {
+      return { text: "Prospect", className: "status-badge-prospect" };
+    }
+
+    // If status is Hired or candidate is accepted, show Finalized
+    if (status === "Hired" || candidateAcceptance) {
       return { text: "Finalized", className: "status-badge-accepted" };
     }
 
