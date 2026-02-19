@@ -113,6 +113,9 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--gap-lg);
+  /* Make cards visually consistent in height */
+  min-height: 96px;
+  flex: 1 1 auto;
 }
 
 .emp-position-card {
